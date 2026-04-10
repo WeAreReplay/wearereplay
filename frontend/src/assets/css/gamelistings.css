@@ -47,6 +47,11 @@
 .listings-main .listings-content .table-head li span:not(:last-of-type) {
   border-right: 0.0125rem solid #fdacac;
 }
+.listings-main .listings-content .table-head li span.actions, .listings-main .listings-content .table-head li span.platform-badge {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
 .listings-main .listings-content .table-content {
   border: 0.0125rem solid #fdacac;
 }

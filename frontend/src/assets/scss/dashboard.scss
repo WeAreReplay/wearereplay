@@ -64,6 +64,7 @@
             -webkit-line-clamp: 3;
             line-clamp: 3;
             overflow: hidden;
+            text-overflow: ellipsis;
 
             &:not(:last-of-type) {
               border-right: $border-xxsmall solid $pink;
@@ -90,6 +91,7 @@
             -webkit-line-clamp: 3;
             line-clamp: 3;
             overflow: hidden;
+            text-overflow: ellipsis;
 
             &:not(:last-of-type) {
               border-right: $border-xxsmall solid $pink;
@@ -109,10 +111,13 @@
 
               .icon-btn {
                 padding: $spacing-4;
-                display: grid;
-                place-items: center;
+                display: flex;
+                align-items: center;
+                gap: $spacing-8;
                 border-radius: $border-small;
+                text-transform: uppercase;
                 background-color: $orange;
+                color: $white;
 
                 svg {
                   fill: $white;

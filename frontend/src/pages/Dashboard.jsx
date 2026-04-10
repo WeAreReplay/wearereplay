@@ -81,7 +81,7 @@ export default function Dashboard() {
     1: { name: "ReplayAdmin", role: "admin" },
   };
 
-  const currentUser = user[1];
+  const currentUser = user[0];
 
   /*
     ! State: Active Listings
@@ -679,6 +679,7 @@ export default function Dashboard() {
                                               className="icon-btn edit"
                                               aria-label="Edit"
                                             >
+                                              Edit
                                               <FaEdit />
                                             </button>
 
@@ -689,6 +690,7 @@ export default function Dashboard() {
                                               className="icon-btn delete"
                                               aria-label="Delete"
                                             >
+                                              Delete
                                               <FaTrash />
                                             </button>
                                           </>

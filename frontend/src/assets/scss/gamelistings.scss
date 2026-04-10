@@ -58,6 +58,13 @@
           &:not(:last-of-type) {
             border-right: $border-xxsmall solid $pink;
           }
+
+          &.actions,
+          &.platform-badge {
+            display: flex;
+            align-items: center;
+            gap: $spacing-8;
+          }
         }
       }
     }

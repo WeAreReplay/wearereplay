@@ -57,6 +57,7 @@
   -webkit-line-clamp: 3;
   line-clamp: 3;
   overflow: hidden;
+  text-overflow: ellipsis;
 }
 .dashboard-main .dashboard-content .dashboard-table .table-head li > span:not(:last-of-type) {
   border-right: 0.0125rem solid #fdacac;
@@ -80,6 +81,7 @@
   -webkit-line-clamp: 3;
   line-clamp: 3;
   overflow: hidden;
+  text-overflow: ellipsis;
 }
 .dashboard-main .dashboard-content .dashboard-table .table-content li > span:not(:last-of-type) {
   border-right: 0.0125rem solid #fdacac;
@@ -96,10 +98,13 @@
 }
 .dashboard-main .dashboard-content .dashboard-table .table-content li > span.actions .icon-btn {
   padding: 0.25rem;
-  display: grid;
-  place-items: center;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
   border-radius: 0.25rem;
+  text-transform: uppercase;
   background-color: #f07c68;
+  color: #fbead9;
 }
 .dashboard-main .dashboard-content .dashboard-table .table-content li > span.actions .icon-btn svg {
   fill: #fbead9;
