@@ -22,7 +22,7 @@ export default function DeleteModal({ name, onConfirm, onCancel }) {
         // ! Important if used with overlay click-to-close
       }
       <div className="content" onClick={(e) => e.stopPropagation()}>
-        <h3>Delete Listing</h3>
+        <h3>Confirm Deletion</h3>
 
         <p>
           Are you sure you want to delete <strong>{itemName}</strong>?
