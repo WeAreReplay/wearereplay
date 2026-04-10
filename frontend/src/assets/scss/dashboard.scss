@@ -97,24 +97,26 @@
               border-right: $border-xxsmall solid $pink;
             }
 
-            &.actions,
             &.platform-badge {
               display: flex;
-              align-items: center;
               gap: $spacing-8;
+              align-items: center;
             }
 
             &.actions {
+              padding: 0;
               display: flex;
-              gap: $spacing-4;
+              gap: 0;
               align-items: center;
 
               .icon-btn {
+                flex: 1;
+                height: 100%;
                 padding: $spacing-4;
                 display: flex;
-                align-items: center;
                 gap: $spacing-8;
-                border-radius: $border-small;
+                align-items: center;
+                justify-content: center;
                 text-transform: uppercase;
                 background-color: $orange;
                 color: $white;
@@ -122,7 +124,19 @@
                 svg {
                   fill: $white;
                 }
+
+                &:not(:last-of-type) {
+                  border-right: $border-xsmall solid $pink;
+                }
               }
+
+              .na-text {
+                padding: $spacing-8;
+              }
+            }
+
+            &:not(.actions):not(.platform-badge) {
+              padding: $spacing-8;
             }
           }
         }

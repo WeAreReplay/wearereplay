@@ -86,28 +86,40 @@
 .dashboard-main .dashboard-content .dashboard-table .table-content li > span:not(:last-of-type) {
   border-right: 0.0125rem solid #fdacac;
 }
-.dashboard-main .dashboard-content .dashboard-table .table-content li > span.actions, .dashboard-main .dashboard-content .dashboard-table .table-content li > span.platform-badge {
+.dashboard-main .dashboard-content .dashboard-table .table-content li > span.platform-badge {
   display: flex;
-  align-items: center;
   gap: 0.5rem;
+  align-items: center;
 }
 .dashboard-main .dashboard-content .dashboard-table .table-content li > span.actions {
+  padding: 0;
   display: flex;
-  gap: 0.25rem;
+  gap: 0;
   align-items: center;
 }
 .dashboard-main .dashboard-content .dashboard-table .table-content li > span.actions .icon-btn {
+  flex: 1;
+  height: 100%;
   padding: 0.25rem;
   display: flex;
-  align-items: center;
   gap: 0.5rem;
-  border-radius: 0.25rem;
+  align-items: center;
+  justify-content: center;
   text-transform: uppercase;
   background-color: #f07c68;
   color: #fbead9;
 }
 .dashboard-main .dashboard-content .dashboard-table .table-content li > span.actions .icon-btn svg {
   fill: #fbead9;
+}
+.dashboard-main .dashboard-content .dashboard-table .table-content li > span.actions .icon-btn:not(:last-of-type) {
+  border-right: 0.125rem solid #fdacac;
+}
+.dashboard-main .dashboard-content .dashboard-table .table-content li > span.actions .na-text {
+  padding: 0.5rem;
+}
+.dashboard-main .dashboard-content .dashboard-table .table-content li > span:not(.actions):not(.platform-badge) {
+  padding: 0.5rem;
 }
 .dashboard-main .dashboard-content .dashboard-table .status {
   display: inline-flex;

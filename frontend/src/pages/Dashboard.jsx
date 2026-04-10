@@ -5,7 +5,8 @@ import GetPlatformIcon from "../components/GetPlatformIcon";
 import DashboardForm from "../components/DashboardForm";
 import Overlay from "../components/Overlay";
 import DeleteModal from "../components/DeleteModal";
-import { FaTrash, FaEdit } from "react-icons/fa";
+import { FaTrash, FaEdit, FaTruck } from "react-icons/fa";
+import { MdReport, MdChatBubble } from "react-icons/md";
 import DonkeyKong from "../assets/images/donkey-kong.webp";
 import indiana from "../assets/images/indiana-jones.webp";
 import Toast from "../components/Toast";
@@ -303,7 +304,7 @@ export default function Dashboard() {
     {
       name: "Hogwarts",
       platform: "Windows",
-      listedBy: "PlayerOne",
+      rentedBy: "PlayerFour",
       rentedOn: "2026-03-18",
       returnedOn: "2026-03-21",
       price: 120,
@@ -415,6 +416,7 @@ export default function Dashboard() {
             { label: "Days Left", key: "daysLeft" },
             { label: "Rented On", key: "rentedOn", isDate: true },
             { label: "Due Date", key: "dueDate", isDate: true },
+            { label: "Actions", key: "actions", isActions: true },
           ],
           statusFn: getRentalStatus,
         },
@@ -461,7 +463,7 @@ export default function Dashboard() {
             { label: "Platform", key: "platform", isIcon: true },
             { label: "Price (AED)", key: "price" },
             { label: "Genre", key: "genre" },
-            { label: "Listed By", key: "listedBy" },
+            { label: "Rented By", key: "rentedBy" },
             { label: "Rented On", key: "rentedOn", isDate: true },
             { label: "Returned On", key: "returnedOn", isDate: true },
           ],
@@ -667,38 +669,113 @@ export default function Dashboard() {
                                       </span>
                                     );
 
-                                  if (col.isActions)
-                                    return (
-                                      <span key={colIndex} className="actions">
-                                        {statusClass === "available" ? (
-                                          <>
-                                            <button
-                                              onClick={() =>
-                                                handleEditListing(row)
-                                              }
-                                              className="icon-btn edit"
-                                              aria-label="Edit"
-                                            >
-                                              Edit
-                                              <FaEdit />
-                                            </button>
+                                  if (col.isActions) {
+                                    // 👉 CURRENT RENTALS ACTIONS
+                                    if (table.title === "Current Rentals") {
+                                      return (
+                                        <span
+                                          key={colIndex}
+                                          className="actions"
+                                        >
+                                          {/* Chat always */}
+                                          <button
+                                            className="icon-btn chat"
+                                            onClick={() =>
+                                              console.log(
+                                                "Chat with",
+                                                row.listedBy,
+                                              )
+                                            }
+                                          >
+                                            Chat
+                                            <MdChatBubble />
+                                          </button>
 
+                                          {/* Return only when allowed */}
+                                          {[
+                                            "rented",
+                                            "due",
+                                            "overdue",
+                                          ].includes(statusClass) && (
                                             <button
+                                              className="icon-btn return"
                                               onClick={() =>
-                                                handleDeleteListing(row.name)
+                                                console.log("Return", row.name)
                                               }
-                                              className="icon-btn delete"
-                                              aria-label="Delete"
                                             >
-                                              Delete
-                                              <FaTrash />
+                                              Return
+                                              <FaTruck />
                                             </button>
-                                          </>
-                                        ) : (
-                                          <span className="na-text">N/A</span>
-                                        )}
-                                      </span>
-                                    );
+                                          )}
+                                        </span>
+                                      );
+                                    }
+
+                                    if (table.title === "Active Listings") {
+                                      return (
+                                        <span
+                                          key={colIndex}
+                                          className="actions"
+                                        >
+                                          {statusClass === "available" ? (
+                                            <>
+                                              <button
+                                                onClick={() =>
+                                                  handleEditListing(row)
+                                                }
+                                                className="icon-btn edit"
+                                              >
+                                                Edit
+                                                <FaEdit />
+                                              </button>
+
+                                              <button
+                                                onClick={() =>
+                                                  handleDeleteListing(row.name)
+                                                }
+                                                className="icon-btn delete"
+                                              >
+                                                Delete
+                                                <FaTrash />
+                                              </button>
+                                            </>
+                                          ) : (
+                                            <>
+                                              {/* Chat always when not available */}
+                                              <button
+                                                className="icon-btn chat"
+                                                onClick={() =>
+                                                  console.log(
+                                                    "Chat with",
+                                                    row.rentedBy,
+                                                  )
+                                                }
+                                              >
+                                                Chat
+                                                <MdChatBubble />
+                                              </button>
+
+                                              {/* Report only if overdue */}
+                                              {statusClass === "overdue" && (
+                                                <button
+                                                  className="icon-btn report"
+                                                  onClick={() =>
+                                                    console.log(
+                                                      "Report",
+                                                      row.name,
+                                                    )
+                                                  }
+                                                >
+                                                  Report
+                                                  <MdReport />
+                                                </button>
+                                              )}
+                                            </>
+                                          )}
+                                        </span>
+                                      );
+                                    }
+                                  }
 
                                   return (
                                     <span key={colIndex}>
@@ -791,14 +868,7 @@ export default function Dashboard() {
                                 if (col.isImage)
                                   return (
                                     <span key={colIndex}>
-                                      <img
-                                        src={row[col.key]}
-                                        alt={row.name}
-                                        style={{
-                                          width: "50px",
-                                          borderRadius: "6px",
-                                        }}
-                                      />
+                                      <img src={row[col.key]} alt={row.name} />
                                     </span>
                                   );
 
