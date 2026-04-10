@@ -1,0 +1,47 @@
+@use "./partials/variables" as *;
+@use "./partials/mixins" as *;
+
+.notfound-main {
+  .width-wrap {
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    gap: $spacing-16;
+
+    h1 {
+      color: $orange;
+      font-family: $font-vcr;
+
+      svg {
+        width: 100%;
+        height: 100%;
+        max-width: 1000px;
+      }
+    }
+
+    h2 {
+      color: $orange;
+      font-family: $font-vcr;
+      @include fontSize(h5);
+
+      @include tablet() {
+        @include fontSize(h3);
+      }
+
+      @include desktop() {
+        @include fontSize(h1);
+      }
+    }
+
+    a {
+      border-radius: $border-large;
+      padding: $spacing-16;
+      border: $border-small solid $orange;
+      text-transform: uppercase;
+      color: $orange;
+    }
+  }
+}

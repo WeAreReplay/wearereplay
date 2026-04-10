@@ -1,0 +1,225 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap");
+.dashboard-main {
+  padding-top: 3.75rem;
+  padding-bottom: 7.5rem;
+  min-height: 100vh;
+  position: relative;
+}
+.dashboard-main h2 {
+  padding-inline: 1rem;
+}
+.dashboard-main .dashboard-content .title {
+  margin-bottom: 1.5rem;
+  margin-left: 0;
+}
+.dashboard-main .dashboard-content .table-wrapper {
+  overflow-x: auto;
+  padding: 1rem;
+}
+.dashboard-main .dashboard-content .table-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-inline: 1rem;
+}
+.dashboard-main .dashboard-content .table-header button,
+.dashboard-main .dashboard-content .table-header a {
+  border-radius: 1rem;
+  padding: 1rem;
+  border: 0.25rem solid #f07c68;
+  text-transform: uppercase;
+  color: #f07c68;
+}
+.dashboard-main .dashboard-content .dashboard-table {
+  width: 100%;
+  overflow-x: auto;
+  white-space: nowrap;
+}
+.dashboard-main .dashboard-content .dashboard-table .table-head li {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: 200px;
+  background-color: #f07c68;
+  color: #fbead9;
+  min-width: -moz-max-content;
+  min-width: max-content;
+}
+.dashboard-main .dashboard-content .dashboard-table .table-head li > span {
+  padding: 0.5rem;
+  font-family: "Inter", sans-serif;
+  font-size: 0.875rem;
+  line-height: 1.8;
+  font-weight: 600;
+  text-transform: uppercase;
+  white-space: nowrap;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
+  overflow: hidden;
+}
+.dashboard-main .dashboard-content .dashboard-table .table-head li > span:not(:last-of-type) {
+  border-right: 0.0125rem solid #fdacac;
+}
+.dashboard-main .dashboard-content .dashboard-table .table-content li {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: 200px;
+  border: 0.0125rem solid #fdacac;
+  min-width: -moz-max-content;
+  min-width: max-content;
+}
+.dashboard-main .dashboard-content .dashboard-table .table-content li > span {
+  padding: 0.5rem;
+  font-family: "Inter", sans-serif;
+  font-size: 0.875rem;
+  line-height: 1.8;
+  white-space: nowrap;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
+  overflow: hidden;
+}
+.dashboard-main .dashboard-content .dashboard-table .table-content li > span:not(:last-of-type) {
+  border-right: 0.0125rem solid #fdacac;
+}
+.dashboard-main .dashboard-content .dashboard-table .table-content li > span.actions, .dashboard-main .dashboard-content .dashboard-table .table-content li > span.platform-badge {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.dashboard-main .dashboard-content .dashboard-table .table-content li > span.actions {
+  display: flex;
+  gap: 0.25rem;
+  align-items: center;
+}
+.dashboard-main .dashboard-content .dashboard-table .table-content li > span.actions .icon-btn {
+  padding: 0.25rem;
+  display: grid;
+  place-items: center;
+  border-radius: 0.25rem;
+  background-color: #f07c68;
+}
+.dashboard-main .dashboard-content .dashboard-table .table-content li > span.actions .icon-btn svg {
+  fill: #fbead9;
+}
+.dashboard-main .dashboard-content .dashboard-table .status {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.25rem 0.5rem;
+  font-weight: 600;
+  font-size: 12px;
+  white-space: nowrap;
+}
+.dashboard-main .dashboard-content .dashboard-table .status.due {
+  background: #ffe8cc;
+  color: #8a8317;
+}
+.dashboard-main .dashboard-content .dashboard-table .status.overdue {
+  background: #ffe5e5;
+  color: #d33;
+}
+.dashboard-main .dashboard-content .dashboard-table .status.available {
+  background: #e5ffe5;
+  color: #2d8a2d;
+}
+.dashboard-main .dashboard-content .dashboard-table .status.delivery {
+  background: #e0f7ff;
+  color: #0077b6;
+}
+.dashboard-main .dashboard-content .dashboard-table .status.rented {
+  background: #dcdcdc;
+  color: #000;
+}
+.dashboard-main .delete-modal {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 100;
+  pointer-events: none;
+}
+.dashboard-main .delete-modal .content {
+  padding: 1.5rem;
+  background-color: #f07c68;
+  color: #fbead9;
+  text-align: center;
+  pointer-events: visible;
+}
+.dashboard-main .delete-modal .content p {
+  margin-block: 0.5rem 2rem;
+}
+.dashboard-main .delete-modal .content p strong {
+  font-weight: 500;
+}
+.dashboard-main .delete-modal .content .delete-btn {
+  background-color: #fbead9;
+  color: #f07c68;
+}
+.dashboard-main .form-ctr {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 100;
+  pointer-events: none;
+}
+.dashboard-main .form-ctr .head {
+  display: flex;
+  justify-content: space-between;
+}
+.dashboard-main .form-ctr form {
+  padding: 1.5rem;
+  pointer-events: visible;
+  background-color: #fbead9;
+}
+.dashboard-main .form-ctr form .opts-ctr li:first-of-type button {
+  background-color: #fbead9;
+  color: #f07c68;
+}
+@media (min-width: 768px) {
+  .dashboard-main .form-ctr form {
+    min-width: 420px;
+  }
+}
+
+.toast {
+  position: fixed;
+  top: 0;
+  right: 0;
+  padding: 1rem 1.5rem;
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  justify-content: center;
+  background-color: #fbead9;
+}
+.toast p {
+  font-size: 0.875rem;
+  line-height: 1.8;
+}
+.toast.deleted, .toast.overdue {
+  background: #ffe5e5;
+}
+.toast.deleted svg, .toast.overdue svg {
+  color: #d33;
+}
+.toast.due {
+  background: #ffe8cc;
+  color: #8a8317;
+}
+.toast.added {
+  background: #e5ffe5;
+  color: #2d8a2d;
+}
+.toast.delivery, .toast.edited {
+  background: #e0f7ff;
+  color: #0077b6;
+}
+.toast.rented {
+  background: #dcdcdc;
+  color: #000;
+}/*# sourceMappingURL=dashboard.css.map */

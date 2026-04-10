@@ -1,0 +1,51 @@
+@use "./partials/variables" as *;
+@use "./partials/mixins" as *;
+
+.auth-main {
+  background-color: $white;
+  min-height: 100vh;
+  max-height: 100vh;
+  display: flex;
+
+  .auth-ctr {
+    width: 100%;
+    padding: $spacing-24 $spacing-32;
+
+    @include tablet() {
+      flex: 1;
+      max-width: 480px;
+    }
+
+    @include desktop() {
+      flex: 0.5;
+    }
+
+    .switch-auth {
+      margin-top: $spacing-16;
+      font-weight: 400;
+      text-align: center;
+
+      a {
+        font-family: $font-inter;
+        font-weight: 800;
+        color: $orange;
+      }
+    }
+  }
+
+  .auth-img {
+    display: none;
+
+    @include tablet() {
+      overflow: hidden;
+      flex: 1;
+      background-color: $orange;
+      display: block;
+    }
+
+    img {
+      height: 100%;
+      width: 100%;
+    }
+  }
+}

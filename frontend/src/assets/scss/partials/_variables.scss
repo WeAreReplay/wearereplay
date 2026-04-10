@@ -1,0 +1,43 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap");
+
+// ! Color Palette
+$white: #fbead9;
+$orange: #f07c68;
+$black: #292828;
+$pink: #fdacac;
+
+// ! Font Families
+$font-vcr: "VCR", monospace;
+$font-pt: "Primetime", sans-serif;
+$font-inter: "Inter", sans-serif;
+
+// ! Element Padding and Spacing
+$spacing-4: 0.25rem; // 4px
+$spacing-8: 0.5rem; // 8px
+$spacing-16: 1rem; // 16px
+$spacing-24: 1.5rem; // 24px
+$spacing-32: 2rem; // 32px
+$spacing-48: 3rem; // 48px
+$spacing-64: 4rem; // 64px
+
+// ! Section Padding
+$section-spacing: 1.5rem; // 24px
+$section-block-small: 3.75rem; // 60px
+$section-block-medium: 5rem; // 80px
+$section-block-large: 7.5rem; //120px
+
+// ! Z-Index
+$z-index-maxbot: -100;
+$z-index-bot: -1;
+$z-index-mid: 1;
+$z-index-top: 50;
+$z-index-maxtop: 100;
+
+// ! Border Width and Radius
+$border-xxsmall: 0.0125rem; // 0.2px
+$border-xsmall: 0.125rem; // 2px
+$border-small: 0.25rem; // 4px
+$border-medium: 0.5rem; // 8px
+$border-large: 1rem; // 16px
+$border-xlarge: 1.5rem; // 24px
+$border-xxlarge: 3rem; // 48px

@@ -1,0 +1,84 @@
+@use "./partials/variables" as *;
+@use "./partials/mixins" as *;
+
+.games-main {
+  .games-content {
+    .width-wrap {
+      min-height: 100vh;
+      padding-block: $section-block-small;
+      background-color: $white;
+
+      .filter-ctr {
+        position: sticky;
+        top: $spacing-64 + $spacing-24;
+        inset-inline: 0;
+        z-index: $z-index-maxtop;
+
+        button {
+          margin: auto;
+          background-color: $orange;
+        }
+      }
+
+      .games-ctr {
+        margin-top: $spacing-24;
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: $spacing-16;
+        justify-content: center;
+
+        @include tablet() {
+          grid-template-columns: repeat(auto-fit, minmax(250px, auto));
+        }
+
+        .card {
+          max-width: 320px;
+          display: grid;
+          gap: $spacing-8;
+
+          .img-ctr {
+            width: 100%;
+            aspect-ratio: 9 / 11; // keeps the ratio
+            overflow: hidden;
+            border-radius: $border-medium;
+
+            img {
+              max-width: 320px;
+              width: 100%;
+              height: 100%;
+              object-fit: cover; // makes it fill and scale nicely
+              user-select: none;
+              -webkit-user-drag: none;
+              transition: transform 0.3s ease;
+            }
+          }
+
+          .info {
+            display: flex;
+            flex-direction: column;
+
+            .name {
+              -webkit-line-clamp: 1;
+              -webkit-box-orient: vertical;
+              display: -webkit-box;
+              font-family: $font-inter;
+              font-weight: 700;
+              text-transform: none;
+              letter-spacing: -0.8px;
+              @include fontSize(p);
+              overflow: hidden;
+              max-width: 20ch;
+            }
+
+            .genre {
+              text-transform: uppercase;
+              font-weight: 500;
+              @include fontSize(tag);
+              opacity: 0.6;
+            }
+          }
+        }
+      }
+    }
+  }
+}

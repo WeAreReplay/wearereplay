@@ -1,0 +1,44 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap");
+.notfound-main .width-wrap {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  gap: 1rem;
+}
+.notfound-main .width-wrap h1 {
+  color: #f07c68;
+  font-family: "VCR", monospace;
+}
+.notfound-main .width-wrap h1 svg {
+  width: 100%;
+  height: 100%;
+  max-width: 1000px;
+}
+.notfound-main .width-wrap h2 {
+  color: #f07c68;
+  font-family: "VCR", monospace;
+  font-size: 2rem;
+  line-height: 1.4;
+}
+@media (min-width: 768px) {
+  .notfound-main .width-wrap h2 {
+    font-size: 3rem;
+    line-height: 1.25;
+  }
+}
+@media (min-width: 1024px) {
+  .notfound-main .width-wrap h2 {
+    font-size: 4.5rem;
+    line-height: 1.1;
+  }
+}
+.notfound-main .width-wrap a {
+  border-radius: 1rem;
+  padding: 1rem;
+  border: 0.25rem solid #f07c68;
+  text-transform: uppercase;
+  color: #f07c68;
+}/*# sourceMappingURL=notfound.css.map */

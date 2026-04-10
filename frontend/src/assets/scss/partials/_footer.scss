@@ -1,0 +1,134 @@
+@use "./variables" as *;
+@use "./mixins" as *;
+
+footer {
+  background-color: $orange;
+  position: relative;
+  z-index: $z-index-maxtop;
+
+  .width-wrap {
+    max-height: 1024px;
+    background-color: $orange;
+
+    @include tablet() {
+      display: grid;
+      gap: $spacing-24;
+      height: 100vh;
+      grid-template-rows: 1fr auto;
+      grid-template-columns: 1fr auto;
+    }
+
+    .foot-logo {
+      width: 160px;
+      height: fit-content;
+      display: none;
+
+      @include tablet() {
+        display: block;
+      }
+    }
+
+    .top {
+      display: flex;
+      flex-direction: column;
+      gap: $spacing-24;
+
+      .nav-items {
+        display: grid;
+        gap: $spacing-8;
+        @include fontSize(h6);
+
+        .nav-link {
+          color: $white;
+          text-transform: uppercase;
+        }
+      }
+
+      .contact-items {
+        display: grid;
+        gap: $spacing-8;
+        @include fontSize(h6);
+
+        li {
+          display: grid;
+          gap: $spacing-4;
+
+          .contact-label {
+            opacity: 0.7;
+          }
+
+          span {
+            color: $white;
+            text-transform: uppercase;
+            font-family: $font-vcr;
+            @include fontSize(p);
+          }
+        }
+      }
+    }
+
+    .copyright-svg {
+      margin-block: $spacing-24;
+      grid-row: 2;
+      width: 100%;
+      height: 100%;
+
+      @include tablet() {
+        grid-column: span 2;
+      }
+    }
+
+    .bottom {
+      display: flex;
+      flex-direction: column;
+      text-align: center;
+      align-items: center;
+      gap: $spacing-16;
+
+      .info-items {
+        display: flex;
+        flex-direction: column;
+        gap: $spacing-16;
+
+        @include tablet() {
+          flex-direction: row;
+          flex-wrap: wrap;
+          gap: $spacing-24;
+        }
+
+        li a {
+          color: $white;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: $spacing-8;
+          text-transform: uppercase;
+        }
+      }
+
+      .copyright {
+        display: flex;
+        gap: $spacing-8;
+        font-family: $font-vcr;
+        text-transform: uppercase;
+        color: $white;
+        font-weight: 500;
+        letter-spacing: 1px;
+        text-wrap: pretty;
+
+        @include tablet() {
+          align-items: center;
+        }
+      }
+
+      @include tablet() {
+        grid-column: span 2;
+        justify-content: space-between;
+      }
+
+      @include desktop() {
+        flex-direction: row-reverse;
+      }
+    }
+  }
+}

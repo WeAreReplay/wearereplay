@@ -1,0 +1,154 @@
+@use "./partials/variables" as *;
+@use "./partials/mixins" as *;
+@use "./partials/reset";
+@use "./partials/header";
+@use "./partials/footer";
+
+.home-main {
+  // ! Hero Section
+  .hero {
+    position: relative;
+    background-color: $black;
+    overflow: hidden;
+
+    // * Hero Video Background
+    .hero-bg {
+      width: 100%;
+      height: 100%;
+      position: absolute;
+      opacity: 0.5;
+    }
+
+    // ! TV Static Overlay Effect
+    .tv-effect {
+      position: absolute;
+      inset: 10px;
+      z-index: $z-index-top;
+      pointer-events: none;
+      overflow: hidden;
+
+      // * TV Line
+      &::before {
+        content: "";
+        pointer-events: none;
+        width: 100%;
+        height: $spacing-4;
+        position: absolute;
+        left: 0;
+        background: #00000044;
+        opacity: 0.75;
+        z-index: $z-index-maxtop;
+        animation: tv-line 5s linear infinite reverse;
+        will-change: transform;
+      }
+
+      // * Static Noise Overlay
+      &::after {
+        content: "";
+        pointer-events: none;
+        position: absolute;
+        inset: 0;
+        z-index: $z-index-maxtop;
+        background-image: linear-gradient(
+          to bottom,
+          transparent 50%,
+          #00000033 50%
+        );
+        background-size: 100% 4px;
+      }
+    }
+
+    // ? Animation for TV Line
+    @keyframes tv-line {
+      0%,
+      15% {
+        transform: translateY(-20px);
+      }
+
+      85%,
+      100% {
+        transform: translateY(100vh);
+      }
+    }
+
+    .width-wrap {
+      height: 100vh;
+      max-height: 1024px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      position: relative;
+      z-index: $z-index-mid;
+      box-shadow: inset #000000 0px 0px 20px 15px;
+
+      // * SVG Hero Heading
+      .hero-heading-svg {
+        width: 100%;
+        height: 100%;
+      }
+    }
+  }
+
+  .benefits .width-wrap {
+    padding: 0;
+    padding-block: $section-block-small;
+    display: grid;
+    gap: $spacing-24;
+
+    .benefits-ctr {
+      padding-inline: $spacing-24;
+      display: flex;
+      flex-direction: column;
+      gap: $spacing-16;
+
+      @include desktop() {
+        flex-direction: row;
+        padding-inline: $spacing-64;
+      }
+
+      @include desktop-large() {
+        justify-self: center;
+      }
+
+      .card {
+        flex: 1;
+        padding: $spacing-24;
+        min-height: 360px;
+        background-color: $orange;
+        color: $white;
+        border-radius: $border-large;
+        position: relative;
+        overflow: hidden;
+
+        .icon {
+          width: 100%;
+          height: 100%;
+          position: absolute;
+          z-index: 0;
+          opacity: 0.2;
+          transform: rotateZ(30deg) scale(1.1) translate(120px, 30px);
+          pointer-events: none;
+
+          path {
+            fill: $white;
+          }
+        }
+
+        .info {
+          height: 100%;
+          display: flex;
+          flex-direction: column;
+          justify-content: flex-end;
+
+          .name {
+            @include fontSize(h5);
+          }
+
+          .desc {
+            @include fontSize(h6);
+          }
+        }
+      }
+    }
+  }
+}

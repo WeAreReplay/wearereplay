@@ -1,0 +1,271 @@
+@use "./partials/variables" as *;
+@use "./partials/mixins" as *;
+
+.dashboard-main {
+  padding-top: $section-block-small;
+  padding-bottom: $section-block-large;
+  min-height: 100vh;
+  position: relative;
+
+  h2 {
+    padding-inline: $spacing-16;
+  }
+
+  .dashboard-content {
+    .title {
+      margin-bottom: $spacing-24;
+      margin-left: 0;
+    }
+
+    .table-wrapper {
+      overflow-x: auto;
+      padding: $spacing-16;
+    }
+
+    .table-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-inline: $spacing-16;
+
+      button,
+      a {
+        border-radius: $border-large;
+        padding: $spacing-16;
+        border: $border-small solid $orange;
+        text-transform: uppercase;
+        color: $orange;
+      }
+    }
+
+    .dashboard-table {
+      width: 100%;
+      overflow-x: auto;
+      white-space: nowrap;
+
+      .table-head {
+        li {
+          display: grid;
+          grid-auto-flow: column;
+          grid-auto-columns: 200px;
+          background-color: $orange;
+          color: $white;
+          min-width: max-content;
+
+          > span {
+            padding: $spacing-8;
+            font-family: $font-inter;
+            @include fontSize(tiny);
+            font-weight: 600;
+            text-transform: uppercase;
+            white-space: nowrap;
+            display: -webkit-box;
+            -webkit-box-orient: vertical;
+            -webkit-line-clamp: 3;
+            line-clamp: 3;
+            overflow: hidden;
+
+            &:not(:last-of-type) {
+              border-right: $border-xxsmall solid $pink;
+            }
+          }
+        }
+      }
+
+      .table-content {
+        li {
+          display: grid;
+          grid-auto-flow: column;
+          grid-auto-columns: 200px;
+          border: $border-xxsmall solid $pink;
+          min-width: max-content;
+
+          > span {
+            padding: $spacing-8;
+            font-family: $font-inter;
+            @include fontSize(tiny);
+            white-space: nowrap;
+            display: -webkit-box;
+            -webkit-box-orient: vertical;
+            -webkit-line-clamp: 3;
+            line-clamp: 3;
+            overflow: hidden;
+
+            &:not(:last-of-type) {
+              border-right: $border-xxsmall solid $pink;
+            }
+
+            &.actions,
+            &.platform-badge {
+              display: flex;
+              align-items: center;
+              gap: $spacing-8;
+            }
+
+            &.actions {
+              display: flex;
+              gap: $spacing-4;
+              align-items: center;
+
+              .icon-btn {
+                padding: $spacing-4;
+                display: grid;
+                place-items: center;
+                border-radius: $border-small;
+                background-color: $orange;
+
+                svg {
+                  fill: $white;
+                }
+              }
+            }
+          }
+        }
+      }
+
+      .status {
+        display: inline-flex;
+        align-items: center;
+        padding: $spacing-4 $spacing-8;
+        font-weight: 600;
+        font-size: 12px;
+        white-space: nowrap;
+
+        &.due {
+          background: #ffe8cc;
+          color: #8a8317;
+        }
+
+        &.overdue {
+          background: #ffe5e5;
+          color: #d33;
+        }
+
+        &.available {
+          background: #e5ffe5;
+          color: #2d8a2d;
+        }
+
+        &.delivery {
+          background: #e0f7ff;
+          color: #0077b6;
+        }
+
+        &.rented {
+          background: #dcdcdc;
+          color: #000;
+        }
+      }
+    }
+  }
+
+  .delete-modal {
+    position: fixed;
+    inset: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: $z-index-maxtop;
+    pointer-events: none;
+
+    .content {
+      padding: $spacing-24;
+      background-color: $orange;
+      color: $white;
+      text-align: center;
+      pointer-events: visible;
+
+      p {
+        margin-block: $spacing-8 $spacing-32;
+
+        strong {
+          font-weight: 500;
+        }
+      }
+
+      .delete-btn {
+        background-color: $white;
+        color: $orange;
+      }
+    }
+  }
+
+  .form-ctr {
+    position: fixed;
+    inset: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: $z-index-maxtop;
+    pointer-events: none;
+
+    .head {
+      display: flex;
+      justify-content: space-between;
+    }
+
+    form {
+      padding: $spacing-24;
+      pointer-events: visible;
+      background-color: $white;
+
+      .opts-ctr {
+        li:first-of-type {
+          button {
+            background-color: $white;
+            color: $orange;
+          }
+        }
+      }
+
+      @include tablet() {
+        min-width: 420px;
+      }
+    }
+  }
+}
+
+.toast {
+  position: fixed;
+  top: 0;
+  right: 0;
+  padding: $spacing-16 $spacing-24;
+  display: flex;
+  gap: $spacing-8;
+  align-items: center;
+  justify-content: center;
+  background-color: $white;
+
+  p {
+    @include fontSize(tiny);
+  }
+
+  &.deleted,
+  &.overdue {
+    background: #ffe5e5;
+    svg {
+      color: #d33;
+    }
+  }
+
+  &.due {
+    background: #ffe8cc;
+    color: #8a8317;
+  }
+
+  &.added {
+    background: #e5ffe5;
+    color: #2d8a2d;
+  }
+
+  &.delivery,
+  &.edited {
+    background: #e0f7ff;
+    color: #0077b6;
+  }
+
+  &.rented {
+    background: #dcdcdc;
+    color: #000;
+  }
+}

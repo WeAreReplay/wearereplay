@@ -1,0 +1,533 @@
+@use "./variables" as *;
+@use "./mixins" as *;
+@use "./fonts";
+
+// ! CSS Reset
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-variant-numeric: tabular-nums;
+}
+
+// * Smooth scrolling and scrollbar styling
+html {
+  scroll-behavior: smooth;
+  scrollbar-color: $orange $white;
+}
+
+main {
+  background-color: $white;
+}
+
+#root {
+  position: relative;
+  z-index: 0;
+}
+
+// ! Image
+img {
+  max-width: 100%;
+  object-fit: cover;
+  display: block;
+  font-weight: 400;
+  @include fontSize(p);
+  font-style: italic;
+  text-transform: none;
+  font-family: $font-inter;
+}
+
+// ! Links
+a {
+  font-family: $font-vcr;
+  display: inline-block;
+  color: $black;
+  text-decoration: none;
+}
+
+// ! Headings
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: $font-pt;
+  text-transform: uppercase;
+  text-wrap: balance;
+}
+
+// ! Paragraphs
+p {
+  @include fontSize(p);
+  overflow-wrap: break-word;
+  text-wrap: balance;
+  font-weight: 300;
+  max-width: 70ch;
+  font-family: $font-inter;
+}
+
+// ! Buttons
+button {
+  font-size: inherit;
+  display: block;
+  border: none;
+  background-color: transparent;
+  font-family: $font-vcr;
+  cursor: pointer;
+}
+
+// ! Lists
+ol,
+ul {
+  list-style: none;
+}
+
+// ! For modal overlays
+.overlay {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  background-color: #0000004d;
+  z-index: $z-index-maxtop;
+  will-change: opacity;
+}
+
+// ! Form elements
+input,
+textarea {
+  width: 100%;
+  @include fontSize(p);
+  background-color: $white;
+  color: $orange;
+  padding: $spacing-8;
+  border: none;
+  font-family: $font-inter;
+  background-color: $white;
+  border-bottom: $orange solid $border-xsmall;
+
+  &::placeholder {
+    color: #f07c6899;
+  }
+}
+
+label {
+  font-family: $font-pt;
+}
+
+input,
+textarea,
+label {
+  @include fontSize(p);
+  display: inline-block;
+}
+
+textarea {
+  resize: vertical;
+}
+
+.icon {
+  width: $spacing-32;
+  height: $spacing-32;
+}
+
+.width-wrap {
+  // * Set the maximum width for the section's content
+  margin: 0 auto;
+  max-width: 1720px;
+  padding: $section-spacing;
+}
+
+// ! Form Reset
+form {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-24;
+
+  .head {
+    display: grid;
+    gap: $spacing-8;
+    text-align: center;
+
+    p {
+      font-weight: 400;
+    }
+  }
+
+  .fields-ctr {
+    display: grid;
+    gap: $spacing-16;
+
+    li {
+      label {
+        text-transform: uppercase;
+      }
+
+      .input-ctr {
+        position: relative;
+        display: flex;
+        align-items: center;
+
+        .valid-icon {
+          position: absolute;
+          right: 0;
+          height: 100%;
+          color: #5a9d5a;
+          padding: $spacing-8;
+          pointer-events: none;
+        }
+      }
+
+      .password-ctr {
+        position: relative;
+        display: flex;
+        align-items: center;
+        border-bottom: $orange solid $border-xsmall;
+
+        input {
+          border-bottom: none;
+        }
+
+        .eye-btn {
+          height: 100%;
+          color: #f07c6899;
+          padding: $spacing-8;
+        }
+      }
+
+      .hint-ctr {
+        margin-top: $spacing-8;
+        display: flex;
+        align-items: center;
+        gap: $spacing-8;
+
+        svg {
+          color: #5a9d5a;
+        }
+
+        p {
+          @include fontSize(tiny);
+        }
+      }
+
+      .radio-ctr {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: $spacing-8;
+        margin-top: $spacing-4;
+        max-width: 300px;
+
+        .radio-btn {
+          padding: $spacing-8 $spacing-16;
+          border: $border-xsmall solid $orange;
+          border-radius: $border-medium;
+          cursor: pointer;
+          user-select: none;
+          color: $orange;
+          background-color: $white;
+
+          & > input {
+            display: none;
+          }
+
+          &.selected {
+            background-color: $orange;
+            color: $white;
+            border-color: $orange;
+          }
+        }
+      }
+
+      .file-ctr {
+        height: 240px;
+        display: flex;
+        justify-content: center;
+        width: 100%;
+        position: relative;
+        border: dotted $border-small $orange;
+
+        input {
+          position: absolute;
+          inset: 0;
+          border: dotted $border-small $orange;
+          opacity: 0;
+          cursor: pointer;
+        }
+
+        .file-preview {
+          pointer-events: none;
+
+          @include tablet() {
+            max-width: 420px;
+          }
+        }
+
+        .file-hint {
+          margin: auto;
+        }
+      }
+    }
+  }
+}
+
+.pixel {
+  font-family: $font-vcr;
+}
+
+// ? Secondary Hero For Sub Pages
+.secondary-hero {
+  min-height: 50vh;
+  padding: $spacing-48;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: $spacing-16;
+  color: $white;
+  background-color: $black;
+  overflow: hidden;
+  position: relative;
+  @include fontSize(h6);
+  text-align: center;
+
+  @include tablet() {
+    @include fontSize(h5);
+  }
+
+  @include desktop() {
+    @include fontSize(h3);
+  }
+
+  .pixel {
+    display: contents;
+  }
+
+  .secondary-img {
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    opacity: 0.2;
+    filter: blur(3px);
+  }
+
+  * {
+    position: relative;
+  }
+}
+
+// ? Opts Container for Forms
+.opts-ctr {
+  display: grid;
+  grid-template-columns: auto 1fr;
+
+  li {
+    &:first-of-type {
+      border: $orange solid $border-small;
+    }
+
+    a,
+    button {
+      height: 100%;
+      width: 100%;
+      padding: $spacing-16;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: $spacing-8;
+      text-transform: uppercase;
+
+      .icon {
+        width: $spacing-24;
+        height: $spacing-24;
+      }
+    }
+
+    a {
+      color: $orange;
+    }
+
+    button {
+      color: $white;
+      background-color: $orange;
+
+      &:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+    }
+  }
+}
+
+// ? For Titles Per Section
+.title {
+  margin-left: $spacing-32;
+  margin-right: $spacing-32;
+  @include fontSize(h5);
+  color: $orange;
+  display: flex;
+  gap: $spacing-16;
+
+  @include tablet() {
+    margin-right: 0;
+    @include fontSize(h3);
+  }
+
+  @include desktop() {
+    margin-left: $spacing-64;
+    @include fontSize(h2);
+  }
+
+  &.right {
+    margin-left: auto;
+    margin-right: $spacing-32;
+    text-align: right;
+  }
+}
+
+// ? For Item Sliders
+.item-slider .width-wrap {
+  padding: 0;
+  padding-block: $section-block-small;
+  display: grid;
+  gap: $spacing-24;
+  overflow: hidden;
+
+  .more-link {
+    padding: $spacing-16 $spacing-32;
+    margin-right: $spacing-32;
+    justify-self: end;
+    display: flex;
+    align-items: center;
+    gap: $spacing-8;
+    text-transform: uppercase;
+    @include fontSize(p);
+    color: $orange;
+    border: $orange solid $border-small;
+    border-radius: $border-xxlarge;
+
+    @include desktop() {
+      margin-right: $spacing-64;
+    }
+
+    &.right {
+      margin-right: auto;
+      margin-left: $spacing-32;
+
+      @include desktop() {
+        margin-left: $spacing-64;
+      }
+    }
+  }
+
+  .slider-ctr {
+    padding-inline: $spacing-32;
+    display: flex;
+    gap: $spacing-24;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+
+    @include desktop() {
+      padding-inline: $spacing-64;
+    }
+
+    @include desktop-large() {
+      justify-self: center;
+    }
+
+    &::-webkit-scrollbar {
+      display: none;
+    }
+
+    .card {
+      scroll-snap-align: center;
+      display: grid;
+      gap: $spacing-8;
+
+      .img-ctr {
+        height: 300px;
+        aspect-ratio: 9 / 11;
+
+        img {
+          height: 100%;
+          user-select: none;
+          -webkit-user-drag: none;
+        }
+      }
+
+      .info {
+        display: flex;
+        flex-direction: column;
+
+        .name {
+          -webkit-line-clamp: 1;
+          -webkit-box-orient: vertical;
+          display: -webkit-box;
+          font-family: $font-inter;
+          font-weight: 700;
+          text-transform: none;
+          letter-spacing: -0.8px;
+          @include fontSize(p);
+          overflow: hidden;
+          max-width: 20ch;
+        }
+
+        .genre {
+          text-transform: uppercase;
+          font-weight: 500;
+          @include fontSize(tag);
+          opacity: 0.6;
+        }
+      }
+    }
+  }
+}
+
+// ? For Pagination
+.page-opts {
+  margin-top: $spacing-24;
+  display: flex;
+  gap: $spacing-24;
+  align-items: center;
+  justify-content: center;
+  color: $orange;
+  @include fontSize(p);
+
+  button {
+    padding: $spacing-16 $spacing-32;
+    display: flex;
+    gap: $spacing-8;
+    align-items: center;
+    justify-content: center;
+    color: $orange;
+    text-transform: uppercase;
+    border: $orange solid $border-small;
+    border-radius: $border-xxlarge;
+
+    .icon2 {
+      @include fontSize(h6);
+    }
+
+    &:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+  }
+
+  .pagination {
+    display: flex;
+    gap: $spacing-8;
+    font-family: $font-inter;
+    color: $black;
+
+    .page-number {
+      padding-inline: $spacing-8;
+      text-align: center;
+      border-bottom: $orange solid $border-xsmall;
+      color: $orange;
+    }
+  }
+}

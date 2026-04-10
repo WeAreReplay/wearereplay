@@ -1,0 +1,73 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap");
+.listings-main .listings-hero {
+  padding-top: 7.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+.listings-main .listings-hero .top .genre {
+  display: flex;
+  justify-content: center;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+  line-height: 1.8;
+  text-transform: uppercase;
+  font-weight: 900;
+}
+.listings-main .listings-hero .top .genre span {
+  font-family: "VCR", monospace;
+}
+.listings-main .listings-hero p {
+  text-align: center;
+}
+.listings-main .listings-content .title {
+  margin-left: 0;
+  margin-bottom: 1rem;
+}
+.listings-main .listings-content .table-wrapper {
+  width: 100%;
+  overflow-x: auto;
+}
+.listings-main .listings-content .table-head li {
+  display: grid;
+  grid-template-columns: 1.5fr 1fr 1fr 1fr;
+  gap: 0.5rem;
+  background-color: #f07c68;
+  color: #fbead9;
+}
+.listings-main .listings-content .table-head li span {
+  padding: 1rem 0.5rem;
+  font-size: 0.875rem;
+  line-height: 1.8;
+  font-weight: 700;
+  text-transform: uppercase;
+  font-family: "Inter", sans-serif;
+}
+.listings-main .listings-content .table-head li span:not(:last-of-type) {
+  border-right: 0.0125rem solid #fdacac;
+}
+.listings-main .listings-content .table-content {
+  border: 0.0125rem solid #fdacac;
+}
+.listings-main .listings-content .table-content li {
+  display: grid;
+  grid-template-columns: 1.5fr 1fr 1fr 1fr;
+  gap: 0.5rem;
+  border-bottom: 0.0125rem solid #fdacac;
+  align-items: center;
+}
+.listings-main .listings-content .table-content li > span {
+  padding: 1rem 0.5rem;
+  font-size: 0.875rem;
+  line-height: 1.8;
+  font-family: "Inter", sans-serif;
+}
+.listings-main .listings-content .table-content li > span:not(:last-of-type) {
+  border-right: 0.0125rem solid #fdacac;
+}
+.listings-main .listings-content .actions {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}/*# sourceMappingURL=gamelistings.css.map */

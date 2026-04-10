@@ -1,0 +1,47 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap");
+.auth-main {
+  background-color: #fbead9;
+  min-height: 100vh;
+  max-height: 100vh;
+  display: flex;
+}
+.auth-main .auth-ctr {
+  width: 100%;
+  padding: 1.5rem 2rem;
+}
+@media (min-width: 768px) {
+  .auth-main .auth-ctr {
+    flex: 1;
+    max-width: 480px;
+  }
+}
+@media (min-width: 1024px) {
+  .auth-main .auth-ctr {
+    flex: 0.5;
+  }
+}
+.auth-main .auth-ctr .switch-auth {
+  margin-top: 1rem;
+  font-weight: 400;
+  text-align: center;
+}
+.auth-main .auth-ctr .switch-auth a {
+  font-family: "Inter", sans-serif;
+  font-weight: 800;
+  color: #f07c68;
+}
+.auth-main .auth-img {
+  display: none;
+}
+@media (min-width: 768px) {
+  .auth-main .auth-img {
+    overflow: hidden;
+    flex: 1;
+    background-color: #f07c68;
+    display: block;
+  }
+}
+.auth-main .auth-img img {
+  height: 100%;
+  width: 100%;
+}/*# sourceMappingURL=auth.css.map */

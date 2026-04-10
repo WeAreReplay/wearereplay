@@ -1,0 +1,149 @@
+@use "./variables" as *;
+@use "./mixins" as *;
+
+header {
+  max-width: 1720px;
+  position: fixed;
+  z-index: $z-index-maxtop;
+  inset: 0;
+  margin: auto;
+  pointer-events: none;
+
+  // * Allow pointer events for interactive elements inside the header
+  a,
+  button,
+  input,
+  li {
+    pointer-events: auto;
+  }
+
+  .width-wrap {
+    padding: 0;
+
+    nav {
+      width: 100%;
+      max-height: 900px;
+      max-width: 700px;
+      position: absolute;
+      // ? Adjust position of the navigation
+      inset-inline: 0;
+      margin: auto;
+      top: 0;
+      // ? ---------------------------------
+      z-index: $z-index-mid;
+      display: grid;
+      grid-template-columns: 1fr auto;
+
+      @include tablet() {
+        border-inline: $orange solid $border-small;
+      }
+
+      // ! Navigation Links
+      .nav-items {
+        display: flex;
+        flex-direction: column;
+        background-color: $white;
+
+        li {
+          border-bottom: $orange solid $border-small;
+
+          a {
+            height: $spacing-64;
+            padding-inline: $spacing-24;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            color: $orange;
+
+            // * Container for the icon and text
+            .link-left {
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              gap: $spacing-16;
+            }
+          }
+        }
+      }
+
+      // ! Social Media Links
+      .social-items {
+        display: flex;
+        flex-direction: column;
+        background-color: $white;
+
+        li {
+          flex: 1;
+          border-bottom: $orange solid $border-small;
+          border-left: $orange solid $border-small;
+
+          a {
+            height: 100%;
+            display: grid;
+            place-items: center;
+            padding-inline: $spacing-24;
+            color: $orange;
+          }
+        }
+      }
+
+      // ! Navigation Options
+      .opt-items {
+        grid-column: span 2;
+        width: 100%;
+        display: grid;
+        grid-template-columns: auto 1fr 1fr;
+        border-bottom: $orange solid $border-small;
+
+        li {
+          // * All options except the last one should have a right border */
+          &:not(:last-of-type) {
+            border-right: $orange solid $border-small;
+          }
+
+          > a,
+          button {
+            width: 100%;
+            height: 100%;
+            padding: $spacing-16;
+            padding-inline: $spacing-8;
+            display: flex;
+            gap: $spacing-8;
+            align-items: center;
+            justify-content: center;
+            background-color: $white;
+            color: $orange;
+            text-transform: uppercase;
+
+            span {
+              display: none;
+
+              @include tablet() {
+                display: block;
+              }
+            }
+          }
+
+          .logo {
+            padding: 0;
+            padding-inline: $spacing-8;
+            background-color: $white;
+
+            svg {
+              width: $spacing-64;
+              height: 100%;
+            }
+          }
+        }
+      }
+
+      .nav-items,
+      .social-items {
+        .icon {
+          width: $spacing-24;
+          height: $spacing-24;
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,75 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap");
+.games-main .games-content .width-wrap {
+  min-height: 100vh;
+  padding-block: 3.75rem;
+  background-color: #fbead9;
+}
+.games-main .games-content .width-wrap .filter-ctr {
+  position: sticky;
+  top: 5.5rem;
+  inset-inline: 0;
+  z-index: 100;
+}
+.games-main .games-content .width-wrap .filter-ctr button {
+  margin: auto;
+  background-color: #f07c68;
+}
+.games-main .games-content .width-wrap .games-ctr {
+  margin-top: 1.5rem;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+  justify-content: center;
+}
+@media (min-width: 768px) {
+  .games-main .games-content .width-wrap .games-ctr {
+    grid-template-columns: repeat(auto-fit, minmax(250px, auto));
+  }
+}
+.games-main .games-content .width-wrap .games-ctr .card {
+  max-width: 320px;
+  display: grid;
+  gap: 0.5rem;
+}
+.games-main .games-content .width-wrap .games-ctr .card .img-ctr {
+  width: 100%;
+  aspect-ratio: 9/11;
+  overflow: hidden;
+  border-radius: 0.5rem;
+}
+.games-main .games-content .width-wrap .games-ctr .card .img-ctr img {
+  max-width: 320px;
+  width: 100%;
+  height: 100%;
+  -o-object-fit: cover;
+     object-fit: cover;
+  -webkit-user-select: none;
+     -moz-user-select: none;
+          user-select: none;
+  -webkit-user-drag: none;
+  transition: transform 0.3s ease;
+}
+.games-main .games-content .width-wrap .games-ctr .card .info {
+  display: flex;
+  flex-direction: column;
+}
+.games-main .games-content .width-wrap .games-ctr .card .info .name {
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  display: -webkit-box;
+  font-family: "Inter", sans-serif;
+  font-weight: 700;
+  text-transform: none;
+  letter-spacing: -0.8px;
+  font-size: 1.125rem;
+  line-height: 1.6;
+  overflow: hidden;
+  max-width: 20ch;
+}
+.games-main .games-content .width-wrap .games-ctr .card .info .genre {
+  text-transform: uppercase;
+  font-weight: 500;
+  font-size: 1rem;
+  line-height: 1.6;
+  opacity: 0.6;
+}/*# sourceMappingURL=games.css.map */

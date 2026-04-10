@@ -1,0 +1,62 @@
+@use "./partials/variables" as *;
+@use "./partials/mixins" as *;
+
+.legal-main {
+  .legal-hero {
+    background-color: $orange;
+  }
+
+  .legal-content {
+    .width-wrap {
+      padding: 0;
+
+      margin: 0 auto;
+      display: grid;
+
+      > div {
+        border: $border-small solid $orange;
+        background-color: $white;
+        display: grid;
+
+        h2 {
+          position: sticky;
+          top: 4rem;
+          background-color: $white;
+          border-bottom: $border-small solid $orange;
+          height: fit-content;
+          padding: $spacing-16;
+          font-size: 1.75rem;
+          font-weight: 600;
+          z-index: 10;
+
+          .legal-num {
+            font-family: $font-vcr;
+          }
+        }
+
+        p {
+          line-height: 1.8;
+          font-size: 1.1rem;
+          color: $black;
+          padding: $spacing-32;
+
+          @include tablet() {
+            border-left: $border-small solid $orange;
+            @include fontSize(h4);
+            line-height: 1.5;
+          }
+        }
+
+        &:not(:first-of-type) {
+          border-top: none;
+        }
+
+        @include tablet() {
+          flex-direction: row;
+          border-inline: none;
+          grid-template-columns: 1fr 1fr;
+        }
+      }
+    }
+  }
+}
