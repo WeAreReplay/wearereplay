@@ -1,8 +1,10 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { AuthProvider } from "./contexts/AuthContext";
 import ResetScrollBehavior from "./components/ResetScrollBehavior";
 import PublicLayout from "./layouts/PublicLayout";
 import Index from "./pages/Index";
 import Dashboard from "./pages/Dashboard";
+import AdminDashboard from "./pages/AdminDashboard";
 import GameListings from "./pages/GameListings";
 import Legal from "./pages/Legal";
 import Games from "./pages/Games";
@@ -12,8 +14,9 @@ import Auth from "./pages/Auth";
 function App() {
   return (
     <BrowserRouter>
-      <ResetScrollBehavior />
-      <Routes>
+      <AuthProvider>
+        <ResetScrollBehavior />
+        <Routes>
         {/* Public Routes */}
         <Route element={<PublicLayout />}>
           <Route path="/" element={<Index />} />
@@ -26,11 +29,13 @@ function App() {
           />
         </Route>
         <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/admin" element={<AdminDashboard />} />
         <Route path="/login" element={<Auth mode="login" />} />
         <Route path="/register" element={<Auth mode="register" />} />
 
         <Route path="*" element={<NotFound />} />
       </Routes>
+      </AuthProvider>
     </BrowserRouter>
   );
 }

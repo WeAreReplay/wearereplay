@@ -1,14 +1,17 @@
 import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import "../assets/css/auth.css";
 import InputField from "../components/InputField";
 import { RiHome7Fill } from "react-icons/ri";
 import LoginImg from "../assets/images/login.webp";
 import RegisterImg from "../assets/images/register.webp";
+import { useAuth } from "../contexts/AuthContext";
 
-// TODO: Connect to backend API (login/register endpoint)
+// API Base URL (adjust for production)
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000/api/auth";
 
 export default function Auth({ mode }) {
+  const { login } = useAuth();
   // * Detect current route (login or register page)
   const isLogin = mode === "login";
 
@@ -36,6 +39,14 @@ export default function Auth({ mode }) {
       : { firstName: "", lastName: "", email: "", password: "" },
   );
 
+  // * Loading and error state
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [successMessage, setSuccessMessage] = useState("");
+
+  // * Navigation
+  const navigate = useNavigate();
+
   // ! Reset form when switching between login/register pages
   useEffect(() => {
     setFormData(
@@ -43,7 +54,21 @@ export default function Auth({ mode }) {
         ? { email: "", password: "" }
         : { firstName: "", lastName: "", email: "", password: "" },
     );
+    // Clear errors when switching
+    setError("");
+    setSuccessMessage("");
   }, [isLogin]);
+
+  // * Clear messages after 5 seconds
+  useEffect(() => {
+    if (error || successMessage) {
+      const timer = setTimeout(() => {
+        setError("");
+        setSuccessMessage("");
+      }, 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [error, successMessage]);
 
   // * Handle input changes dynamically
   const handleChange = (e) => {
@@ -126,14 +151,59 @@ export default function Auth({ mode }) {
   // * Check if ALL fields are valid before enabling submit
   const isFormValid = fields.every((f) => f.isValid(formData));
 
-  // ! SUBMIT HANDLER (backend not connected yet)
+  // ! SUBMIT HANDLER (connects to backend API)
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // ! Prevent submission if form is invalid
-    if (!isFormValid) return;
+    // ! Prevent submission if form is invalid or loading
+    if (!isFormValid || loading) return;
 
-    // TODO: Connect to backend API (login/register endpoint)
+    setLoading(true);
+    setError("");
+    setSuccessMessage("");
+
+    try {
+      // Determine endpoint based on mode
+      const endpoint = isLogin ? "/login" : "/register";
+      const url = `${API_URL}${endpoint}`;
+
+      const response = await fetch(url, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || "Something went wrong");
+      }
+
+      // Success - store token and user data using AuthContext
+      if (data.data) {
+        // Use AuthContext login function to store auth data
+        login(data.data.user, data.data.token, data.data.role);
+
+        setSuccessMessage(data.message || (isLogin ? "Login successful!" : "Registration successful!"));
+
+        // Redirect based on role after a short delay
+        // Admin users → /dashboard, Regular users → /
+        setTimeout(() => {
+          if (data.data.role === 'admin') {
+            navigate("/dashboard", { replace: true });
+          } else {
+            navigate("/", { replace: true });
+          }
+        }, 1000);
+      }
+    } catch (err) {
+      console.error("Auth error:", err);
+      setError(err.message || "An error occurred. Please try again.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -168,6 +238,20 @@ export default function Auth({ mode }) {
           </ul>
 
           {
+            // * Error and Success Messages
+          }
+          {error && (
+            <div className="auth-message auth-message--error">
+              <span>{error}</span>
+            </div>
+          )}
+          {successMessage && (
+            <div className="auth-message auth-message--success">
+              <span>{successMessage}</span>
+            </div>
+          )}
+
+          {
             // * Back Home and Submit Button
           }
           <ul className="opts-ctr">
@@ -178,8 +262,8 @@ export default function Auth({ mode }) {
               </Link>
             </li>
             <li>
-              <button type="submit" disabled={!isFormValid}>
-                <span>{submitText}</span>
+              <button type="submit" disabled={!isFormValid || loading}>
+                <span>{loading ? "Processing..." : submitText}</span>
               </button>
             </li>
           </ul>

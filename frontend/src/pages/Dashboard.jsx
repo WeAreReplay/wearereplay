@@ -1,5 +1,8 @@
 import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "../contexts/AuthContext";
+import { RiLogoutCircleLine, RiHome7Fill } from "react-icons/ri";
+import Header from "../layouts/Header";
 import "../assets/css/dashboard.css";
 import GetPlatformIcon from "../components/GetPlatformIcon";
 import DashboardForm from "../components/DashboardForm";
@@ -10,7 +13,6 @@ import { MdReport, MdChatBubble } from "react-icons/md";
 import DonkeyKong from "../assets/images/donkey-kong.webp";
 import indiana from "../assets/images/indiana-jones.webp";
 import Toast from "../components/Toast";
-import DashboardHeader from "../layouts/DashboardHeader";
 
 /* 
 ? Backend
@@ -74,15 +76,36 @@ const getListingStatus = (game) => {
 };
 
 export default function Dashboard() {
+  const { user: authUser, logout, isAuthenticated } = useAuth();
+  const navigate = useNavigate();
+
+  // Check if user is authenticated, if not redirect to login
+  useEffect(() => {
+    if (!isAuthenticated()) {
+      navigate("/login", { replace: true });
+    }
+  }, [isAuthenticated, navigate]);
+
+  // If user is not authenticated, don't render the dashboard
+  if (!isAuthenticated()) {
+    return null;
+  }
+
   /*
     ! User Info
   */
   const user = {
-    0: { name: "PlayerOne", role: "common" },
+    0: { name: authUser?.firstName || "PlayerOne", role: "common" },
     1: { name: "ReplayAdmin", role: "admin" },
   };
 
   const currentUser = user[0];
+
+  // Handle logout
+  const handleLogout = () => {
+    logout();
+    navigate("/", { replace: true });
+  };
 
   /*
     ! State: Active Listings
@@ -581,6 +604,7 @@ export default function Dashboard() {
 
   return (
     <>
+      <Header />
       <main className="dashboard-main">
         <h2>Welcome, {currentUser.name}!</h2>
 

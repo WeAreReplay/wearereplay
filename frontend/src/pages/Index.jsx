@@ -1,3 +1,5 @@
+import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import "../assets/css/index.css";
 import donkeyKong from "../assets/images/donkey-kong.webp";
 import indianaJones from "../assets/images/indiana-jones.webp";
@@ -10,10 +12,20 @@ import BenefitIcon1 from "../components/SVGs/BenefitIcon1";
 import BenefitIcon2 from "../components/SVGs/BenefitIcon2";
 import BenefitIcon3 from "../components/SVGs/BenefitIcon3";
 import ItemSlider from "../components/ItemSlider";
-
-// TODO: Hot it works, About the games, Featured Games, Benefits, Testimonials/Reviews, FAQs
+import { useAuth } from "../contexts/AuthContext";
 
 export default function Index() {
+  const { isAuthenticated, user } = useAuth();
+  const navigate = useNavigate();
+
+  // If admin user lands on home page, immediately redirect to dashboard
+  // This prevents admin from seeing guest landing page when pressing back button
+  useEffect(() => {
+    if (isAuthenticated() && user?.role === "admin") {
+      navigate("/dashboard", { replace: true });
+    }
+  }, [isAuthenticated, user, navigate]);
+
   const featuredGames = [
     { name: "Donkey Kong", genre: "Action", img: donkeyKong },
     { name: "Indiana Jones", genre: "RPG", img: indianaJones },
@@ -39,7 +51,7 @@ export default function Index() {
 
   return (
     <main className="home-main">
-      <Hero />
+      <Hero isAuthenticated={isAuthenticated} user={user} />
 
       <Benefits />
 
@@ -65,7 +77,7 @@ export default function Index() {
   );
 }
 
-const Hero = () => {
+const Hero = ({ isAuthenticated, user }) => {
   return (
     <section className="hero">
       {
@@ -87,7 +99,11 @@ const Hero = () => {
           // * Hero Title
         }
         <h1 className="hero-title">
-          <HeroTitle />
+          {isAuthenticated() ? (
+            <span>Welcome back, {user?.firstName || "Player"}!</span>
+          ) : (
+            <HeroTitle />
+          )}
         </h1>
       </div>
     </section>

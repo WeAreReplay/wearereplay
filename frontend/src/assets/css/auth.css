@@ -44,4 +44,48 @@
 .auth-main .auth-img img {
   height: 100%;
   width: 100%;
-}/*# sourceMappingURL=auth.css.map */
+}
+
+/* Auth Messages (Error & Success) */
+.auth-message {
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  animation: slideIn 0.3s ease-out;
+}
+
+.auth-message--error {
+  background-color: #fef2f2;
+  color: #dc2626;
+  border: 1px solid #fecaca;
+}
+
+.auth-message--success {
+  background-color: #f0fdf4;
+  color: #16a34a;
+  border: 1px solid #bbf7d0;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Loading state for button */
+.auth-ctr button:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+/*# sourceMappingURL=auth.css.map */

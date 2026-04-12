@@ -1,16 +1,17 @@
 import { useState } from "react";
-import { Link, NavLink } from "react-router-dom";
+import { Link, NavLink, useNavigate } from "react-router-dom";
 import { AiFillSmile, AiOutlineCaretRight } from "react-icons/ai";
-import { RiQuestionFill, RiInformationFill, RiStoreFill } from "react-icons/ri";
+import { RiQuestionFill, RiInformationFill, RiStoreFill, RiLogoutCircleLine } from "react-icons/ri";
 import { BiLogoFacebookSquare, BiLogoInstagramAlt } from "react-icons/bi";
 import { MdGamepad } from "react-icons/md";
 import Overlay from "../components/Overlay";
 import Logo from "../components/SVGs/Logo";
-
-// TODO: Update the link to direct the user to the dashboard, replace text or profile with user's,
+import { useAuth } from "../contexts/AuthContext";
 
 export default function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
+  const { user, isAuthenticated, logout } = useAuth();
+  const navigate = useNavigate();
 
   const navList = [
     { txt: "Games", path: "/games", icon: RiStoreFill },
@@ -58,13 +59,31 @@ export default function Header() {
               </li>
 
               <li>
-                {
-                  // * Login Link
-                }
-                <Link to="/login" className="login-link">
-                  <AiFillSmile className="icon" />
-                  <span>Login</span>
-                </Link>
+                {isAuthenticated() ? (
+                  // * User is logged in - show user info and logout
+                  <>
+                    <Link to="" className="user-link">
+                      <AiFillSmile className="icon" />
+                      <span>Welcome, {user?.firstName || "User"}</span>
+                    </Link>
+                    <button
+                      className="logout-btn"
+                      onClick={() => {
+                        logout();
+                        navigate("/");
+                      }}
+                    >
+                      <RiLogoutCircleLine className="icon" />
+                      <span>Logout</span>
+                    </button>
+                  </>
+                ) : (
+                  // * User is not logged in - show login link
+                  <Link to="/login" className="login-link">
+                    <AiFillSmile className="icon" />
+                    <span>Login</span>
+                  </Link>
+                )}
               </li>
 
               <li>
