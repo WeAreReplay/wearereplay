@@ -82,6 +82,8 @@
       box-shadow: inset #000000 0px 0px 20px 15px;
 
       .hero-title {
+        text-align: center;
+        color: $white;
         @include fontSize(h5);
 
         @include tablet() {

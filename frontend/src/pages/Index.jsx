@@ -18,13 +18,13 @@ export default function Index() {
   const { isAuthenticated, user } = useAuth();
   const navigate = useNavigate();
 
-  // If admin user lands on home page, immediately redirect to dashboard
-  // This prevents admin from seeing guest landing page when pressing back button
-  useEffect(() => {
-    if (isAuthenticated() && user?.role === "admin") {
-      navigate("/dashboard", { replace: true });
-    }
-  }, [isAuthenticated, user, navigate]);
+  // // If admin user lands on home page, immediately redirect to dashboard
+  // // This prevents admin from seeing guest landing page when pressing back button
+  // useEffect(() => {
+  //   if (isAuthenticated() && user?.role === "admin") {
+  //     navigate("/dashboard", { replace: true });
+  //   }
+  // }, [isAuthenticated, user, navigate]);
 
   const featuredGames = [
     { name: "Donkey Kong", genre: "Action", img: donkeyKong },

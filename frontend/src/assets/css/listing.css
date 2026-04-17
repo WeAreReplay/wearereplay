@@ -15,6 +15,22 @@
 }
 .listing-main section .width-wrap h1 {
   color: #f07c68;
+  font-family: "Inter", sans-serif;
+  font-weight: 900;
+  font-size: 2.5rem;
+  line-height: 1.3;
+}
+@media (min-width: 768px) {
+  .listing-main section .width-wrap h1 {
+    font-size: 3rem;
+    line-height: 1.25;
+  }
+}
+@media (min-width: 1024px) {
+  .listing-main section .width-wrap h1 {
+    font-size: 4.5rem;
+    line-height: 1.1;
+  }
 }
 .listing-main section .width-wrap .left h2 {
   color: #f07c68;

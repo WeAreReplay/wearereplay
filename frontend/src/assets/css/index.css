@@ -892,6 +892,8 @@ footer .width-wrap .bottom .copyright {
   box-shadow: inset #000000 0px 0px 20px 15px;
 }
 .home-main .hero .width-wrap .hero-title {
+  text-align: center;
+  color: #fbead9;
   font-size: 2rem;
   line-height: 1.4;
 }

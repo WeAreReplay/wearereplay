@@ -16,6 +16,17 @@
 
     h1 {
       color: $orange;
+      font-family: $font-inter;
+      font-weight: 900;
+      @include fontSize(h4);
+
+      @include tablet() {
+        @include fontSize(h3);
+      }
+
+      @include desktop() {
+        @include fontSize(h1);
+      }
     }
 
     .left {
