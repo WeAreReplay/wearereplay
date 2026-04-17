@@ -95,6 +95,10 @@
   align-items: center;
   gap: 1rem;
 }
+.dashboard-header .width-wrap nav > .nav-items > li .submenu li .tab.active {
+  background-color: #f07c68;
+  color: #fbead9;
+}
 .dashboard-header .width-wrap nav > .nav-items > li .submenu li .icon {
   width: 1.5rem;
   height: 1.5rem;

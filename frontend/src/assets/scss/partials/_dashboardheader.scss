@@ -104,6 +104,11 @@
                   align-items: center;
                   gap: $spacing-16;
                 }
+
+                &.active {
+                  background-color: $orange;
+                  color: $white;
+                }
               }
 
               .icon {

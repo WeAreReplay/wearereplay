@@ -614,6 +614,7 @@ form .fields-ctr li .file-ctr .file-hint {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  text-transform: uppercase;
   color: #f07c68;
 }
 .public-header .width-wrap nav .nav-items li a .link-left {
