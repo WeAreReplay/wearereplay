@@ -1,6 +1,110 @@
 @import url("https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap");
+.dashboard-header {
+  max-width: 1720px;
+  position: fixed;
+  z-index: 100;
+  inset: 0;
+  margin: auto;
+  pointer-events: none;
+}
+.dashboard-header a,
+.dashboard-header button,
+.dashboard-header input,
+.dashboard-header li {
+  pointer-events: auto;
+}
+.dashboard-header .width-wrap {
+  padding: 0;
+}
+.dashboard-header .width-wrap nav {
+  width: 100%;
+  max-height: 900px;
+  position: absolute;
+  right: 0;
+  margin: auto;
+  top: 0;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  border-bottom: #f07c68 solid 0.25rem;
+  background-color: #fbead9;
+  text-transform: uppercase;
+}
+@media (min-width: 768px) {
+  .dashboard-header .width-wrap nav {
+    max-width: 640px;
+    border-left: #f07c68 solid 0.25rem;
+  }
+}
+.dashboard-header .width-wrap nav > .nav-items {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.dashboard-header .width-wrap nav > .nav-items a,
+.dashboard-header .width-wrap nav > .nav-items button {
+  width: 100%;
+  padding: 1rem 0.5rem;
+  color: #f07c68;
+  text-transform: uppercase;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+}
+.dashboard-header .width-wrap nav > .nav-items a span,
+.dashboard-header .width-wrap nav > .nav-items button span {
+  max-width: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.dashboard-header .width-wrap nav > .nav-items > li {
+  flex: 1;
+  position: relative;
+}
+.dashboard-header .width-wrap nav > .nav-items > li:first-of-type {
+  border-right: #f07c68 solid 0.25rem;
+}
+.dashboard-header .width-wrap nav > .nav-items > li .submenu {
+  width: 100%;
+  display: none;
+  position: absolute;
+  top: 4.25rem;
+  background-color: #fbead9;
+  border-inline: #f07c68 solid 0.25rem;
+  border-bottom: #f07c68 solid 0.25rem;
+}
+.dashboard-header .width-wrap nav > .nav-items > li .submenu li {
+  color: #f07c68;
+}
+.dashboard-header .width-wrap nav > .nav-items > li .submenu li:first-of-type {
+  border-bottom: #f07c68 solid 0.25rem;
+}
+.dashboard-header .width-wrap nav > .nav-items > li .submenu li > a,
+.dashboard-header .width-wrap nav > .nav-items > li .submenu li > button {
+  width: 100%;
+  justify-content: left;
+}
+.dashboard-header .width-wrap nav > .nav-items > li .submenu li .tab {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.dashboard-header .width-wrap nav > .nav-items > li .submenu li .tab .left {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+.dashboard-header .width-wrap nav > .nav-items > li .submenu li .icon {
+  width: 1.5rem;
+  height: 1.5rem;
+}
+.dashboard-header .width-wrap nav > .nav-items > li .submenu.open {
+  display: grid;
+}
+
 .dashboard-main {
-  padding-top: 3.75rem;
+  padding-top: 5rem;
   padding-bottom: 7.5rem;
   min-height: 100vh;
   position: relative;
@@ -141,7 +245,7 @@
   background: #e5ffe5;
   color: #2d8a2d;
 }
-.dashboard-main .dashboard-content .dashboard-table .status.delivery {
+.dashboard-main .dashboard-content .dashboard-table .status.delivery, .dashboard-main .dashboard-content .dashboard-table .status.pending {
   background: #e0f7ff;
   color: #0077b6;
 }
@@ -189,6 +293,8 @@
   justify-content: space-between;
 }
 .dashboard-main .form-ctr form {
+  overflow-y: auto;
+  max-height: 640px;
   padding: 1.5rem;
   pointer-events: visible;
   background-color: #fbead9;
@@ -207,36 +313,4 @@
   position: fixed;
   top: 0;
   right: 0;
-  padding: 1rem 1.5rem;
-  display: flex;
-  gap: 0.5rem;
-  align-items: center;
-  justify-content: center;
-  background-color: #fbead9;
-}
-.toast p {
-  font-size: 0.875rem;
-  line-height: 1.8;
-}
-.toast.deleted, .toast.overdue {
-  background: #ffe5e5;
-}
-.toast.deleted svg, .toast.overdue svg {
-  color: #d33;
-}
-.toast.due {
-  background: #ffe8cc;
-  color: #8a8317;
-}
-.toast.added {
-  background: #e5ffe5;
-  color: #2d8a2d;
-}
-.toast.delivery, .toast.edited {
-  background: #e0f7ff;
-  color: #0077b6;
-}
-.toast.rented {
-  background: #dcdcdc;
-  color: #000;
 }/*# sourceMappingURL=dashboard.css.map */

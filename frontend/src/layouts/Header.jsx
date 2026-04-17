@@ -1,7 +1,14 @@
 import { useState } from "react";
 import { Link, NavLink, useNavigate } from "react-router-dom";
 import { AiFillSmile, AiOutlineCaretRight } from "react-icons/ai";
-import { RiQuestionFill, RiInformationFill, RiStoreFill, RiLogoutCircleLine } from "react-icons/ri";
+import {
+  RiQuestionFill,
+  RiInformationFill,
+  RiStoreFill,
+  RiDashboardHorizontalFill,
+  RiLogoutCircleFill,
+} from "react-icons/ri";
+
 import { BiLogoFacebookSquare, BiLogoInstagramAlt } from "react-icons/bi";
 import { MdGamepad } from "react-icons/md";
 import Overlay from "../components/Overlay";
@@ -10,6 +17,7 @@ import { useAuth } from "../contexts/AuthContext";
 
 export default function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
+  const [submenuOpen, setSubmenuOpen] = useState(false);
   const { user, isAuthenticated, logout } = useAuth();
   const navigate = useNavigate();
 
@@ -36,16 +44,17 @@ export default function Header() {
   return (
     <>
       {
-        // * Checks if either the menu is open to determine if the overlay should be displayed
+        // * Checks if either the menu/submenu is open to determine if the overlay should be displayed
       }
       <Overlay
-        isModalOpen={menuOpen}
+        isModalOpen={menuOpen || submenuOpen}
         onClick={() => {
           setMenuOpen(false);
+          setSubmenuOpen(false);
         }}
       />
 
-      <header>
+      <header className="public-header">
         <div className="width-wrap">
           <nav>
             {
@@ -62,20 +71,39 @@ export default function Header() {
                 {isAuthenticated() ? (
                   // * User is logged in - show user info and logout
                   <>
-                    <Link to="" className="user-link">
-                      <AiFillSmile className="icon" />
-                      <span>Welcome, {user?.firstName || "User"}</span>
-                    </Link>
                     <button
-                      className="logout-btn"
+                      className="nav-submenu-btn"
                       onClick={() => {
-                        logout();
-                        navigate("/");
+                        setMenuOpen(false);
+                        setSubmenuOpen((prev) => !prev);
                       }}
                     >
-                      <RiLogoutCircleLine className="icon" />
-                      <span>Logout</span>
+                      <AiFillSmile className="icon" />
+                      <span>{user?.firstName || "User"}</span>
                     </button>
+                    <div className={`nav-submenu ${submenuOpen ? "open" : ""}`}>
+                      <ul>
+                        <li>
+                          <Link to="/dashboard" className="user-link">
+                            <RiDashboardHorizontalFill className="icon" />
+                            <span>Dashboard</span>
+                          </Link>
+                        </li>
+                        <li>
+                          <button
+                            className="logout-btn"
+                            onClick={() => {
+                              logout();
+                              navigate("/");
+                              setSubmenuOpen(false);
+                            }}
+                          >
+                            <RiLogoutCircleFill className="icon" />
+                            <span>Logout</span>
+                          </button>
+                        </li>
+                      </ul>
+                    </div>
                   </>
                 ) : (
                   // * User is not logged in - show login link
@@ -92,7 +120,10 @@ export default function Header() {
                 }
                 <button
                   className="menu-btn"
-                  onClick={() => setMenuOpen(!menuOpen)}
+                  onClick={() => {
+                    setMenuOpen(!menuOpen);
+                    setSubmenuOpen(false);
+                  }}
                 >
                   <MdGamepad
                     className="icon"

@@ -81,6 +81,17 @@
       z-index: $z-index-mid;
       box-shadow: inset #000000 0px 0px 20px 15px;
 
+      .hero-title {
+        @include fontSize(h5);
+
+        @include tablet() {
+          @include fontSize(h2);
+        }
+
+        @include desktop() {
+          @include fontSize(h1);
+        }
+      }
       // * SVG Hero Heading
       .hero-heading-svg {
         width: 100%;

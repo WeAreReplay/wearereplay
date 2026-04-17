@@ -7,75 +7,136 @@
       min-height: 100vh;
       padding-block: $section-block-small;
       background-color: $white;
+      overflow: hidden;
 
-      .filter-ctr {
-        position: sticky;
-        top: $spacing-64 + $spacing-24;
-        inset-inline: 0;
-        z-index: $z-index-maxtop;
+      .platform-filters {
+        scroll-snap-type: x mandatory;
+        display: flex;
+        overflow-x: auto;
+        gap: $spacing-24;
 
-        button {
-          margin: auto;
-          background-color: $orange;
+        .platform-btn {
+          flex: 0 0 160px;
+          padding: $spacing-24 $spacing-16;
+          border: $border-small solid $orange;
+          border-radius: $border-medium;
+          cursor: pointer;
+          user-select: none;
+          color: $orange;
+          background-color: $white;
+          text-transform: uppercase;
+
+          input {
+            display: none;
+          }
+
+          .platform-badge {
+            display: flex;
+            flex-direction: column-reverse;
+            align-items: center;
+            justify-content: center;
+
+            svg {
+              width: $spacing-48;
+              height: $spacing-48;
+              margin-bottom: $spacing-8;
+            }
+          }
+
+          &.selected {
+            background-color: $orange;
+            color: $white;
+            border-color: $orange;
+          }
         }
+      }
+
+      .bottom {
+        margin-top: $spacing-24;
+        display: flex;
+        overflow: hidden;
+        border: $orange solid $border-small;
+        border-radius: $border-medium;
+
+        .search-box {
+          flex: 1;
+          display: flex;
+          align-items: center;
+          color: $orange;
+
+          input {
+            border: none;
+            padding: $spacing-16;
+          }
+        }
+
+        select {
+          border: none;
+          padding: $spacing-16;
+          background: $white;
+          color: $orange;
+          cursor: pointer;
+        }
+      }
+
+      h2 {
+        margin-top: $spacing-16;
+        color: $orange;
+        font-family: $font-inter;
+        font-weight: 900;
+        text-align: center;
       }
 
       .games-ctr {
         margin-top: $spacing-24;
         display: grid;
-        grid-template-columns: repeat(2, 1fr);
         gap: $spacing-16;
-        justify-content: center;
 
         @include tablet() {
-          grid-template-columns: repeat(auto-fit, minmax(250px, auto));
+          grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
         }
 
         .card {
-          max-width: 320px;
           display: grid;
           gap: $spacing-8;
+          padding: $spacing-16;
+          border: $border-small solid $black;
+          border-radius: $border-medium;
+        }
 
-          .img-ctr {
-            width: 100%;
-            aspect-ratio: 9 / 11; // keeps the ratio
+        .info {
+          display: flex;
+          flex-direction: column;
+          gap: $spacing-4;
+
+          .name {
+            font-weight: 700;
+            letter-spacing: -0.8px;
+            @include fontSize(p);
             overflow: hidden;
-            border-radius: $border-medium;
-
-            img {
-              max-width: 320px;
-              width: 100%;
-              height: 100%;
-              object-fit: cover; // makes it fill and scale nicely
-              user-select: none;
-              -webkit-user-drag: none;
-              transition: transform 0.3s ease;
-            }
+            max-width: 20ch;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+            font-family: $font-inter;
           }
 
-          .info {
-            display: flex;
-            flex-direction: column;
+          .listedBy {
+            font-size: 0.9rem;
+            opacity: 0.7;
+            font-family: $font-inter;
+          }
 
-            .name {
-              -webkit-line-clamp: 1;
-              -webkit-box-orient: vertical;
-              display: -webkit-box;
-              font-family: $font-inter;
-              font-weight: 700;
-              text-transform: none;
-              letter-spacing: -0.8px;
-              @include fontSize(p);
-              overflow: hidden;
-              max-width: 20ch;
-            }
+          ul {
+            gap: $spacing-8;
+            text-transform: uppercase;
+            font-family: $font-inter;
+          }
 
-            .genre {
-              text-transform: uppercase;
-              font-weight: 500;
-              @include fontSize(tag);
-              opacity: 0.6;
-            }
+          .genre {
+            text-transform: uppercase;
+            font-weight: 500;
+            @include fontSize(tag);
+            opacity: 0.6;
           }
         }
       }

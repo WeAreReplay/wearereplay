@@ -1,6 +1,14 @@
 import { motion, AnimatePresence } from "motion/react";
-import { FaPlus, FaTrash, FaEdit, FaBoxOpen, FaTruck } from "react-icons/fa";
+import {
+  FaPlus,
+  FaTrash,
+  FaEdit,
+  FaBoxOpen,
+  FaTruck,
+  FaCheck,
+} from "react-icons/fa";
 import { MdAccessTime } from "react-icons/md";
+import { FaXmark } from "react-icons/fa6";
 
 /*
   ! Toast Icons Map
@@ -24,6 +32,8 @@ const icons = {
   due: <MdAccessTime />,
   overdue: <MdAccessTime />,
   delivery: <FaTruck />,
+  correct: <FaCheck />,
+  wrong: <FaXmark />,
 };
 
 /*

@@ -1,7 +1,7 @@
 @use "./variables" as *;
 @use "./mixins" as *;
 
-header {
+.public-header {
   max-width: 1720px;
   position: fixed;
   z-index: $z-index-maxtop;
@@ -96,6 +96,7 @@ header {
         border-bottom: $orange solid $border-small;
 
         li {
+          position: relative;
           // * All options except the last one should have a right border */
           &:not(:last-of-type) {
             border-right: $orange solid $border-small;
@@ -114,14 +115,6 @@ header {
             background-color: $white;
             color: $orange;
             text-transform: uppercase;
-
-            span {
-              display: none;
-
-              @include tablet() {
-                display: block;
-              }
-            }
           }
 
           .logo {
@@ -132,6 +125,36 @@ header {
             svg {
               width: $spacing-64;
               height: 100%;
+            }
+          }
+
+          .nav-submenu-btn {
+            span {
+              max-width: 100px;
+              overflow: hidden;
+              text-overflow: ellipsis;
+            }
+          }
+
+          .nav-submenu {
+            position: absolute;
+            inset-inline: 0;
+            display: grid;
+            grid-template-rows: 0fr;
+
+            &.open {
+              grid-template-rows: 1fr;
+            }
+
+            ul {
+              overflow: hidden;
+
+              > li {
+                border: $orange solid $border-small;
+                &:not(:first-of-type) {
+                  border-top: 0;
+                }
+              }
             }
           }
         }

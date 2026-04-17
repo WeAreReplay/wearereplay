@@ -20,6 +20,12 @@
       flex: 0.5;
     }
 
+    .toast {
+      position: relative;
+      display: flex;
+      justify-content: flex-start;
+    }
+
     .switch-auth {
       margin-top: $spacing-16;
       font-weight: 400;

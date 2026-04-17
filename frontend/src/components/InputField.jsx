@@ -109,7 +109,11 @@ export default function InputField({
       {
         // * Input Label
       }
-      <label htmlFor={name}>{label}</label>
+      {type === "radio" ? (
+        <legend>{label}</legend>
+      ) : (
+        <label htmlFor={name}>{label}</label>
+      )}
 
       <div className={`input-ctr ${inputClass}`}>
         {
@@ -128,6 +132,7 @@ export default function InputField({
               type="file"
               accept="image/*"
               hidden
+              id={name}
               onChange={handleFileChange}
               onClick={(e) => e.stopPropagation()}
             />
@@ -192,9 +197,10 @@ export default function InputField({
         {
           // * Validation Checkmark
         }
-        {type !== "password" && type !== "file" && isValid && (
-          <FaCheck className="icon valid-icon" />
-        )}
+        {type !== "password" &&
+          type !== "file" &&
+          type !== "radio" &&
+          isValid && <FaCheck className="icon valid-icon" />}
 
         {
           // ! Password Toggle Button
@@ -210,7 +216,6 @@ export default function InputField({
           </button>
         )}
       </div>
-
       {
         // * Hint
       }

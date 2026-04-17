@@ -5,6 +5,7 @@ import {
   BsApple,
   BsWindows,
 } from "react-icons/bs";
+import { FaShapes } from "react-icons/fa";
 
 /*
   ! GetPlatformIcon
@@ -32,6 +33,7 @@ export default function GetPlatformIcon({ platform }) {
     xbox: { icon: BsXbox, label: "Xbox" },
     playstation: { icon: BsPlaystation, label: "PlayStation" },
     nintendo: { icon: BsNintendoSwitch, label: "Nintendo" },
+    all: { icon: FaShapes, label: "All" },
   };
 
   // * Get platform config

@@ -6,9 +6,11 @@ import { RiHome7Fill } from "react-icons/ri";
 import LoginImg from "../assets/images/login.webp";
 import RegisterImg from "../assets/images/register.webp";
 import { useAuth } from "../contexts/AuthContext";
+import Toast from "../components/Toast";
 
 // API Base URL (adjust for production)
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000/api/auth";
+const API_URL =
+  import.meta.env.VITE_API_URL || "http://localhost:5000/api/auth";
 
 export default function Auth({ mode }) {
   const { login } = useAuth();
@@ -41,8 +43,7 @@ export default function Auth({ mode }) {
 
   // * Loading and error state
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
-  const [successMessage, setSuccessMessage] = useState("");
+  const [toast, setToast] = useState(null);
 
   // * Navigation
   const navigate = useNavigate();
@@ -54,21 +55,20 @@ export default function Auth({ mode }) {
         ? { email: "", password: "" }
         : { firstName: "", lastName: "", email: "", password: "" },
     );
-    // Clear errors when switching
-    setError("");
-    setSuccessMessage("");
+
+    // reset toast on switch
+    setToast(null);
   }, [isLogin]);
 
-  // * Clear messages after 5 seconds
   useEffect(() => {
-    if (error || successMessage) {
-      const timer = setTimeout(() => {
-        setError("");
-        setSuccessMessage("");
-      }, 5000);
-      return () => clearTimeout(timer);
-    }
-  }, [error, successMessage]);
+    if (!toast) return;
+
+    const timer = setTimeout(() => {
+      setToast(null);
+    }, 3000);
+
+    return () => clearTimeout(timer);
+  }, [toast]);
 
   // * Handle input changes dynamically
   const handleChange = (e) => {
@@ -159,8 +159,6 @@ export default function Auth({ mode }) {
     if (!isFormValid || loading) return;
 
     setLoading(true);
-    setError("");
-    setSuccessMessage("");
 
     try {
       // Determine endpoint based on mode
@@ -186,12 +184,17 @@ export default function Auth({ mode }) {
         // Use AuthContext login function to store auth data
         login(data.data.user, data.data.token, data.data.role);
 
-        setSuccessMessage(data.message || (isLogin ? "Login successful!" : "Registration successful!"));
+        setToast({
+          type: "correct",
+          message:
+            data.message ||
+            (isLogin ? "Login successful!" : "Registration successful!"),
+        });
 
         // Redirect based on role after a short delay
         // Admin users → /dashboard, Regular users → /
         setTimeout(() => {
-          if (data.data.role === 'admin') {
+          if (data.data.role === "admin") {
             navigate("/dashboard", { replace: true });
           } else {
             navigate("/", { replace: true });
@@ -200,7 +203,11 @@ export default function Auth({ mode }) {
       }
     } catch (err) {
       console.error("Auth error:", err);
-      setError(err.message || "An error occurred. Please try again.");
+
+      setToast({
+        type: "wrong",
+        message: err.message || "An error occurred. Please try again.",
+      });
     } finally {
       setLoading(false);
     }
@@ -237,19 +244,11 @@ export default function Auth({ mode }) {
             ))}
           </ul>
 
-          {
-            // * Error and Success Messages
-          }
-          {error && (
-            <div className="auth-message auth-message--error">
-              <span>{error}</span>
-            </div>
-          )}
-          {successMessage && (
-            <div className="auth-message auth-message--success">
-              <span>{successMessage}</span>
-            </div>
-          )}
+          <Toast
+            type={toast?.type}
+            message={toast?.message}
+            isVisible={!!toast}
+          />
 
           {
             // * Back Home and Submit Button

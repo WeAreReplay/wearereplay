@@ -1,0 +1,123 @@
+@use "./variables" as *;
+@use "./mixins" as *;
+
+.dashboard-header {
+  max-width: 1720px;
+  position: fixed;
+  z-index: $z-index-maxtop;
+  inset: 0;
+  margin: auto;
+  pointer-events: none;
+
+  // * Allow pointer events for interactive elements inside the header
+  a,
+  button,
+  input,
+  li {
+    pointer-events: auto;
+  }
+
+  .width-wrap {
+    padding: 0;
+
+    nav {
+      width: 100%;
+      max-height: 900px;
+      position: absolute;
+      // ? Adjust position of the navigation
+      right: 0;
+      margin: auto;
+      top: 0;
+      // ? ---------------------------------
+      z-index: $z-index-mid;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      border-bottom: $orange solid $border-small;
+      background-color: $white;
+      text-transform: uppercase;
+
+      @include tablet() {
+        max-width: 640px;
+        border-left: $orange solid $border-small;
+      }
+
+      > .nav-items {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        a,
+        button {
+          width: 100%;
+          padding: $spacing-16 $spacing-8;
+          color: $orange;
+          text-transform: uppercase;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: $spacing-16;
+
+          span {
+            max-width: 200px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+          }
+        }
+
+        > li {
+          flex: 1;
+          position: relative;
+
+          &:first-of-type {
+            border-right: $orange solid $border-small;
+          }
+
+          .submenu {
+            width: 100%;
+            display: none;
+            position: absolute;
+            top: $spacing-64 + $spacing-4;
+            background-color: $white;
+            border-inline: $orange solid $border-small;
+            border-bottom: $orange solid $border-small;
+
+            li {
+              color: $orange;
+
+              &:first-of-type {
+                border-bottom: $orange solid $border-small;
+              }
+
+              > a,
+              > button {
+                width: 100%;
+                justify-content: left;
+              }
+
+              .tab {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+
+                .left {
+                  display: flex;
+                  align-items: center;
+                  gap: $spacing-16;
+                }
+              }
+
+              .icon {
+                width: $spacing-24;
+                height: $spacing-24;
+              }
+            }
+
+            &.open {
+              display: grid;
+            }
+          }
+        }
+      }
+    }
+  }
+}

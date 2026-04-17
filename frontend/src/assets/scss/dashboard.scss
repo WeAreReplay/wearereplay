@@ -1,8 +1,9 @@
 @use "./partials/variables" as *;
 @use "./partials/mixins" as *;
+@use "./partials/dashboardheader";
 
 .dashboard-main {
-  padding-top: $section-block-small;
+  padding-top: $section-block-medium;
   padding-bottom: $section-block-large;
   min-height: 100vh;
   position: relative;
@@ -165,7 +166,8 @@
           color: #2d8a2d;
         }
 
-        &.delivery {
+        &.delivery,
+        &.pending {
           background: #e0f7ff;
           color: #0077b6;
         }
@@ -224,6 +226,8 @@
     }
 
     form {
+      overflow-y: auto;
+      max-height: 640px;
       padding: $spacing-24;
       pointer-events: visible;
       background-color: $white;
@@ -248,43 +252,4 @@
   position: fixed;
   top: 0;
   right: 0;
-  padding: $spacing-16 $spacing-24;
-  display: flex;
-  gap: $spacing-8;
-  align-items: center;
-  justify-content: center;
-  background-color: $white;
-
-  p {
-    @include fontSize(tiny);
-  }
-
-  &.deleted,
-  &.overdue {
-    background: #ffe5e5;
-    svg {
-      color: #d33;
-    }
-  }
-
-  &.due {
-    background: #ffe8cc;
-    color: #8a8317;
-  }
-
-  &.added {
-    background: #e5ffe5;
-    color: #2d8a2d;
-  }
-
-  &.delivery,
-  &.edited {
-    background: #e0f7ff;
-    color: #0077b6;
-  }
-
-  &.rented {
-    background: #dcdcdc;
-    color: #000;
-  }
 }

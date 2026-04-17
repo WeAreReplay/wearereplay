@@ -112,13 +112,15 @@ textarea {
   }
 }
 
-label {
+label,
+legend {
   font-family: $font-pt;
 }
 
 input,
 textarea,
-label {
+label,
+legend {
   @include fontSize(p);
   display: inline-block;
 }
@@ -160,7 +162,8 @@ form {
     gap: $spacing-16;
 
     li {
-      label {
+      label,
+      legend {
         text-transform: uppercase;
       }
 
@@ -528,6 +531,73 @@ form {
       text-align: center;
       border-bottom: $orange solid $border-xsmall;
       color: $orange;
+    }
+  }
+}
+
+.toast {
+  padding: $spacing-16 $spacing-24;
+  display: flex;
+  gap: $spacing-8;
+  align-items: center;
+  justify-content: center;
+  background-color: $white;
+
+  p {
+    @include fontSize(tiny);
+  }
+
+  &.deleted,
+  &.overdue,
+  &.wrong {
+    background: $toast-error-bg;
+    border: $border-xsmall solid $toast-error-color;
+
+    svg {
+      color: $toast-error-color;
+    }
+  }
+
+  &.due {
+    background: $toast-warning-bg;
+    color: $toast-warning-color;
+    border: $border-xsmall solid $toast-warning-color;
+
+    svg {
+      color: $toast-warning-color;
+    }
+  }
+
+  &.added,
+  &.correct {
+    background: $toast-success-bg;
+    color: $toast-success-color;
+    border: $border-xsmall solid $toast-success-color;
+
+    svg {
+      color: $toast-success-color;
+    }
+  }
+
+  &.delivery,
+  &.edited,
+  &.pending {
+    background: $toast-info-bg;
+    color: $toast-info-color;
+    border: $border-xsmall solid $toast-info-color;
+
+    svg {
+      color: $toast-info-color;
+    }
+  }
+
+  &.rented {
+    background: $toast-neutral-bg;
+    color: $toast-neutral-color;
+    border: $border-xsmall solid $toast-neutral-color;
+
+    svg {
+      color: $toast-neutral-color;
     }
   }
 }

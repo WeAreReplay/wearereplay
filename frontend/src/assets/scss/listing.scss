@@ -1,0 +1,121 @@
+@use "./partials/variables" as *;
+@use "./partials/mixins" as *;
+
+.listing-main {
+  padding-top: $section-block-medium;
+  padding-bottom: $section-block-large;
+
+  section .width-wrap {
+    display: grid;
+    position: relative;
+
+    @include tablet() {
+      grid-template-columns: 1fr 0.5fr;
+      gap: $spacing-24;
+    }
+
+    h1 {
+      color: $orange;
+    }
+
+    .left {
+      h2 {
+        color: $orange;
+        margin-bottom: $spacing-24;
+      }
+
+      span {
+        font-family: $font-inter;
+      }
+
+      .listing-wrapper {
+        padding-block: $spacing-24;
+
+        &:not(:last-of-type) {
+          border-bottom: $orange solid $border-xsmall;
+        }
+
+        ul {
+          display: grid;
+          gap: $spacing-16;
+
+          @include tablet() {
+            grid-template-columns: 1fr 1fr;
+          }
+
+          li {
+            display: grid;
+            gap: $spacing-8;
+          }
+        }
+      }
+    }
+
+    .right {
+      position: sticky;
+      top: $spacing-64 + $spacing-24;
+      height: fit-content;
+      border-radius: $border-xlarge;
+      background-color: $orange;
+      color: $white;
+
+      .top {
+        padding: $spacing-32;
+        display: grid;
+        gap: $spacing-24;
+
+        h2,
+        h3 {
+          font-weight: 900;
+          flex-wrap: wrap;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+
+          span {
+            &:first-of-type {
+              font-family: $font-pt;
+            }
+
+            &:last-of-type {
+              font-family: $font-inter;
+            }
+          }
+        }
+
+        p {
+          text-align: center;
+          font-weight: 500;
+        }
+      }
+
+      .bottom {
+        border-top: $white solid $border-xsmall;
+        display: flex;
+
+        li {
+          width: 100%;
+
+          &:first-of-type {
+            border-right: $white solid $border-xsmall;
+          }
+
+          button {
+            width: 100%;
+            padding: $spacing-32;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: $spacing-24;
+            color: $white;
+
+            span {
+              font-family: $font-vcr;
+              text-transform: uppercase;
+            }
+          }
+        }
+      }
+    }
+  }
+}
