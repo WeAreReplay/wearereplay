@@ -2,7 +2,7 @@ import "../assets/css/listing.css";
 import GetPlatformIcon from "../components/GetPlatformIcon";
 import { MdChatBubble } from "react-icons/md";
 import { FaMoneyBill } from "react-icons/fa";
-import { useParams } from "react-router-dom";
+import { useParams, Navigate } from "react-router-dom";
 
 const listings = [
   {
@@ -48,6 +48,10 @@ export default function Listing() {
   const { id } = useParams();
 
   const item = listings.find((l) => l.id === Number(id));
+
+  if (!item) {
+    return <Navigate to="/notfound" replace />;
+  }
 
   return (
     <main className="listing-main">
