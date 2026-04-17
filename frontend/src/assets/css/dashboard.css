@@ -287,6 +287,7 @@
   align-items: center;
   z-index: 100;
   pointer-events: none;
+  overflow: hidden;
 }
 .dashboard-main .form-ctr .head {
   display: flex;
@@ -298,6 +299,9 @@
   padding: 1.5rem;
   pointer-events: visible;
   background-color: #fbead9;
+  padding: 3rem 1.5rem;
+  border: #f07c68 solid 0.5rem;
+  border-radius: 1rem;
 }
 .dashboard-main .form-ctr form .opts-ctr li:first-of-type button {
   background-color: #fbead9;

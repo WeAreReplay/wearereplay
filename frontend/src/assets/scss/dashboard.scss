@@ -219,6 +219,7 @@
     align-items: center;
     z-index: $z-index-maxtop;
     pointer-events: none;
+    overflow: hidden;
 
     .head {
       display: flex;
@@ -231,6 +232,9 @@
       padding: $spacing-24;
       pointer-events: visible;
       background-color: $white;
+      padding: $spacing-48 $spacing-24;
+      border: $orange solid $border-medium;
+      border-radius: $border-large;
 
       .opts-ctr {
         li:first-of-type {
