@@ -8,6 +8,7 @@ import {
   RiDashboardHorizontalFill,
   RiLogoutCircleFill,
 } from "react-icons/ri";
+import { FaShoppingBasket } from "react-icons/fa";
 
 import { BiLogoFacebookSquare, BiLogoInstagramAlt } from "react-icons/bi";
 import { MdGamepad } from "react-icons/md";
@@ -87,6 +88,12 @@ export default function Header() {
                           <Link to="/dashboard" className="user-link">
                             <RiDashboardHorizontalFill className="icon" />
                             <span>Dashboard</span>
+                          </Link>
+                        </li>
+                        <li>
+                          <Link to="/cart" className="user-link">
+                            <FaShoppingBasket className="icon" />
+                            <span>Cart</span>
                           </Link>
                         </li>
                         <li>
