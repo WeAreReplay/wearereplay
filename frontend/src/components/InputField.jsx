@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { FaCheck } from "react-icons/fa";
 import { RiEyeFill, RiEyeOffFill } from "react-icons/ri";
 
@@ -38,6 +38,7 @@ export default function InputField({
   hint,
   inputClass = "",
   options = [],
+  disabled = false,
 }) {
   // * Controls password visibility
   const [showPassword, setShowPassword] = useState(false);
@@ -51,6 +52,11 @@ export default function InputField({
   // * File preview state
   const [preview, setPreview] = useState(null);
 
+  useEffect(() => {
+    if (type === "file" && value && typeof value === "string") {
+      setPreview(value);
+    }
+  }, [value, type]);
   /*
     ! Handle File Selection
     * Creates preview URL + sends file to parent form
@@ -122,10 +128,10 @@ export default function InputField({
         {type === "file" ? (
           <div
             className={`file-ctr ${dragActive ? "active" : ""}`}
-            onClick={() => fileRef.current?.click()}
-            onDragOver={handleDragOver}
-            onDragLeave={handleDragLeave}
-            onDrop={handleDrop}
+            onClick={() => !disabled && fileRef.current?.click()}
+            onDragOver={(e) => !disabled && handleDragOver(e)}
+            onDragLeave={(e) => !disabled && handleDragLeave(e)}
+            onDrop={(e) => !disabled && handleDrop(e)}
           >
             <input
               ref={fileRef}
@@ -133,8 +139,10 @@ export default function InputField({
               accept="image/*"
               hidden
               id={name}
+              disabled={disabled}
               onChange={handleFileChange}
               onClick={(e) => e.stopPropagation()}
+              disabled={disabled}
             />
 
             {preview ? (
@@ -153,6 +161,7 @@ export default function InputField({
             value={value}
             onChange={onChange}
             required
+            disabled={disabled}
           />
         ) : type === "radio" ? (
           <>
@@ -170,6 +179,7 @@ export default function InputField({
                   value={option}
                   checked={value === option}
                   onChange={onChange}
+                  disabled={disabled}
                 />
 
                 {
@@ -197,7 +207,8 @@ export default function InputField({
         {
           // * Validation Checkmark
         }
-        {type !== "password" &&
+        {!disabled &&
+          type !== "password" &&
           type !== "file" &&
           type !== "radio" &&
           isValid && <FaCheck className="icon valid-icon" />}
@@ -205,7 +216,7 @@ export default function InputField({
         {
           // ! Password Toggle Button
         }
-        {type === "password" && (
+        {type === "password" && !disabled && (
           <button
             type="button"
             className="eye-btn"

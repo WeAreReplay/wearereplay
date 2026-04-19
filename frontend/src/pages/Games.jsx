@@ -12,7 +12,7 @@ const gamesData = [
     id: 1,
     name: "Hogwarts Legacy",
     listedBy: "PlayerFour",
-    platform: "Windows",
+    platform: "Xbox",
     genre: "Adventure",
     price: 120,
   },
@@ -99,25 +99,23 @@ export default function Games() {
       <section className="games-content">
         <div className="width-wrap">
           <div className="platform-filters">
-            {["All", "Nintendo", "Xbox", "PlayStation", "Mac", "Windows"].map(
-              (platform) => (
-                <label
-                  key={platform}
-                  className={`platform-btn ${
-                    platformFilter === platform ? "selected" : ""
-                  }`}
-                >
-                  <input
-                    type="radio"
-                    name="platform"
-                    value={platform}
-                    checked={platformFilter === platform}
-                    onChange={(e) => setPlatformFilter(e.target.value)}
-                  />
-                  <GetPlatformIcon platform={platform} />
-                </label>
-              ),
-            )}
+            {["All", "Nintendo", "Xbox", "PlayStation"].map((platform) => (
+              <label
+                key={platform}
+                className={`platform-btn ${
+                  platformFilter === platform ? "selected" : ""
+                }`}
+              >
+                <input
+                  type="radio"
+                  name="platform"
+                  value={platform}
+                  checked={platformFilter === platform}
+                  onChange={(e) => setPlatformFilter(e.target.value)}
+                />
+                <GetPlatformIcon platform={platform} />
+              </label>
+            ))}
           </div>
           <div className="bottom">
             {

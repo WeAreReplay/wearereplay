@@ -213,10 +213,9 @@ form .fields-ctr li .hint-ctr p {
 form .fields-ctr li .radio-ctr {
   display: flex;
   flex-wrap: wrap;
-  justify-content: center;
   gap: 0.5rem;
   margin-top: 0.25rem;
-  max-width: 300px;
+  max-width: 420px;
 }
 form .fields-ctr li .radio-ctr .radio-btn {
   padding: 0.5rem 1rem;
@@ -228,6 +227,10 @@ form .fields-ctr li .radio-ctr .radio-btn {
           user-select: none;
   color: #f07c68;
   background-color: #fbead9;
+  font-size: 0.875rem;
+  line-height: 1.8;
+  font-family: "Inter", sans-serif;
+  font-weight: 700;
 }
 form .fields-ctr li .radio-ctr .radio-btn > input {
   display: none;
@@ -522,48 +525,42 @@ form .fields-ctr li .file-ctr .file-hint {
   justify-content: center;
   background-color: #fbead9;
 }
-.toast p {
+.toast span {
+  font-family: "Inter", sans-serif;
   font-size: 0.875rem;
   line-height: 1.8;
 }
-.toast.deleted, .toast.overdue, .toast.wrong {
+.toast.red {
   background: #ffe5e5;
+  color: #d33;
   border: 0.125rem solid #d33;
 }
-.toast.deleted svg, .toast.overdue svg, .toast.wrong svg {
+.toast.red svg {
   color: #d33;
 }
-.toast.due {
+.toast.yellow {
   background: #ffe8cc;
   color: #8a8317;
   border: 0.125rem solid #8a8317;
 }
-.toast.due svg {
+.toast.yellow svg {
   color: #8a8317;
 }
-.toast.added, .toast.correct {
+.toast.green {
   background: #e5ffe5;
   color: #2d8a2d;
   border: 0.125rem solid #2d8a2d;
 }
-.toast.added svg, .toast.correct svg {
+.toast.green svg {
   color: #2d8a2d;
 }
-.toast.delivery, .toast.edited, .toast.pending {
+.toast.blue {
   background: #e0f7ff;
   color: #0077b6;
   border: 0.125rem solid #0077b6;
 }
-.toast.delivery svg, .toast.edited svg, .toast.pending svg {
+.toast.blue svg {
   color: #0077b6;
-}
-.toast.rented {
-  background: #dcdcdc;
-  color: #000;
-  border: 0.125rem solid #000;
-}
-.toast.rented svg {
-  color: #000;
 }
 
 .public-header {

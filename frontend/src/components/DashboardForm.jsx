@@ -67,10 +67,18 @@ export default function DashboardForm({
   const handleChange = (e) => {
     const { name, value } = e.target;
 
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
+    setFormData((prev) => {
+      const updated = {
+        ...prev,
+        [name]: value,
+      };
+
+      if (name === "platform") {
+        updated.model = "";
+      }
+
+      return updated;
+    });
   };
 
   /*
@@ -97,23 +105,14 @@ export default function DashboardForm({
   return (
     <div className="form-ctr">
       <form onSubmit={handleSubmit}>
-        {/*
-          * Header Section
-          ? Displays form title + close button
-        */}
         <div className="head">
           <h1>{title}</h1>
 
-          {/* Close Form */}
           <button type="button" className="close-btn" onClick={onClose}>
             <IoClose size={22} />
           </button>
         </div>
 
-        {/*
-          * Dynamic Fields Section
-          ? Renders inputs based on configuration array
-        */}
         <ul className="fields-ctr">
           {fields.map((field) => (
             <InputField
@@ -126,15 +125,15 @@ export default function DashboardForm({
               onChange={handleChange}
               isValid={field.isValid(formData)}
               inputClass={field.inputClass}
-              options={field.options}
+              options={
+                typeof field.options === "function"
+                  ? field.options(formData)
+                  : field.options
+              }
             />
           ))}
         </ul>
 
-        {/*
-          * Action Buttons
-          ? Cancel + Submit controls
-        */}
         <ul className="opts-ctr">
           {/* Cancel Button */}
           <li>

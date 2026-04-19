@@ -217,10 +217,9 @@ form {
       .radio-ctr {
         display: flex;
         flex-wrap: wrap;
-        justify-content: center;
         gap: $spacing-8;
         margin-top: $spacing-4;
-        max-width: 300px;
+        max-width: 420px;
 
         .radio-btn {
           padding: $spacing-8 $spacing-16;
@@ -230,6 +229,9 @@ form {
           user-select: none;
           color: $orange;
           background-color: $white;
+          @include fontSize(tiny);
+          font-family: $font-inter;
+          font-weight: 700;
 
           & > input {
             display: none;
@@ -543,61 +545,48 @@ form {
   justify-content: center;
   background-color: $white;
 
-  p {
+  span {
+    font-family: $font-inter;
     @include fontSize(tiny);
   }
 
-  &.deleted,
-  &.overdue,
-  &.wrong {
-    background: $toast-error-bg;
-    border: $border-xsmall solid $toast-error-color;
+  &.red {
+    background: $toast-red-bg;
+    color: $toast-red-color;
+    border: $border-xsmall solid $toast-red-color;
 
     svg {
-      color: $toast-error-color;
+      color: $toast-red-color;
     }
   }
 
-  &.due {
-    background: $toast-warning-bg;
-    color: $toast-warning-color;
-    border: $border-xsmall solid $toast-warning-color;
+  &.yellow {
+    background: $toast-yellow-bg;
+    color: $toast-yellow-color;
+    border: $border-xsmall solid $toast-yellow-color;
 
     svg {
-      color: $toast-warning-color;
+      color: $toast-yellow-color;
     }
   }
 
-  &.added,
-  &.correct {
-    background: $toast-success-bg;
-    color: $toast-success-color;
-    border: $border-xsmall solid $toast-success-color;
+  &.green {
+    background: $toast-green-bg;
+    color: $toast-green-color;
+    border: $border-xsmall solid $toast-green-color;
 
     svg {
-      color: $toast-success-color;
+      color: $toast-green-color;
     }
   }
 
-  &.delivery,
-  &.edited,
-  &.pending {
-    background: $toast-info-bg;
-    color: $toast-info-color;
-    border: $border-xsmall solid $toast-info-color;
+  &.blue {
+    background: $toast-blue-bg;
+    color: $toast-blue-color;
+    border: $border-xsmall solid $toast-blue-color;
 
     svg {
-      color: $toast-info-color;
-    }
-  }
-
-  &.rented {
-    background: $toast-neutral-bg;
-    color: $toast-neutral-color;
-    border: $border-xsmall solid $toast-neutral-color;
-
-    svg {
-      color: $toast-neutral-color;
+      color: $toast-blue-color;
     }
   }
 }

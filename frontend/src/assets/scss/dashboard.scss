@@ -104,11 +104,19 @@
               align-items: center;
             }
 
+            > .table-image {
+              max-height: $spacing-64;
+            }
+
             &.actions {
               padding: 0;
               display: flex;
               gap: 0;
               align-items: center;
+
+              &.none {
+                padding: $spacing-8;
+              }
 
               .icon-btn {
                 flex: 1;
@@ -130,14 +138,12 @@
                   border-right: $border-xsmall solid $pink;
                 }
               }
-
-              .na-text {
-                padding: $spacing-8;
-              }
             }
 
             &:not(.actions):not(.platform-badge) {
               padding: $spacing-8;
+              display: flex;
+              align-items: center;
             }
           }
         }
@@ -151,36 +157,29 @@
         font-size: 12px;
         white-space: nowrap;
 
-        &.due {
-          background: #ffe8cc;
-          color: #8a8317;
-        }
-
         &.overdue {
-          background: #ffe5e5;
-          color: #d33;
+          background: $toast-red-bg;
+          color: $toast-red-color;
         }
 
-        &.available {
-          background: #e5ffe5;
-          color: #2d8a2d;
+        &.available,
+        &.rented,
+        &.returned {
+          background: $toast-green-bg;
+          color: $toast-green-color;
         }
 
-        &.delivery,
+        &.delivering,
+        &.returning,
         &.pending {
-          background: #e0f7ff;
-          color: #0077b6;
-        }
-
-        &.rented {
-          background: #dcdcdc;
-          color: #000;
+          background: $toast-blue-bg;
+          color: $toast-blue-color;
         }
       }
     }
   }
 
-  .delete-modal {
+  .confirm-modal {
     position: fixed;
     inset: 0;
     display: flex;
@@ -190,6 +189,7 @@
     pointer-events: none;
 
     .content {
+      border-radius: $spacing-24;
       padding: $spacing-24;
       background-color: $orange;
       color: $white;
@@ -204,7 +204,7 @@
         }
       }
 
-      .delete-btn {
+      .confirm-btn {
         background-color: $white;
         color: $orange;
       }
@@ -220,6 +220,11 @@
     z-index: $z-index-maxtop;
     pointer-events: none;
     overflow: hidden;
+
+    button,
+    a {
+      pointer-events: visible;
+    }
 
     .head {
       display: flex;
@@ -250,10 +255,136 @@
       }
     }
   }
+
+  .review-wrap {
+    position: fixed;
+    inset: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: $z-index-maxtop;
+    pointer-events: none;
+    overflow: hidden;
+
+    button,
+    a {
+      pointer-events: visible;
+    }
+
+    .review-ctr {
+      pointer-events: visible;
+      overflow-y: auto;
+      max-width: 480px;
+      max-height: 640px;
+      padding: $spacing-48 0;
+      margin: auto;
+      border: $orange solid $border-medium;
+      border-radius: $border-large;
+      background-color: $white;
+      display: grid;
+      gap: $spacing-24;
+
+      .head {
+        padding-inline: $spacing-24;
+        display: flex;
+        justify-content: space-between;
+      }
+
+      .preview-img {
+        padding-inline: $spacing-24;
+      }
+
+      .review-content {
+        display: grid;
+        gap: $spacing-16;
+        font-family: $font-inter;
+
+        .info-ctr {
+          display: grid;
+          gap: $spacing-4;
+
+          .info-title {
+            padding: 0 $spacing-24;
+            padding-bottom: $spacing-8;
+            border-bottom: $orange solid $border-small;
+          }
+
+          .info-list {
+            display: grid;
+            gap: $spacing-8;
+
+            .info {
+              padding: $spacing-8 $spacing-24;
+              display: flex;
+              justify-content: space-between;
+
+              &:not(:last-of-type) {
+                border-bottom: $orange solid $border-xsmall;
+              }
+            }
+
+            .description {
+              max-width: 320px;
+              display: flex;
+              flex-direction: column;
+              gap: 8px;
+            }
+
+            .label {
+              font-weight: 500;
+            }
+
+            .data {
+              font-style: italic;
+              > .platform-badge {
+                display: flex;
+                align-items: center;
+                gap: $spacing-8;
+              }
+            }
+          }
+        }
+      }
+
+      .opts-ctr {
+        padding: 0 $spacing-24;
+        li:first-of-type {
+          button {
+            background-color: $white;
+            color: $orange;
+          }
+        }
+      }
+    }
+  }
 }
 
 .toast {
   position: fixed;
-  top: 0;
-  right: 0;
+  bottom: $spacing-24;
+  inset-inline: 0;
+  width: fit-content;
+  margin-inline: auto;
+  display: flex;
+  gap: $spacing-8;
+
+  .icon {
+    width: $spacing-16;
+    height: $spacing-16;
+  }
+
+  .toast-content {
+    display: flex;
+    gap: $spacing-4;
+
+    span:first-of-type {
+      max-width: 20ch;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      font-family: $font-inter;
+      display: block;
+      font-weight: 600;
+    }
+  }
 }

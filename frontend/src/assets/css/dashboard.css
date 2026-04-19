@@ -199,11 +199,17 @@
   gap: 0.5rem;
   align-items: center;
 }
+.dashboard-main .dashboard-content .dashboard-table .table-content li > span > .table-image {
+  max-height: 4rem;
+}
 .dashboard-main .dashboard-content .dashboard-table .table-content li > span.actions {
   padding: 0;
   display: flex;
   gap: 0;
   align-items: center;
+}
+.dashboard-main .dashboard-content .dashboard-table .table-content li > span.actions.none {
+  padding: 0.5rem;
 }
 .dashboard-main .dashboard-content .dashboard-table .table-content li > span.actions .icon-btn {
   flex: 1;
@@ -223,11 +229,10 @@
 .dashboard-main .dashboard-content .dashboard-table .table-content li > span.actions .icon-btn:not(:last-of-type) {
   border-right: 0.125rem solid #fdacac;
 }
-.dashboard-main .dashboard-content .dashboard-table .table-content li > span.actions .na-text {
-  padding: 0.5rem;
-}
 .dashboard-main .dashboard-content .dashboard-table .table-content li > span:not(.actions):not(.platform-badge) {
   padding: 0.5rem;
+  display: flex;
+  align-items: center;
 }
 .dashboard-main .dashboard-content .dashboard-table .status {
   display: inline-flex;
@@ -237,27 +242,19 @@
   font-size: 12px;
   white-space: nowrap;
 }
-.dashboard-main .dashboard-content .dashboard-table .status.due {
-  background: #ffe8cc;
-  color: #8a8317;
-}
 .dashboard-main .dashboard-content .dashboard-table .status.overdue {
   background: #ffe5e5;
   color: #d33;
 }
-.dashboard-main .dashboard-content .dashboard-table .status.available {
+.dashboard-main .dashboard-content .dashboard-table .status.available, .dashboard-main .dashboard-content .dashboard-table .status.rented, .dashboard-main .dashboard-content .dashboard-table .status.returned {
   background: #e5ffe5;
   color: #2d8a2d;
 }
-.dashboard-main .dashboard-content .dashboard-table .status.delivery, .dashboard-main .dashboard-content .dashboard-table .status.pending {
+.dashboard-main .dashboard-content .dashboard-table .status.delivering, .dashboard-main .dashboard-content .dashboard-table .status.returning, .dashboard-main .dashboard-content .dashboard-table .status.pending {
   background: #e0f7ff;
   color: #0077b6;
 }
-.dashboard-main .dashboard-content .dashboard-table .status.rented {
-  background: #dcdcdc;
-  color: #000;
-}
-.dashboard-main .delete-modal {
+.dashboard-main .confirm-modal {
   position: fixed;
   inset: 0;
   display: flex;
@@ -266,20 +263,21 @@
   z-index: 100;
   pointer-events: none;
 }
-.dashboard-main .delete-modal .content {
+.dashboard-main .confirm-modal .content {
+  border-radius: 1.5rem;
   padding: 1.5rem;
   background-color: #f07c68;
   color: #fbead9;
   text-align: center;
   pointer-events: visible;
 }
-.dashboard-main .delete-modal .content p {
+.dashboard-main .confirm-modal .content p {
   margin-block: 0.5rem 2rem;
 }
-.dashboard-main .delete-modal .content p strong {
+.dashboard-main .confirm-modal .content p strong {
   font-weight: 500;
 }
-.dashboard-main .delete-modal .content .delete-btn {
+.dashboard-main .confirm-modal .content .confirm-btn {
   background-color: #fbead9;
   color: #f07c68;
 }
@@ -292,6 +290,10 @@
   z-index: 100;
   pointer-events: none;
   overflow: hidden;
+}
+.dashboard-main .form-ctr button,
+.dashboard-main .form-ctr a {
+  pointer-events: visible;
 }
 .dashboard-main .form-ctr .head {
   display: flex;
@@ -316,9 +318,116 @@
     min-width: 420px;
   }
 }
+.dashboard-main .review-wrap {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 100;
+  pointer-events: none;
+  overflow: hidden;
+}
+.dashboard-main .review-wrap button,
+.dashboard-main .review-wrap a {
+  pointer-events: visible;
+}
+.dashboard-main .review-wrap .review-ctr {
+  pointer-events: visible;
+  overflow-y: auto;
+  max-width: 480px;
+  max-height: 640px;
+  padding: 3rem 0;
+  margin: auto;
+  border: #f07c68 solid 0.5rem;
+  border-radius: 1rem;
+  background-color: #fbead9;
+  display: grid;
+  gap: 1.5rem;
+}
+.dashboard-main .review-wrap .review-ctr .head {
+  padding-inline: 1.5rem;
+  display: flex;
+  justify-content: space-between;
+}
+.dashboard-main .review-wrap .review-ctr .preview-img {
+  padding-inline: 1.5rem;
+}
+.dashboard-main .review-wrap .review-ctr .review-content {
+  display: grid;
+  gap: 1rem;
+  font-family: "Inter", sans-serif;
+}
+.dashboard-main .review-wrap .review-ctr .review-content .info-ctr {
+  display: grid;
+  gap: 0.25rem;
+}
+.dashboard-main .review-wrap .review-ctr .review-content .info-ctr .info-title {
+  padding: 0 1.5rem;
+  padding-bottom: 0.5rem;
+  border-bottom: #f07c68 solid 0.25rem;
+}
+.dashboard-main .review-wrap .review-ctr .review-content .info-ctr .info-list {
+  display: grid;
+  gap: 0.5rem;
+}
+.dashboard-main .review-wrap .review-ctr .review-content .info-ctr .info-list .info {
+  padding: 0.5rem 1.5rem;
+  display: flex;
+  justify-content: space-between;
+}
+.dashboard-main .review-wrap .review-ctr .review-content .info-ctr .info-list .info:not(:last-of-type) {
+  border-bottom: #f07c68 solid 0.125rem;
+}
+.dashboard-main .review-wrap .review-ctr .review-content .info-ctr .info-list .description {
+  max-width: 320px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.dashboard-main .review-wrap .review-ctr .review-content .info-ctr .info-list .label {
+  font-weight: 500;
+}
+.dashboard-main .review-wrap .review-ctr .review-content .info-ctr .info-list .data {
+  font-style: italic;
+}
+.dashboard-main .review-wrap .review-ctr .review-content .info-ctr .info-list .data > .platform-badge {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.dashboard-main .review-wrap .review-ctr .opts-ctr {
+  padding: 0 1.5rem;
+}
+.dashboard-main .review-wrap .review-ctr .opts-ctr li:first-of-type button {
+  background-color: #fbead9;
+  color: #f07c68;
+}
 
 .toast {
   position: fixed;
-  top: 0;
-  right: 0;
+  bottom: 1.5rem;
+  inset-inline: 0;
+  width: -moz-fit-content;
+  width: fit-content;
+  margin-inline: auto;
+  display: flex;
+  gap: 0.5rem;
+}
+.toast .icon {
+  width: 1rem;
+  height: 1rem;
+}
+.toast .toast-content {
+  display: flex;
+  gap: 0.25rem;
+}
+.toast .toast-content span:first-of-type {
+  max-width: 20ch;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-family: "Inter", sans-serif;
+  display: block;
+  font-weight: 600;
 }/*# sourceMappingURL=dashboard.css.map */

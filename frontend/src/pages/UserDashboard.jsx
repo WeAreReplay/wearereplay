@@ -4,198 +4,218 @@ import "../assets/css/dashboard.css";
 import GetPlatformIcon from "../components/GetPlatformIcon";
 import DashboardForm from "../components/DashboardForm";
 import Overlay from "../components/Overlay";
-import DeleteModal from "../components/DeleteModal";
-import { FaTrash, FaEdit, FaTruck } from "react-icons/fa";
+import ConfirmModal from "../components/ConfirmModal";
+import {
+  FaTrash,
+  FaEdit,
+  FaTruck,
+  FaCheck,
+  FaShoppingBasket,
+  FaList,
+} from "react-icons/fa";
 import { MdReport, MdChatBubble } from "react-icons/md";
 import Toast from "../components/Toast";
+import donkeyKong from "../assets/images/donkey-kong.webp";
+import indianaJones from "../assets/images/indiana-jones.webp";
+import zelda from "../assets/images/zelda.webp";
+import hogwarts from "../assets/images/hogwarts.webp";
+import pokemon from "../assets/images/pokemon.webp";
+import { FormatDate } from "../components/FormatDate";
 import DashboardHeader from "../layouts/DashboardHeader";
 import { useAuth } from "../contexts/AuthContext";
-import { FaShoppingBasket, FaList } from "react-icons/fa";
 
-/* 
-? Backend
-TODO: Replace rentals, listings and history data and connect to backend API (current rentals, rental history, active listings, listing history endpoint)
+// TODO: Replace borrowed games, listings and history data and connect to backend API (current borrowed games, rental history, active listings, listing history endpoint)
 
-TODO: Update user's profile name (image?), saved/deleted/edited listings, updating status?
+// ! ---------------- HELPERS ----------------
 
-TODO: Form should automatically add the genre depending on the available games on the website
-
-TODO: Fetch from the API the image url
-
-? Frontend
-
-TODO: DashboardHeader with Logout and Go Back Home Links, navigation? Admin: Available Games Managaement, Contact with Users?, Users: Rentals and Listings Tab?
-*/
-
-/*
-  * Formats date into readable format
-  ? Returns "—" if no date exists
-*/
-const formatDate = (dateString) => {
-  if (!dateString) return "—";
-  return new Date(dateString).toLocaleDateString(undefined, {
-    year: "numeric",
-    month: "short",
-    day: "numeric",
-  });
+const STATUS = {
+  AVAILABLE: "available",
+  PENDING: "pending",
+  DELIVERING: "delivering",
+  RENTED: "rented",
+  RETURNING: "returning",
+  RETURNED: "returned",
+  OVERDUE: "overdue",
 };
 
+const ACTIONS = {
+  EDIT: "edit",
+  DELETE: "delete",
+  DELIVERY_CONFIRM: "delivery_confirm",
+  RETURN_START: "return_start",
+  RETURN_CONFIRM: "return_confirm",
+};
+
+const CONFIRM_CONFIG = {
+  [ACTIONS.DELETE]: {
+    title: "Confirm Deletion",
+    message: "Are you sure you want to delete this game?",
+    confirmText: "Delete",
+  },
+
+  [ACTIONS.DELIVERY_CONFIRM]: {
+    title: "Confirm Delivery",
+    message: "Have you received this game?",
+    confirmText: "Confirm",
+  },
+
+  [ACTIONS.RETURN_START]: {
+    title: "Confirm Return",
+    message: "Are you sure you want return this game?",
+    confirmText: "Confirm",
+  },
+
+  [ACTIONS.RETURN_CONFIRM]: {
+    title: "Confirm Return",
+    message: "Has this game been returned?",
+    confirmText: "Confirm",
+  },
+};
+
+const PLATFORM_MODELS = {
+  Xbox: ["Xbox One", "Xbox Series S", "Xbox Series X"],
+  PlayStation: ["PS4", "PS4 Pro", "PS5"],
+  Nintendo: ["Switch", "Switch OLED", "Switch Lite"],
+};
+
+const calculateDueDate = (startDate, borrowDuration) => {
+  const start = startDate ? new Date(startDate) : new Date();
+
+  const due = new Date(start);
+  due.setDate(due.getDate() + Number(borrowDuration));
+
+  return due;
+};
+
+const isOverdue = (startDate, borrowDuration) => {
+  if (!startDate) return false;
+
+  const start = new Date(startDate);
+  const due = new Date(start);
+  due.setDate(due.getDate() + Number(borrowDuration));
+
+  return new Date() > due;
+};
+
+// ! ---------------- LENDER SIDE ----------------
+
 /*
-  ! Rental Status Logic (Renter Side)
+  ! Lender Status Logic (Owner Side)
+  * Determines state of a listed game
+  ? Used for lender's listing availability
+*/
+const getLenderStatus = (game) => {
+  const status = game.status?.toLowerCase();
+  const overdue = isOverdue(game.startDate, game.borrowDuration);
+
+  if (status === STATUS.PENDING) return STATUS.PENDING;
+  if (status === STATUS.DELIVERING) return STATUS.DELIVERING;
+  if (status === STATUS.RETURNED) return STATUS.RETURNED;
+  if (status === STATUS.RETURNING) return STATUS.RETURNING;
+
+  if (!game.rentedBy) return STATUS.AVAILABLE;
+
+  if (overdue) return STATUS.OVERDUE;
+
+  return STATUS.RENTED;
+};
+
+const getLenderActions = (game) => {
+  const status = getLenderStatus(game);
+
+  switch (status) {
+    case STATUS.AVAILABLE:
+      return ["edit", "delete"];
+
+    case STATUS.DELIVERING:
+      return ["chat"];
+
+    case STATUS.RENTED:
+      return ["chat"];
+
+    case STATUS.RETURNING:
+      return ["chat", "confirm_return"];
+
+    case STATUS.OVERDUE:
+      return ["chat", "report"];
+
+    default:
+      return [];
+  }
+};
+
+// ! ---------------- BORROWER SIDE ----------------
+
+/*
+  ! Borrow Status Logic (Renter Side)
   * Determines state of a rented game
   ? Used for UI status badges
 */
-const getRentalStatus = (game) => {
-  const today = new Date();
-  const due = new Date(game.dueDate);
+const getBorrowStatus = (game) => {
+  const status = game.status?.toLowerCase();
+  const overdue = isOverdue(game.startDate, game.borrowDuration);
 
-  if (game.status === "Out for Delivery") return "delivery";
-  if (today > due) return "overdue";
-  if (game.daysLeft <= 2) return "due";
+  if (status === STATUS.DELIVERING) return STATUS.DELIVERING;
+  if (status === STATUS.RETURNING) return STATUS.RETURNING;
+  if (status === STATUS.RETURNED) return STATUS.RETURNED;
 
-  return "rented";
+  if (overdue) return STATUS.OVERDUE;
+
+  return STATUS.RENTED;
 };
 
-/*
-  ! Listing Status Logic (Owner Side)
-  * Determines state of a listed game
-  ? Used for listing availability + rental state
-*/
-const getListingStatus = (game) => {
-  const today = new Date();
-  const due = new Date(game.dueDate);
+const getBorrowerActions = (game) => {
+  const status = getBorrowStatus(game);
 
-  if (game.status === "Pending") return "pending";
-  if (game.status === "Out for Delivery") return "delivery";
-  if (!game.rentedBy) return "available";
-  if (today > due) return "overdue";
-  if (game.daysLeft <= 2) return "due";
+  switch (status) {
+    case STATUS.DELIVERING:
+      return ["chat", "confirm_delivery"];
 
-  return "rented";
+    case STATUS.RETURNING:
+      return ["chat"];
+
+    case STATUS.RENTED:
+    case STATUS.OVERDUE:
+      return ["chat", "return"];
+
+    default:
+      return [];
+  }
+};
+
+// ! ---------------- COLUMNS CONFIG ----------------
+
+const COLS = {
+  text: (label, key) => ({ label, key }),
+  image: { label: "Image", key: "image", isImage: true },
+  platform: { label: "Platform", key: "platform", isIcon: true },
+  status: { label: "Status", key: "status", isStatus: true },
+  date: (label, key) => ({ label, key, isDate: true }),
+  actions: { label: "Actions", key: "actions", isActions: true },
 };
 
 export default function Dashboard() {
-  /*
-    ! State: Active Listings
-    * Games currently listed by the user
-  */
-  const [listedGames, setListedGames] = useState([
-    {
-      id: 1,
-      name: "Hogwarts Legacy",
-      platform: "Windows",
-      price: 120,
-      genre: "Adventure",
-      status: "Rented",
-      rentedBy: "PlayerFour",
-      daysLeft: 3,
-      rentedOn: "2026-03-18",
-      dueDate: "2026-03-21",
-      about: "Deluxe edition with bonus content.",
-      ownershipDuration: 200,
-      hasExpansions: "yes",
-      ageRating: "T",
-      deliveryMethod: "Drop-off",
-    },
-    {
-      id: 2,
-      name: "Mario Kart 8 Deluxe",
-      platform: "Nintendo",
-      price: 85,
-      genre: "Racing",
-      status: "Available",
-      rentedBy: null,
-      daysLeft: null,
-      rentedOn: null,
-      dueDate: null,
-      about: "Well-maintained cartridge, original box included.",
-      ownershipDuration: 320,
-      hasExpansions: "no",
-      ageRating: "E",
-      deliveryMethod: "Meet-Up",
-    },
-    {
-      id: 3,
-      name: "Zelda: Tears of the Kingdom",
-      platform: "Nintendo",
-      price: 100,
-      genre: "RPG",
-      status: "Rented",
-      rentedBy: "PlayerX",
-      daysLeft: 1,
-      rentedOn: "2026-04-08",
-      dueDate: "2026-04-11",
-      about: "Collector’s edition, includes map and extras.",
-      ownershipDuration: 150,
-      hasExpansions: "yes",
-      ageRating: "T",
-      deliveryMethod: "Pick-up",
-    },
-  ]);
+  // ! ---------------- UI STATES ----------------
 
-  /*
-    ! State: Pending Listings
-    * Games currently sent to the admin for approval
-  */
-  const [pendingListings, setPendingListings] = useState([
-    {
-      id: 101,
-      name: "Red Dead Redemption 2",
-      platform: "PlayStation",
-      price: 130,
-      genre: "Action",
-      status: "Pending",
-      about: "Excellent condition disc, original case included.",
-      ownershipDuration: 180,
-      hasExpansions: "no",
-      ageRating: "18+",
-      deliveryMethod: "Meet-Up",
-    },
-    {
-      id: 102,
-      name: "Cyberpunk 2077",
-      platform: "Xbox",
-      price: 90,
-      genre: "RPG",
-      status: "Pending",
-      about: "Updated version with DLC expansion.",
-      ownershipDuration: 90,
-      hasExpansions: "yes",
-      ageRating: "18+",
-      deliveryMethod: "Drop-off",
-    },
-    {
-      id: 103,
-      name: "Animal Crossing: New Horizons",
-      platform: "Nintendo",
-      price: 70,
-      genre: "Simulation",
-      status: "Pending",
-      about: "Lightly used cartridge in perfect condition.",
-      ownershipDuration: 60,
-      hasExpansions: "yes",
-      ageRating: "E",
-      deliveryMethod: "Pick-up",
-    },
-  ]);
-
-  /*
-    ! UI State Controls
-    * Handles modals (create/edit + delete)
-  */
+  const { user, logout } = useAuth();
+  const navigate = useNavigate();
   const [toast, setToast] = useState(null);
   const [showForm, setShowForm] = useState(false);
   const [editData, setEditData] = useState(null);
-  const [deleteListing, setDeleteListing] = useState(null);
-  const { user, logout } = useAuth();
-  const [activeTab, setActiveTab] = useState("rentals");
-  const navigate = useNavigate();
+  const [confirmAction, setConfirmAction] = useState(null);
+  const [activeTab, setActiveTab] = useState("borrowed_games");
+
+  /*
+    ! Modal State Grouping
+    * True if any modal is open
+  */
+  const isAnyModalOpen = showForm || !!confirmAction;
 
   const tabs = [
     {
-      key: "rentals",
+      key: "borrowed_games",
       icon: FaShoppingBasket,
-      label: "My Rentals",
+      label: "My Borrowed Games",
     },
     {
       key: "listings",
@@ -203,200 +223,6 @@ export default function Dashboard() {
       label: "My Listings",
     },
   ];
-
-  /*
-    ! Modal State Grouping
-    * True if any modal is open
-  */
-  const isAnyModalOpen = showForm || deleteListing;
-
-  /*
-    ! Rentals (Current)
-    * Games user is currently renting
-  */
-  const rentedGames = [
-    {
-      name: "Elden Ring",
-      platform: "PlayStation",
-      listedBy: "PlayerFive",
-      status: "Rented",
-      daysLeft: 1,
-      rentedOn: "2026-04-07",
-      dueDate: "2026-04-11",
-      price: 140,
-      genre: "RPG",
-      about: "Includes Shadow of the Erdtree DLC.",
-      ownershipDuration: 180,
-      hasExpansions: "yes",
-      ageRating: "18+",
-      deliveryMethod: "Meet-Up",
-    },
-    {
-      name: "Spider-Man Remastered",
-      platform: "PlayStation",
-      listedBy: "PlayerSix",
-      status: "Overdue",
-      daysLeft: -1,
-      rentedOn: "2026-04-01",
-      dueDate: "2026-04-09",
-      price: 130,
-      genre: "Action",
-      about: "Minor scratches but fully playable.",
-      ownershipDuration: 220,
-      hasExpansions: "no",
-      ageRating: "16+",
-      deliveryMethod: "Pick-up",
-    },
-    {
-      name: "Minecraft",
-      platform: "Windows",
-      listedBy: "PlayerSeven",
-      status: "Rented",
-      daysLeft: 6,
-      rentedOn: "2026-04-05",
-      dueDate: "2026-04-16",
-      price: 70,
-      genre: "Sandbox",
-      about: "Java + Bedrock edition included.",
-      ownershipDuration: 400,
-      hasExpansions: "no",
-      ageRating: "7+",
-      deliveryMethod: "Drop-off",
-    },
-  ];
-
-  /*
-    ! Rental History
-    * Past rentals completed by user
-  */
-  const rentHistory = [
-    {
-      name: "Breath of the Wild",
-      platform: "Nintendo",
-      listedBy: "PlayerThree",
-      rentedOn: "2026-03-20",
-      returnedOn: "2026-03-27",
-      price: 150,
-      genre: "Adventure",
-      about: "Complete edition in excellent condition.",
-      ownershipDuration: 500,
-      hasExpansions: "yes",
-      ageRating: "12+",
-      deliveryMethod: "Meet-Up",
-    },
-  ];
-
-  /*
-    ! Listing History
-    * Past listings owned by user
-  */
-
-  const listingHistory = [
-    {
-      name: "Hogwarts Legacy",
-      platform: "Windows",
-      rentedBy: "PlayerFour",
-      rentedOn: "2026-03-18",
-      returnedOn: "2026-03-21",
-      price: 120,
-      genre: "Adventure",
-      about: "No scratches, well maintained disc.",
-      ownershipDuration: 240,
-      hasExpansions: "yes",
-      ageRating: "16+",
-      deliveryMethod: "Meet-Up",
-    },
-  ];
-  /*
-    ! Create / Update Listing Handler
-    * Handles both new listing creation and edits
-  */
-  const handleSaveListing = (newListing) => {
-    if (editData) {
-      setListedGames((prev) => prev.filter((l) => l.id !== editData.id));
-
-      const updatedItem = {
-        ...editData,
-        name: newListing.name,
-        platform: newListing.platform,
-        price: Number(newListing.price),
-        genre: newListing.genre,
-        about: newListing.about,
-        ownershipDuration: newListing.ownershipDuration,
-        hasExpansions: newListing.hasExpansions,
-        ageRating: newListing.ageRating,
-        deliveryMethod: newListing.deliveryMethod,
-        status: "Pending",
-      };
-
-      setPendingListings((prev) => [updatedItem, ...prev]);
-
-      setToast({
-        type: "edited",
-        message: `${newListing.name} sent for re-approval!`,
-      });
-    } else {
-      const newItem = {
-        id: Date.now(),
-        name: newListing.name,
-        platform: newListing.platform,
-        rentedBy: null,
-        daysLeft: null,
-        rentedOn: null,
-        dueDate: null,
-        status: "Pending",
-        price: Number(newListing.price),
-        genre: newListing.genre,
-        about: newListing.about,
-        ownershipDuration: newListing.ownershipDuration,
-        hasExpansions: newListing.hasExpansions,
-        ageRating: newListing.ageRating,
-        deliveryMethod: newListing.deliveryMethod,
-      };
-
-      setPendingListings((prev) => [newItem, ...prev]);
-
-      setToast({
-        type: "added",
-        message: `"${newListing.name}" is pending admin approval!`,
-      });
-    }
-
-    setShowForm(false);
-    setEditData(null);
-  };
-
-  /*
-    ! Delete Listing Handler
-    * Opens confirmation modal
-  */
-  const handleDeleteListing = (name) => {
-    setDeleteListing(name);
-  };
-
-  /*
-    ! Confirm Delete Action
-    * Removes listing from state
-  */
-  const confirmDelete = () => {
-    setListedGames((prev) => prev.filter((l) => l.name !== deleteListing));
-
-    setToast({
-      type: "deleted",
-      message: `${deleteListing} was deleted successfully!`,
-    });
-
-    setDeleteListing(null);
-  };
-
-  /*
-    ! Edit Listing Handler
-    * Opens form pre-filled with data
-  */
-  const handleEditListing = (listing) => {
-    setEditData(listing);
-    setShowForm(true);
-  };
 
   useEffect(() => {
     if (!toast) return;
@@ -408,11 +234,493 @@ export default function Dashboard() {
     return () => clearTimeout(timer);
   }, [toast]);
 
+  // ! ---------------- LENDER DATABASE ----------------
+
+  /*
+    ! State: Pending Listings
+    * Games currently sent to the admin for approval
+  */
+  const [pendingListings, setPendingListings] = useState([
+    {
+      id: 101,
+      name: "Red Dead Redemption 2",
+      platform: "PlayStation",
+      consoleModel: "PS4",
+      price: 130,
+      genre: "Action",
+      tag: "Open World",
+      status: "Pending",
+      about: "Excellent condition disc, original case included.",
+      borrowDuration: 180,
+      hasExpansions: "no",
+      deliveryMethod: "Meet-up",
+      image: hogwarts,
+    },
+    {
+      id: 102,
+      name: "Cyberpunk 2077",
+      platform: "Xbox",
+      consoleModel: "Xbox One",
+      price: 90,
+      genre: "RPG",
+      tag: "Futuristic",
+      status: "Pending",
+      about: "Updated version with DLC expansion.",
+      borrowDuration: 90,
+      hasExpansions: "yes",
+      deliveryMethod: "Drop-off",
+      image: pokemon,
+    },
+    {
+      id: 103,
+      name: "Animal Crossing: New Horizons",
+      platform: "Nintendo",
+      consoleModel: "Switch",
+      price: 70,
+      genre: "Simulation",
+      tag: "Relaxing",
+      status: "Pending",
+      about: "Lightly used cartridge in perfect condition.",
+      borrowDuration: 60,
+      hasExpansions: "yes",
+      deliveryMethod: "Pick-up",
+      image: donkeyKong,
+    },
+  ]);
+
+  /*
+    ! State: Active Listings
+    * Games currently listed by the user
+  */
+  const [listedGames, setListedGames] = useState([
+    {
+      id: 3,
+      name: "Call of Duty MW3",
+      platform: "Xbox",
+      consoleModel: "Xbox Series X",
+      price: 110,
+      genre: "Shooter",
+      tag: "Competitive",
+      status: "rented",
+      rentedBy: "PlayerTwo",
+      startDate: "2026-04-10",
+      dueDate: "2026-04-15", // should now be overdue
+      about: "Disc in perfect condition.",
+      borrowDuration: 5,
+      hasExpansions: "no",
+      deliveryMethod: "Meet-up",
+      image: pokemon,
+    },
+
+    {
+      id: 4,
+      name: "Spider-Man 2",
+      platform: "PlayStation",
+      consoleModel: "PS5",
+      price: 150,
+      genre: "Action",
+      tag: "Story Rich",
+      status: "returning",
+      rentedBy: "PlayerThree",
+      startDate: "2026-04-12",
+      dueDate: "2026-04-20",
+      about: "Includes bonus content.",
+      borrowDuration: 8,
+      hasExpansions: "yes",
+      deliveryMethod: "Drop-off",
+      image: hogwarts,
+    },
+
+    {
+      id: 5,
+      name: "Forza Horizon 5",
+      platform: "Xbox",
+      consoleModel: "Xbox Series S",
+      price: 100,
+      genre: "Racing",
+      tag: "Open World",
+      status: "available",
+      rentedBy: null,
+      startDate: null,
+      dueDate: null,
+      about: "Like new condition.",
+      borrowDuration: 120,
+      hasExpansions: "yes",
+      deliveryMethod: "Pick-up",
+      image: donkeyKong,
+    },
+    {
+      id: 6,
+      name: "The Legend of Zelda: Tears of the Kingdom",
+      platform: "Nintendo",
+      consoleModel: "Switch OLED",
+      price: 160,
+      genre: "Adventure",
+      tag: "Open World",
+      status: "delivering",
+      rentedBy: "PlayerFour",
+      startDate: null,
+      dueDate: null,
+      about: "On its way to the borrower.",
+      borrowDuration: 7,
+      hasExpansions: "no",
+      deliveryMethod: "Drop-off",
+      image: zelda,
+    },
+    {
+      id: 7,
+      name: "Elden Ring",
+      platform: "PlayStation",
+      consoleModel: "PS5",
+      price: 140,
+      genre: "RPG",
+      tag: "Challenging",
+      status: "rented",
+      rentedBy: "PlayerFive",
+      startDate: "2026-04-14",
+      dueDate: "2026-04-24",
+      about: "Highly rated RPG, well maintained disc.",
+      borrowDuration: 10,
+      hasExpansions: "yes",
+      deliveryMethod: "Meet-up",
+      image: indianaJones,
+    },
+  ]);
+
+  /*
+    ! Listing History
+    * Past listings owned by user
+  */
+  const listingHistory = [
+    {
+      id: 1,
+      name: "Hogwarts Legacy",
+      platform: "Nintendo",
+      consoleModel: "Switch",
+      rentedBy: "PlayerFour",
+      startDate: "2026-03-18",
+      dueDate: "2026-03-21",
+      returnedOn: "2026-03-22",
+      price: 120,
+      genre: "Adventure",
+      tag: "Open World",
+      about: "No scratches, well maintained disc.",
+      borrowDuration: 240,
+      hasExpansions: "yes",
+      deliveryMethod: "Meet-up",
+      image: indianaJones,
+    },
+  ];
+
+  // ! ---------------- BORROWER DATABASE ----------------
+
+  /*
+    ! Borrowed Games (Current)
+    * Games user is currently renting
+  */
+  const [borrowedGames, setBorrowedGames] = useState([
+    {
+      id: 2,
+      name: "Elden Ring",
+      platform: "PlayStation",
+      consoleModel: "PS5",
+      listedBy: "PlayerSix",
+      status: "rented",
+      startDate: "2026-04-10",
+      dueDate: "2026-04-25",
+      price: 140,
+      genre: "RPG",
+      tag: "Challenging",
+      about: "Hardcore RPG experience.",
+      borrowDuration: 15,
+      hasExpansions: "yes",
+      deliveryMethod: "Meet-up",
+      image: indianaJones,
+    },
+
+    {
+      id: 3,
+      name: "Halo Infinite",
+      platform: "Xbox",
+      consoleModel: "Xbox Series X",
+      listedBy: "PlayerSeven",
+      status: "returning",
+      startDate: "2026-04-05",
+      dueDate: "2026-04-15",
+      price: 80,
+      genre: "Shooter",
+      tag: "Multiplayer",
+      about: "Includes multiplayer pass.",
+      borrowDuration: 10,
+      hasExpansions: "no",
+      deliveryMethod: "Drop-off",
+      image: pokemon,
+    },
+
+    {
+      id: 4,
+      name: "Zelda Tears of the Kingdom",
+      platform: "Nintendo",
+      consoleModel: "Switch OLED",
+      listedBy: "PlayerEight",
+      status: "delivering",
+      startDate: null,
+      dueDate: null,
+      price: 160,
+      genre: "Adventure",
+      tag: "Open World",
+      about: "Brand new sealed.",
+      borrowDuration: 7,
+      hasExpansions: "no",
+      deliveryMethod: "Pick-up",
+      image: zelda,
+    },
+
+    {
+      id: 5,
+      name: "NBA 2K24",
+      platform: "PlayStation",
+      consoleModel: "PS4",
+      listedBy: "PlayerNine",
+      status: "rented",
+      startDate: "2026-04-01",
+      dueDate: "2026-04-05", // overdue
+      price: 75,
+      genre: "Sports",
+      tag: "Competitive",
+      about: "Used but good condition.",
+      borrowDuration: 4,
+      hasExpansions: "no",
+      deliveryMethod: "Meet-up",
+      image: donkeyKong,
+    },
+  ]);
+  /*
+    ! Borrowed Games History
+    * Past borrowed games completed by user
+  */
+  const borrowedGamesHistory = [
+    {
+      id: 1,
+      name: "Breath of the Wild",
+      platform: "Nintendo",
+      consoleModel: "Switch OLED",
+      listedBy: "PlayerThree",
+      startDate: "2026-03-20",
+      dueDate: "2026-03-27",
+      returnedOn: "2026-03-28",
+      price: 150,
+      genre: "Adventure",
+      tag: "Open World",
+      about: "Complete edition in excellent condition.",
+      borrowDuration: 500,
+      hasExpansions: "yes",
+      deliveryMethod: "Meet-up",
+      image: zelda,
+    },
+  ];
+
+  // ! ---------------- LENDER HANDLERS ----------------
+
+  /*
+    ! Create / Update Listing
+    * Handles both new listing creation and edits
+  */
+  const handleSaveListing = (newListing) => {
+    if (editData) {
+      setListedGames((prev) => prev.filter((l) => l.id !== editData.id));
+
+      const updatedItem = {
+        ...editData,
+        name: newListing.name,
+        platform: newListing.platform,
+        consoleModel: newListing.consoleModel,
+        price: Number(newListing.price),
+        genre: newListing.genre,
+        about: newListing.about,
+        borrowDuration: newListing.borrowDuration,
+        hasExpansions: newListing.hasExpansions,
+        deliveryMethod: newListing.deliveryMethod,
+        image: newListing.image,
+        status: "Pending",
+      };
+
+      setPendingListings((prev) => [updatedItem, ...prev]);
+
+      setToast({
+        color: "blue",
+        icon: "edit",
+        title: newListing.name,
+        message: "sent for re-approval!",
+      });
+    } else {
+      const newItem = {
+        id: Date.now(),
+        name: newListing.name,
+        platform: newListing.platform,
+        consoleModel: newListing.consoleModel,
+        rentedBy: null,
+        daysLeft: null,
+        startDate: null,
+        dueDate: null,
+        status: "Pending",
+        price: Number(newListing.price),
+        genre: newListing.genre,
+        about: newListing.about,
+        borrowDuration: newListing.borrowDuration,
+        hasExpansions: newListing.hasExpansions,
+        deliveryMethod: newListing.deliveryMethod,
+        image: newListing.image,
+      };
+
+      setPendingListings((prev) => [newItem, ...prev]);
+
+      setToast({
+        color: "green",
+        icon: "plus",
+        title: newListing.name,
+        message: "is pending admin approval!",
+      });
+    }
+
+    setShowForm(false);
+    setEditData(null);
+  };
+
+  /*
+    ! Edit Listing 
+    * Opens form pre-filled with data
+  */
+  const handleEditListing = (listing) => {
+    setEditData(listing);
+    setShowForm(true);
+  };
+
+  /*
+  ! Confirm Returned
+  * Confirms that a rented game has been returned to the lender
+*/
+  const handleConfirmReturned = () => {
+    const game = confirmAction?.game;
+
+    if (!game) return;
+
+    setListedGames((prev) =>
+      prev.map((g) =>
+        g.id === game.id
+          ? {
+              ...g,
+              status: "returned",
+            }
+          : g,
+      ),
+    );
+
+    setToast({
+      color: "blue",
+      icon: "check",
+      title: game?.name || "Return Confirmed",
+      message: "Game marked as returned.",
+    });
+
+    setConfirmAction(null);
+  };
+
+  /*
+  ! Confirm Delete 
+  * Permanently removes a game from the listed games state
+  ? Triggered from ConfirmModal when user confirms deletion
+*/
+  const handleConfirmDelete = () => {
+    const game = confirmAction?.game;
+
+    if (!game) return;
+
+    setListedGames((prev) => prev.filter((l) => l.id !== game.id));
+
+    setToast({
+      color: "red",
+      icon: "error",
+      title: game?.name,
+      message: "was deleted successfully!",
+    });
+
+    setConfirmAction(null);
+  };
+
+  // ! ---------------- BORROWER HANDLERS ----------------
+
+  /*
+  ! Confirm Returning 
+  * Marks a game as being returned by the borrower
+*/
+  const handleConfirmReturning = () => {
+    const game = confirmAction?.game;
+
+    if (!game) return;
+
+    setBorrowedGames((prev) =>
+      prev.map((g) =>
+        g.id === game.id
+          ? {
+              ...g,
+              status: "returning",
+            }
+          : g,
+      ),
+    );
+
+    setToast({
+      color: "blue",
+      icon: "truck",
+      title: game?.name,
+      message: "will be returned.",
+    });
+
+    setConfirmAction(null);
+  };
+
+  /*
+  ! Confirm Delivery 
+  * Marks a game delivery as confirmed by the borrower
+*/
+  const handleConfirmDelivery = () => {
+    const game = confirmAction?.game;
+
+    if (!game) return;
+
+    const today = new Date();
+
+    const startDate = today.toISOString();
+    const dueDate = calculateDueDate(today, game.borrowDuration).toISOString();
+
+    setBorrowedGames((prev) =>
+      prev.map((g) =>
+        g.id === game.id
+          ? {
+              ...g,
+              status: "rented",
+              startDate,
+              dueDate,
+            }
+          : g,
+      ),
+    );
+
+    setToast({
+      color: "green",
+      icon: "check",
+      title: game?.name,
+      message: "is now marked as rented.",
+    });
+
+    setConfirmAction(null);
+  };
+
   /*
   ! Listing Form Fields
-  * Reusable configuration for DashboardForm
-  ? Used for create + edit listing
-*/
+  * Used for create + edit listing
+  */
   const listingFields = [
     {
       name: "name",
@@ -423,11 +731,49 @@ export default function Dashboard() {
     },
 
     {
+      name: "image",
+      label: "Image File",
+      type: "file",
+      placeholder: "Image path or URL",
+      isValid: (data) => !!data.image,
+    },
+
+    {
       name: "genre",
       label: "Genre",
-      type: "text",
-      placeholder: "Enter game genre",
-      isValid: (data) => data.name?.trim().length > 2,
+      type: "radio",
+      inputClass: "radio-ctr",
+      options: [
+        "Action",
+        "Adventure",
+        "RPG",
+        "Shooter",
+        "Sports",
+        "Racing",
+        "Simulation",
+        "Horror",
+        "Puzzle",
+        "Sandbox",
+      ],
+      isValid: (data) => !!data.genre,
+    },
+
+    {
+      name: "tag",
+      label: "Tag",
+      type: "radio",
+      inputClass: "radio-ctr",
+      options: [
+        "Single Player",
+        "Multiplayer",
+        "Co-op",
+        "Competitive",
+        "Open World",
+        "Story Rich",
+        "Casual",
+        "Family Friendly",
+      ],
+      isValid: (data) => !!data.tag,
     },
 
     {
@@ -439,12 +785,12 @@ export default function Dashboard() {
     },
 
     {
-      name: "ownershipDuration",
-      label: "Days Owned",
+      name: "borrowDuration",
+      label: "Borrow Duration (Days)",
       type: "number",
-      placeholder: "e.g. 120",
+      placeholder: "e.g. 10",
       isValid: (data) =>
-        Number(data.ownershipDuration) > 0 && !isNaN(data.ownershipDuration),
+        Number(data.borrowDuration) > 0 && !isNaN(data.borrowDuration),
     },
 
     {
@@ -452,8 +798,17 @@ export default function Dashboard() {
       label: "Platform",
       type: "radio",
       inputClass: "radio-ctr",
-      options: ["Windows", "Xbox", "PlayStation", "Nintendo", "Mac"],
+      options: ["Xbox", "PlayStation", "Nintendo"],
       isValid: (data) => data.platform?.trim() !== "",
+    },
+
+    {
+      name: "consoleModel",
+      label: "Console Model",
+      type: "radio",
+      inputClass: "radio-ctr",
+      options: (data) => PLATFORM_MODELS[data.platform] || [],
+      isValid: (data) => !!data.consoleModel,
     },
 
     {
@@ -467,16 +822,8 @@ export default function Dashboard() {
     },
 
     {
-      name: "ageRating",
-      label: "Age Rating",
-      type: "text",
-      placeholder: "e.g. E, T, M, 18+",
-      isValid: (data) => data.ageRating?.trim().length > 0,
-    },
-
-    {
       name: "price",
-      label: "Price (AED)",
+      label: "Original Price (AED)",
       type: "number",
       placeholder: "Enter price",
       isValid: (data) => Number(data.price) > 0,
@@ -487,7 +834,7 @@ export default function Dashboard() {
       label: "Delivery Method",
       type: "radio",
       inputClass: "radio-ctr",
-      options: ["Pick-up", "Meet-Up", "Drop-off"],
+      options: ["Pick-up", "Meet-up", "Drop-off"],
       isValid: (data) => !!data.deliveryMethod,
     },
   ];
@@ -496,106 +843,121 @@ export default function Dashboard() {
     ! Dashboard Table Configuration
     * Controls how tables are rendered dynamically
   */
-  const commonTables = [
+  const USER_TABLES = [
     {
-      sectionTitle: "My Rentals",
+      sectionTitle: "My Borrowed Games",
       tables: [
         {
-          title: "Current Rentals",
-          data: rentedGames,
+          title: "Active Borrowed Games",
+          data: borrowedGames,
+          statusFn: getBorrowStatus,
           columns: [
-            { label: "Game", key: "name" },
-            { label: "Platform", key: "platform", isIcon: true },
-            { label: "About", key: "about" },
-            { label: "Age Rating", key: "ageRating" },
-            { label: "Expansions", key: "hasExpansions" },
-            { label: "Delivery", key: "deliveryMethod" },
-            { label: "Price (AED)", key: "price" },
-            { label: "Genre", key: "genre" },
-            { label: "Listed By", key: "listedBy" },
-            { label: "Status", key: "status", isStatus: true },
-            { label: "Days Left", key: "daysLeft" },
-            { label: "Rented On", key: "rentedOn", isDate: true },
-            { label: "Due Date", key: "dueDate", isDate: true },
-            { label: "Actions", key: "actions", isActions: true },
+            COLS.text("Listed By", "listedBy"),
+            COLS.text("Game", "name"),
+            COLS.platform,
+            COLS.text("Console Model", "consoleModel"),
+            COLS.text("Price (AED)", "price"),
+            COLS.image,
+            COLS.text("About", "about"),
+            COLS.text("Genre", "genre"),
+            COLS.text("Tag", "tag"),
+            COLS.text("Expansions", "hasExpansions"),
+            COLS.text("Delivery Method", "deliveryMethod"),
+            COLS.status,
+            COLS.text("Borrow Duration (Days)", "borrowDuration"),
+            COLS.date("Start Date", "startDate"),
+            COLS.date("Due Date", "dueDate"),
+            COLS.actions,
           ],
-          statusFn: getRentalStatus,
         },
         {
-          title: "Renting History",
-          data: rentHistory,
+          title: "Borrowed Games History",
+          data: borrowedGamesHistory,
           columns: [
-            { label: "Game", key: "name" },
-            { label: "Platform", key: "platform", isIcon: true },
-            { label: "Price (AED)", key: "price" },
-            { label: "Genre", key: "genre" },
-            { label: "About", key: "about" },
-            { label: "Age Rating", key: "ageRating" },
-            { label: "Expansions", key: "hasExpansions" },
-            { label: "Delivery", key: "deliveryMethod" },
-            { label: "Listed By", key: "listedBy" },
-            { label: "Rented On", key: "rentedOn", isDate: true },
-            { label: "Returned On", key: "returnedOn", isDate: true },
+            COLS.text("Listed By", "listedBy"),
+            COLS.text("Game", "name"),
+            COLS.platform,
+            COLS.text("Console Model", "consoleModel"),
+            COLS.text("Price (AED)", "price"),
+            COLS.image,
+            COLS.text("About", "about"),
+            COLS.text("Genre", "genre"),
+            COLS.text("Tag", "tag"),
+            COLS.text("Expansions", "hasExpansions"),
+            COLS.text("Delivery Method", "deliveryMethod"),
+            COLS.text("Borrow Duration (Days)", "borrowDuration"),
+            COLS.date("Start Date", "startDate"),
+            COLS.date("Due Date", "dueDate"),
+            COLS.date("Returned On", "returnedOn"),
           ],
         },
       ],
     },
+
     {
       sectionTitle: "My Listings",
       tables: [
         {
           title: "Pending Listings",
           data: pendingListings,
+          statusFn: getLenderStatus,
           columns: [
-            { label: "Game", key: "name" },
-            { label: "Platform", key: "platform", isIcon: true },
-            { label: "About", key: "about" },
-            { label: "Age Rating", key: "ageRating" },
-            { label: "Expansions", key: "hasExpansions" },
-            { label: "Delivery", key: "deliveryMethod" },
-            { label: "Price (AED)", key: "price" },
-            { label: "Genre", key: "genre" },
-            { label: "Status", key: "status", isStatus: true },
+            COLS.text("Game", "name"),
+            COLS.platform,
+            COLS.text("Console Model", "consoleModel"),
+            COLS.text("Price (AED)", "price"),
+            COLS.image,
+            COLS.text("About", "about"),
+            COLS.text("Genre", "genre"),
+            COLS.text("Tag", "tag"),
+            COLS.text("Expansions", "hasExpansions"),
+            COLS.text("Delivery Method", "deliveryMethod"),
+            COLS.text("Borrow Duration (Days)", "borrowDuration"),
+            COLS.status,
           ],
-          statusFn: getListingStatus,
         },
         {
           title: "Active Listings",
           data: listedGames,
+          statusFn: getLenderStatus,
           columns: [
-            { label: "Game", key: "name" },
-            { label: "Platform", key: "platform", isIcon: true },
-            { label: "Price (AED)", key: "price" },
-            { label: "Genre", key: "genre" },
-            { label: "Rented By", key: "rentedBy" },
-            { label: "About", key: "about" },
-            { label: "Age Rating", key: "ageRating" },
-            { label: "Expansions", key: "hasExpansions" },
-            { label: "Delivery", key: "deliveryMethod" },
-            { label: "Status", key: "status", isStatus: true },
-            { label: "Days Left", key: "daysLeft" },
-            { label: "Rented On", key: "rentedOn", isDate: true },
-            { label: "Due Date", key: "dueDate", isDate: true },
-            { label: "Actions", key: "actions", isActions: true },
+            COLS.text("Rented By", "rentedBy"),
+            COLS.text("Game", "name"),
+            COLS.platform,
+            COLS.text("Console Model", "consoleModel"),
+            COLS.text("Price (AED)", "price"),
+            COLS.image,
+            COLS.text("About", "about"),
+            COLS.text("Genre", "genre"),
+            COLS.text("Tag", "tag"),
+            COLS.text("Expansions", "hasExpansions"),
+            COLS.text("Delivery Method", "deliveryMethod"),
+            COLS.status,
+            COLS.text("Borrow Duration (Days)", "borrowDuration"),
+            COLS.date("Start Date", "startDate"),
+            COLS.date("Due Date", "dueDate"),
+            COLS.actions,
           ],
-          statusFn: getListingStatus,
         },
         {
           title: "Listing History",
           data: listingHistory,
           columns: [
-            { label: "Game", key: "name" },
-            { label: "Platform", key: "platform", isIcon: true },
-            { label: "Price (AED)", key: "price" },
-            { label: "Genre", key: "genre" },
-            { label: "About", key: "about" },
-            { label: "Age Rating", key: "ageRating" },
-            { label: "Expansions", key: "hasExpansions" },
-            { label: "Delivery", key: "deliveryMethod" },
-
-            { label: "Rented By", key: "rentedBy" },
-            { label: "Rented On", key: "rentedOn", isDate: true },
-            { label: "Returned On", key: "returnedOn", isDate: true },
+            COLS.text("Rented By", "rentedBy"),
+            COLS.text("Game", "name"),
+            COLS.platform,
+            COLS.text("Console Model", "consoleModel"),
+            COLS.text("Price (AED)", "price"),
+            COLS.image,
+            COLS.text("About", "about"),
+            COLS.text("Genre", "genre"),
+            COLS.text("Tag", "tag"),
+            COLS.text("Expansions", "hasExpansions"),
+            COLS.text("Delivery Method", "deliveryMethod"),
+            COLS.text("Borrow Duration (Days)", "borrowDuration"),
+            COLS.date("Start Date", "startDate"),
+            COLS.date("Due Date", "dueDate"),
+            COLS.date("Returned On", "returnedOn"),
           ],
         },
       ],
@@ -615,216 +977,237 @@ export default function Dashboard() {
         }}
       />
       <main className="dashboard-main">
-        {commonTables
-          .filter((section) =>
-            activeTab === "rentals"
-              ? section.sectionTitle === "My Rentals"
-              : section.sectionTitle === "My Listings",
-          )
-          .map((section, i) => (
-            <section className="dashboard-content" key={i}>
-              <div className="title">
-                <h2>{section.sectionTitle}</h2>
-              </div>
+        {USER_TABLES.filter((section) =>
+          activeTab === "borrowed_games"
+            ? section.sectionTitle === "My Borrowed Games"
+            : section.sectionTitle === "My Listings",
+        ).map((section, i) => (
+          <section className="dashboard-content" key={i}>
+            <div className="title">
+              <h2>{section.sectionTitle}</h2>
+            </div>
 
-              {section.tables.map((table, j) => (
-                <div key={j}>
-                  <div className="table-header">
-                    <h4>{table.title}</h4>
+            {section.tables.map((table, j) => (
+              <div key={j}>
+                <div className="table-header">
+                  <h4>{table.title}</h4>
 
-                    {table.title === "Current Rentals" && (
-                      <Link to="/games" className="table-action-link">
-                        Browse More Games
-                      </Link>
-                    )}
+                  {table.title === "Active Borrowed Games" && (
+                    <Link to="/games" className="table-action-link">
+                      Browse More Games
+                    </Link>
+                  )}
 
-                    {table.title === "Active Listings" && (
-                      <button
-                        className="table-action-link"
-                        onClick={() => setShowForm(true)}
-                      >
-                        Create Listing
-                      </button>
-                    )}
-                  </div>
+                  {table.title === "Active Listings" && (
+                    <button
+                      className="table-action-link"
+                      onClick={() => setShowForm(true)}
+                    >
+                      Create Listing
+                    </button>
+                  )}
+                </div>
 
-                  <div className="table-wrapper">
-                    <div className="dashboard-table" key={j}>
-                      <ul className="table-head">
-                        <li>
-                          {table.columns.map((col, k) => (
-                            <span key={k}>{col.label}</span>
-                          ))}
-                        </li>
-                      </ul>
-                      <ul className="table-content">
-                        {table.data.map((row, rowIndex) => {
-                          const statusClass = table.statusFn
-                            ? table.statusFn(row)
-                            : null;
+                <div className="table-wrapper">
+                  <div className="dashboard-table" key={j}>
+                    <ul className="table-head">
+                      <li>
+                        {table.columns.map((col, k) => (
+                          <span key={k}>{col.label}</span>
+                        ))}
+                      </li>
+                    </ul>
+                    <ul className="table-content">
+                      {table.data.map((row, rowIndex) => {
+                        const statusClass = table.statusFn
+                          ? table.statusFn(row)
+                          : null;
 
-                          return (
-                            <li key={rowIndex}>
-                              {table.columns.map((col, colIndex) => {
-                                if (col.isIcon)
-                                  return (
-                                    <GetPlatformIcon
-                                      platform={row[col.key]}
-                                      key={colIndex}
+                        return (
+                          <li key={rowIndex}>
+                            {table.columns.map((col, colIndex) => {
+                              {
+                                // ! ICONS
+                              }
+                              if (col.isIcon)
+                                return (
+                                  <GetPlatformIcon
+                                    platform={row[col.key]}
+                                    key={colIndex}
+                                  />
+                                );
+                              {
+                                // ! IMAGES
+                              }
+                              if (col.isImage)
+                                return (
+                                  <span key={colIndex}>
+                                    <img
+                                      src={row[col.key]}
+                                      alt={row.name}
+                                      className="table-image"
                                     />
-                                  );
+                                  </span>
+                                );
 
-                                if (col.isStatus)
+                              {
+                                // ! STATUS
+                              }
+                              if (col.isStatus) {
+                                const statusLabels = {
+                                  available: "Available",
+                                  pending: "Pending",
+                                  delivering: "Delivering",
+                                  rented: "Rented",
+                                  returning: "Returning",
+                                  returned: "Returned",
+                                  overdue: "Overdue",
+                                };
+
+                                return (
+                                  <span
+                                    key={colIndex}
+                                    className={`status ${statusClass}`}
+                                  >
+                                    {statusLabels[statusClass] || "—"}
+                                  </span>
+                                );
+                              }
+
+                              {
+                                // ! DATES
+                              }
+                              if (col.isDate) {
+                                return (
+                                  <span key={colIndex}>
+                                    {FormatDate(row[col.key])}
+                                  </span>
+                                );
+                              }
+
+                              {
+                                // ! ACTIONS
+                              }
+                              if (col.isActions) {
+                                const actions =
+                                  table.title === "Active Listings"
+                                    ? getLenderActions(row)
+                                    : getBorrowerActions(row);
+                                if (!actions.length) {
                                   return (
                                     <span
                                       key={colIndex}
-                                      className={`status ${statusClass}`}
+                                      className="actions none"
                                     >
-                                      {statusClass === "delivery"
-                                        ? "Out for Delivery"
-                                        : statusClass === "overdue"
-                                          ? "Overdue"
-                                          : statusClass === "due"
-                                            ? "Due Soon"
-                                            : statusClass === "available"
-                                              ? "Available"
-                                              : statusClass === "rented"
-                                                ? "Rented"
-                                                : statusClass === "pending"
-                                                  ? "Pending"
-                                                  : "Active"}
+                                      —
                                     </span>
                                   );
-
-                                if (col.isDate)
-                                  return (
-                                    <span key={colIndex}>
-                                      {formatDate(row[col.key])}
-                                    </span>
-                                  );
-
-                                if (col.isActions) {
-                                  if (table.title === "Current Rentals") {
-                                    return (
-                                      <span key={colIndex} className="actions">
-                                        {/* Chat always */}
-                                        <button
-                                          className="icon-btn chat"
-                                          onClick={() =>
-                                            console.log(
-                                              "Chat with",
-                                              row.listedBy,
-                                            )
-                                          }
-                                        >
-                                          Chat
-                                          <MdChatBubble />
-                                        </button>
-
-                                        {/* Return only when allowed */}
-                                        {["rented", "due", "overdue"].includes(
-                                          statusClass,
-                                        ) && (
-                                          <button
-                                            className="icon-btn return"
-                                            onClick={() =>
-                                              console.log("Return", row.name)
-                                            }
-                                          >
-                                            Return
-                                            <FaTruck />
-                                          </button>
-                                        )}
-                                      </span>
-                                    );
-                                  }
-
-                                  if (table.title === "Active Listings") {
-                                    return (
-                                      <span key={colIndex} className="actions">
-                                        {statusClass === "available" ? (
-                                          <>
-                                            <button
-                                              onClick={() =>
-                                                handleEditListing(row)
-                                              }
-                                              className="icon-btn edit"
-                                            >
-                                              Edit
-                                              <FaEdit />
-                                            </button>
-
-                                            <button
-                                              onClick={() =>
-                                                handleDeleteListing(row.name)
-                                              }
-                                              className="icon-btn delete"
-                                            >
-                                              Delete
-                                              <FaTrash />
-                                            </button>
-                                          </>
-                                        ) : (
-                                          <>
-                                            {/* Chat always when not available */}
-                                            <button
-                                              className="icon-btn chat"
-                                              onClick={() =>
-                                                console.log(
-                                                  "Chat with",
-                                                  row.rentedBy,
-                                                )
-                                              }
-                                            >
-                                              Chat
-                                              <MdChatBubble />
-                                            </button>
-
-                                            {/* Report only if overdue */}
-                                            {statusClass === "overdue" && (
-                                              <button
-                                                className="icon-btn report"
-                                                onClick={() =>
-                                                  console.log(
-                                                    "Report",
-                                                    row.name,
-                                                  )
-                                                }
-                                              >
-                                                Report
-                                                <MdReport />
-                                              </button>
-                                            )}
-                                          </>
-                                        )}
-                                      </span>
-                                    );
-                                  }
                                 }
-
                                 return (
-                                  <span key={colIndex}>
-                                    {row[col.key] || "—"}
+                                  <span key={colIndex} className="actions">
+                                    {actions.includes("chat") && (
+                                      <button className="icon-btn chat">
+                                        <MdChatBubble /> Chat
+                                      </button>
+                                    )}
+
+                                    {actions.includes("report") && (
+                                      <button className="icon-btn report">
+                                        <MdReport /> Report
+                                      </button>
+                                    )}
+
+                                    {actions.includes("edit") && (
+                                      <button
+                                        className="icon-btn edit"
+                                        onClick={() => handleEditListing(row)}
+                                      >
+                                        <FaEdit /> Edit
+                                      </button>
+                                    )}
+
+                                    {actions.includes("delete") && (
+                                      <button
+                                        className="icon-btn delete"
+                                        onClick={() =>
+                                          setConfirmAction({
+                                            type: ACTIONS.DELETE,
+                                            game: row,
+                                          })
+                                        }
+                                      >
+                                        <FaTrash /> Delete
+                                      </button>
+                                    )}
+
+                                    {actions.includes("return") && (
+                                      <button
+                                        className="icon-btn return"
+                                        onClick={() =>
+                                          setConfirmAction({
+                                            type: ACTIONS.RETURN_START,
+                                            game: row,
+                                          })
+                                        }
+                                      >
+                                        <FaTruck /> Return
+                                      </button>
+                                    )}
+
+                                    {actions.includes("confirm_delivery") && (
+                                      <button
+                                        className="icon-btn confirm"
+                                        onClick={() =>
+                                          setConfirmAction({
+                                            type: ACTIONS.DELIVERY_CONFIRM,
+                                            game: row,
+                                          })
+                                        }
+                                      >
+                                        <FaCheck /> Confirm
+                                      </button>
+                                    )}
+
+                                    {actions.includes("confirm_return") && (
+                                      <button
+                                        className="icon-btn confirm"
+                                        onClick={() =>
+                                          setConfirmAction({
+                                            type: ACTIONS.RETURN_CONFIRM,
+                                            game: row,
+                                          })
+                                        }
+                                      >
+                                        <FaCheck /> Confirm
+                                      </button>
+                                    )}
                                   </span>
                                 );
-                              })}
-                            </li>
-                          );
-                        })}
-                      </ul>
-                    </div>
+                              }
+
+                              return (
+                                <span key={colIndex}>
+                                  {row[col.key] || "—"}
+                                </span>
+                              );
+                            })}
+                          </li>
+                        );
+                      })}
+                    </ul>
                   </div>
                 </div>
-              ))}
-            </section>
-          ))}
+              </div>
+            ))}
+          </section>
+        ))}
 
         <Overlay
           isModalOpen={isAnyModalOpen}
           onClick={() => {
             setShowForm(false);
             setEditData(null);
-            setDeleteListing(null);
+            setConfirmAction(null);
           }}
         />
 
@@ -842,15 +1225,50 @@ export default function Dashboard() {
           />
         )}
 
-        {deleteListing && (
-          <DeleteModal
-            name={deleteListing}
-            onCancel={() => setDeleteListing(null)}
-            onConfirm={confirmDelete}
-          />
-        )}
+        {confirmAction &&
+          (() => {
+            const config = CONFIRM_CONFIG[confirmAction.type];
+
+            return (
+              <ConfirmModal
+                title={config.title}
+                message={config.message}
+                itemName={confirmAction.game?.name}
+                confirmText={config.confirmText}
+                cancelText="Cancel"
+                onCancel={() => setConfirmAction(null)}
+                onConfirm={() => {
+                  switch (confirmAction.type) {
+                    case ACTIONS.DELETE:
+                      handleConfirmDelete(confirmAction.game);
+                      break;
+
+                    case ACTIONS.DELIVERY_CONFIRM:
+                      handleConfirmDelivery(confirmAction.game);
+                      break;
+
+                    case ACTIONS.RETURN_START:
+                      handleConfirmReturning(confirmAction.game);
+                      break;
+
+                    case ACTIONS.RETURN_CONFIRM:
+                      handleConfirmReturned(confirmAction.game);
+                      break;
+                  }
+
+                  setConfirmAction(null);
+                }}
+              />
+            );
+          })()}
       </main>
-      <Toast type={toast?.type} message={toast?.message} isVisible={!!toast} />
+      <Toast
+        color={toast?.color}
+        icon={toast?.icon}
+        title={toast?.title}
+        message={toast?.message}
+        isVisible={!!toast}
+      />
     </>
   );
 }

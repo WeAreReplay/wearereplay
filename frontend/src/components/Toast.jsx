@@ -7,46 +7,54 @@ import {
   FaTruck,
   FaCheck,
 } from "react-icons/fa";
-import { MdAccessTime } from "react-icons/md";
+import { MdAccessTime, MdInfo } from "react-icons/md";
 import { FaXmark } from "react-icons/fa6";
 
-/*
-  ! Toast Icons Map
-  --------------------------------------------------
-  ? Maps toast types to corresponding icons
+const iconMap = {
+  plus: FaPlus,
+  edit: FaEdit,
+  check: FaCheck,
+  box: FaBoxOpen,
+  truck: FaTruck,
+  trash: FaTrash,
+  time: MdAccessTime,
+  error: FaXmark,
+  info: MdInfo,
+};
 
-  * Types:
-  * - added: item created
-  * - edited: item updated
-  * - deleted: item removed
-  * - rented: item rented/active
-  * - due: item nearing deadline
-  * - overdue: item past deadline
-  * - delivery: item out for delivery
+/*
+  ! Color Map
 */
-const icons = {
-  added: <FaPlus />,
-  edited: <FaEdit />,
-  deleted: <FaTrash />,
-  rented: <FaBoxOpen />,
-  due: <MdAccessTime />,
-  overdue: <MdAccessTime />,
-  delivery: <FaTruck />,
-  correct: <FaCheck />,
-  wrong: <FaXmark />,
+const colorMap = {
+  green: "green",
+  blue: "blue",
+  red: "red",
+  black: "black",
+  yellow: "yellow",
 };
 
 /*
   ! Toast Component
   --------------------------------------------------
-  ? Animated notification popup component
+  ? Displays animated notification messages.
 
   * Props:
-  * - type (string): toast type (added, edited, deleted, etc.)
-  * - message (string): text message to display
-  * - isVisible (boolean): controls visibility of toast
+  * - color: visual theme (green, blue, red, etc.)
+  * - icon: icon key from iconMap
+  * - title: optional heading text
+  * - message: main toast message
+  * - isVisible: controls whether toast is shown
 */
-const Toast = ({ type, message, isVisible }) => {
+const Toast = ({
+  color = "blue",
+  icon = "info",
+  title,
+  message,
+  isVisible,
+}) => {
+  const Icon = iconMap[icon] || iconMap.info;
+  const colorClass = colorMap[color] || colorMap.blue;
+
   return (
     <AnimatePresence>
       {
@@ -54,21 +62,24 @@ const Toast = ({ type, message, isVisible }) => {
       }
       {isVisible && (
         <motion.div
-          className={`toast ${type}`}
+          className={`toast ${colorClass}`}
           initial={{ opacity: 0, scale: 0.85 }}
           animate={{ opacity: 1, scale: 1 }}
           exit={{ opacity: 0, scale: 0.85 }}
           transition={{ duration: 0.25, ease: "easeInOut" }}
         >
           {
-            // * Render icon based on toast type
+            // * Toast Icon
           }
-          {icons[type]}
+          {<Icon className="icon" />}
 
           {
             // * Toast Message
           }
-          <p>{message}</p>
+          <div className="toast-content">
+            <span>{title}</span>
+            <span>{message}</span>
+          </div>
         </motion.div>
       )}
     </AnimatePresence>
