@@ -60,15 +60,15 @@ export default function Auth({ mode }) {
     setToast(null);
   }, [isLogin]);
 
-  useEffect(() => {
-    if (!toast) return;
+  // useEffect(() => {
+  //   if (!toast) return;
 
-    const timer = setTimeout(() => {
-      setToast(null);
-    }, 3000);
+  //   const timer = setTimeout(() => {
+  //     setToast(null);
+  //   }, 3000);
 
-    return () => clearTimeout(timer);
-  }, [toast]);
+  //   return () => clearTimeout(timer);
+  // }, [toast]);
 
   // * Handle input changes dynamically
   const handleChange = (e) => {
@@ -185,7 +185,8 @@ export default function Auth({ mode }) {
         login(data.data.user, data.data.token, data.data.role);
 
         setToast({
-          type: "correct",
+          color: "green",
+          icon: "check",
           message:
             data.message ||
             (isLogin ? "Login successful!" : "Registration successful!"),
@@ -205,7 +206,8 @@ export default function Auth({ mode }) {
       console.error("Auth error:", err);
 
       setToast({
-        type: "wrong",
+        color: "red",
+        icon: "error",
         message: err.message || "An error occurred. Please try again.",
       });
     } finally {
@@ -245,7 +247,9 @@ export default function Auth({ mode }) {
           </ul>
 
           <Toast
-            type={toast?.type}
+            color={toast?.color}
+            icon={toast?.icon}
+            title={toast?.title}
             message={toast?.message}
             isVisible={!!toast}
           />
