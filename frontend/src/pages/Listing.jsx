@@ -3,51 +3,67 @@ import GetPlatformIcon from "../components/GetPlatformIcon";
 import { MdChatBubble } from "react-icons/md";
 import { FaMoneyBill } from "react-icons/fa";
 import { useParams, Navigate } from "react-router-dom";
+import donkeyKong from "../assets/images/donkey-kong.webp";
+import indianaJones from "../assets/images/indiana-jones.webp";
+import zelda from "../assets/images/zelda.webp";
+import hogwarts from "../assets/images/hogwarts.webp";
+import pokemon from "../assets/images/pokemon.webp";
 
-const listings = [
+const gamesData = [
   {
     id: 1,
-    name: "Hogwarts Legacy",
-    platform: "Windows",
-    genre: "Adventure",
-    deliveryMethod: "Drop-off",
-    hasExpansions: "yes",
-    description:
-      "Deluxe edition with bonus content. Barely used, excellent condition.",
-    durationOfOwnership: 200,
-    price: 120,
-    listedBy: "PlayerFour",
+    name: "Red Dead Redemption 2",
+    platform: "PlayStation",
+    consoleModel: "PS4",
+    price: 130,
+    genre: "Action",
+    tag: "Open World",
+    status: "Pending",
+    about: "Excellent condition disc, original case included.",
+    borrowDuration: 180,
+    hasExpansions: "no",
+    deliveryMethod: "Meet-up",
+    image: hogwarts,
+    listedBy: "PlayerOne",
   },
   {
     id: 2,
-    name: "Mario Kart 8 Deluxe",
-    platform: "Nintendo",
-    genre: "Racing",
-    deliveryMethod: "Meet-Up",
-    hasExpansions: "no",
-    description: "Original cartridge with box included. Works perfectly.",
-    durationOfOwnership: 320,
-    price: 85,
+    name: "Cyberpunk 2077",
+    platform: "Xbox",
+    consoleModel: "Xbox One",
+    price: 90,
+    genre: "RPG",
+    tag: "Futuristic",
+    status: "Pending",
+    about: "Updated version with DLC expansion.",
+    borrowDuration: 90,
+    hasExpansions: "yes",
+    deliveryMethod: "Drop-off",
+    image: pokemon,
     listedBy: "PlayerTwo",
   },
   {
     id: 3,
-    name: "Elden Ring",
-    platform: "PlayStation",
-    genre: "RPG",
-    deliveryMethod: "Drop-off",
+    name: "Animal Crossing: New Horizons",
+    platform: "Nintendo",
+    consoleModel: "Switch",
+    price: 70,
+    genre: "Simulation",
+    tag: "Relaxing",
+    status: "Pending",
+    about: "Lightly used cartridge in perfect condition.",
+    borrowDuration: 60,
     hasExpansions: "yes",
-    description: "Includes Shadow of the Erdtree DLC. Slight wear on case.",
-    durationOfOwnership: 150,
-    price: 140,
-    listedBy: "PlayerFive",
+    deliveryMethod: "Pick-up",
+    image: donkeyKong,
+    listedBy: "PlayerThree",
   },
 ];
 
 export default function Listing() {
   const { id } = useParams();
 
-  const item = listings.find((l) => l.id === Number(id));
+  const item = gamesData.find((l) => l.id === Number(id));
 
   if (!item) {
     return <Navigate to="/notfound" replace />;
@@ -59,15 +75,18 @@ export default function Listing() {
         <div className="width-wrap">
           <aside className="left">
             <h1>{item?.name}</h1>
-
-            <div className="listing-wrapper">
-              <h2>Product Information</h2>
+            <h2>Product Information</h2>
+            {
+              // * Details
+            }
+            <div className="details">
               <ul>
                 <li>
                   <h3>Platform:</h3>
-                  <span>
+                  <div>
                     <GetPlatformIcon platform={item?.platform} />
-                  </span>
+                    <span>| {item?.consoleModel}</span>
+                  </div>
                 </li>
 
                 <li>
@@ -76,36 +95,88 @@ export default function Listing() {
                 </li>
 
                 <li>
+                  <h3>Tag:</h3>
+                  <span>{item?.tag}</span>
+                </li>
+              </ul>
+
+              <ul>
+                <li>
+                  <h3>Has Expansion:</h3>
+                  <span>{item?.hasExpansions}</span>
+                </li>
+                <li>
+                  <h3>Original Price:</h3>
+                  <span>{item?.price} AED</span>
+                </li>
+              </ul>
+              <ul>
+                <li>
                   <h3>Delivery Method:</h3>
                   <span>{item?.deliveryMethod}</span>
                 </li>
-
                 <li>
-                  <h3>Has Expansions:</h3>
-                  <span>{item?.hasExpansions}</span>
+                  <h3>Return Deadline:</h3>
+                  <span>{item?.borrowDuration} days from today</span>
                 </li>
               </ul>
             </div>
-
-            <div className="listing-wrapper">
+            {
+              // * About
+            }
+            <div className="about">
               <h2>About The Item</h2>
-              <ul>
-                <li>
-                  <p>{item?.description}</p>
-                </li>
-                <li>
-                  <h3>Duration of Ownership:</h3>
-                  <span>{item?.durationOfOwnership} days</span>
-                </li>
-              </ul>
+              <p>{item?.about}</p>
             </div>
-            <div className="listing-wrapper">
+            {
+              // * Read
+            }
+            <div className="read">
               <h2>Read Before Requesting:</h2>
               <p>
-                Lorem ipsum dolor sit amet consectetur, adipisicing elit. Ullam
-                amet nostrum aspernatur incidunt facilis temporibus recusandae
-                quos, repellendus cumque quia?
+                Before you borrow a game on RE:PLAY, please take a moment to
+                review a few important things:
               </p>
+              <ul>
+                <li>
+                  <p>
+                    Games listed on the platform are owned by other users, so
+                    availability may vary. Make sure to check the borrowing
+                    period and return the game on time to avoid penalties or
+                    additional fees.
+                  </p>
+                </li>
+                <li>
+                  <p>
+                    A refundable deposit of 40% of the original game price (50%
+                    if it includes expansions) is required before borrowing.
+                    This deposit is capped at a maximum of 80 AED and is only
+                    for security purposes. It will be fully returned once the
+                    game is safely returned in good condition.
+                  </p>
+                </li>
+                <li>
+                  <p>
+                    A small protection fee of 6 AED is also included with each
+                    transaction. This fee is non-refundable and helps cover
+                    platform security and handling.
+                  </p>
+                </li>
+                <li>
+                  <p>
+                    Be respectful of other users—treat borrowed games as if they
+                    were your own. Any damage, loss, or failure to return may
+                    result in account restrictions.
+                  </p>
+                </li>
+                <li>
+                  <p>
+                    Lastly, always double-check platform compatibility
+                    (Nintendo, PlayStation, Xbox) before confirming your
+                    request.
+                  </p>
+                </li>
+              </ul>
             </div>
           </aside>
           <aside className="right">
@@ -114,9 +185,6 @@ export default function Listing() {
                 <span>Listed By: </span>
                 <span>{item?.listedBy}</span>
               </h2>
-              <h3>
-                <span>Price: </span> <span>AED {item?.price} </span>
-              </h3>
               <p>
                 Reach out to the lender for further inquiries regarding the
                 item:

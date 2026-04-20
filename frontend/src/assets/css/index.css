@@ -45,6 +45,7 @@ img {
   font-style: italic;
   text-transform: none;
   font-family: "Inter", sans-serif;
+  background-color: #292828;
 }
 
 a {
@@ -71,7 +72,7 @@ p {
   overflow-wrap: break-word;
   text-wrap: balance;
   font-weight: 300;
-  max-width: 70ch;
+  max-width: 75ch;
   font-family: "Inter", sans-serif;
 }
 
@@ -136,11 +137,6 @@ legend {
 
 textarea {
   resize: vertical;
-}
-
-.icon {
-  width: 2rem;
-  height: 2rem;
 }
 
 .width-wrap {
@@ -246,12 +242,12 @@ form .fields-ctr li .file-ctr {
   justify-content: center;
   width: 100%;
   position: relative;
-  border: dotted 0.25rem #f07c68;
+  border: dashed 0.25rem #f07c68;
 }
 form .fields-ctr li .file-ctr input {
   position: absolute;
   inset: 0;
-  border: dotted 0.25rem #f07c68;
+  border: dashed 0.25rem #f07c68;
   opacity: 0;
   cursor: pointer;
 }
@@ -267,50 +263,25 @@ form .fields-ctr li .file-ctr .file-hint {
   margin: auto;
 }
 
+.icon {
+  width: 2rem;
+  height: 2rem;
+}
+
 .pixel {
   font-family: "VCR", monospace;
 }
 
-.secondary-hero {
-  min-height: 50vh;
-  padding: 3rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 1rem;
-  color: #fbead9;
-  background-color: #292828;
-  overflow: hidden;
-  position: relative;
-  font-size: 1.5rem;
-  line-height: 1.4;
-  text-align: center;
-}
-@media (min-width: 768px) {
-  .secondary-hero {
-    font-size: 2rem;
-    line-height: 1.4;
-  }
-}
-@media (min-width: 1024px) {
-  .secondary-hero {
-    font-size: 3rem;
-    line-height: 1.25;
-  }
-}
-.secondary-hero .pixel {
-  display: contents;
-}
-.secondary-hero .secondary-img {
-  inset: 0;
-  width: 100%;
-  height: 100%;
+.invisible {
   position: absolute;
-  opacity: 0.2;
-  filter: blur(3px);
-}
-.secondary-hero * {
-  position: relative;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
 }
 
 .opts-ctr {
@@ -486,7 +457,7 @@ form .fields-ctr li .file-ctr .file-hint {
   line-height: 1.6;
 }
 .page-opts button {
-  padding: 1rem 2rem;
+  padding: 1rem;
   display: flex;
   gap: 0.5rem;
   align-items: center;
@@ -494,7 +465,7 @@ form .fields-ctr li .file-ctr .file-hint {
   color: #f07c68;
   text-transform: uppercase;
   border: #f07c68 solid 0.25rem;
-  border-radius: 3rem;
+  border-radius: 1rem;
 }
 .page-opts button .icon2 {
   font-size: 1.5rem;

@@ -2,41 +2,68 @@
 @use "./partials/mixins" as *;
 
 .games-main {
-  .games-content {
+  .hero {
+    background-color: $orange;
+
     .width-wrap {
-      min-height: 100vh;
-      padding-block: $section-block-small;
-      background-color: $white;
+      padding-inline: 0;
+      padding-block: $section-block-large 0;
+      position: relative;
       overflow: hidden;
 
+      &::before {
+        content: "";
+        position: absolute;
+        width: 100%;
+        height: $section-block-medium;
+        bottom: 0;
+        z-index: 0;
+        background-color: $white;
+
+        @include tablet() {
+          height: $spacing-32;
+        }
+      }
+
       .platform-filters {
-        scroll-snap-type: x mandatory;
-        display: flex;
+        margin-inline: auto;
+        padding-inline: $section-spacing;
+        display: grid;
+        max-width: 800px;
+        grid-template-columns: repeat(4, $spacing-64 * 3);
         overflow-x: auto;
-        gap: $spacing-24;
+        gap: $spacing-16;
+
+        scrollbar-width: none;
+
+        @include desktop() {
+          grid-template-columns: repeat(4, 1fr);
+        }
 
         .platform-btn {
-          flex: 0 0 160px;
+          position: relative;
           padding: $spacing-24 $spacing-16;
           border: $border-small solid $orange;
-          border-radius: $border-medium;
-          cursor: pointer;
-          user-select: none;
+          border-radius: $border-xlarge;
           color: $orange;
           background-color: $white;
           text-transform: uppercase;
+          display: grid;
+          place-items: center;
 
           input {
-            display: none;
+            position: absolute;
+            inset: 0;
+            opacity: 0;
+            cursor: pointer;
           }
 
           .platform-badge {
-            display: flex;
-            flex-direction: column-reverse;
-            align-items: center;
-            justify-content: center;
+            display: grid;
+            place-items: center;
 
             svg {
+              grid-row: 1;
               width: $spacing-48;
               height: $spacing-48;
               margin-bottom: $spacing-8;
@@ -46,97 +73,257 @@
           &.selected {
             background-color: $orange;
             color: $white;
-            border-color: $orange;
+            border: $orange solid $border-small;
+            border-color: $white;
           }
         }
       }
 
-      .bottom {
-        margin-top: $spacing-24;
-        display: flex;
-        overflow: hidden;
+      .filter-bar {
+        position: relative;
+        z-index: 1;
+        margin-inline: $section-spacing;
+        margin-top: $spacing-32;
+        max-width: 1200px;
+        display: grid;
         border: $orange solid $border-small;
-        border-radius: $border-medium;
+        border-radius: $border-xlarge;
+        overflow: hidden;
 
-        .search-box {
+        @include desktop() {
+          margin-inline: $spacing-48;
+          grid-template-rows: 1fr;
+          grid-template-columns: 1fr;
+          grid-template-columns: 1fr repeat(3, 160px);
+        }
+
+        @include desktop-large() {
+          margin-inline: auto;
+          border-radius: $border-xxlarge;
+        }
+
+        .search {
           flex: 1;
-          display: flex;
+          display: grid;
           align-items: center;
-          color: $orange;
+          background-color: $white;
+          position: relative;
+
+          .icon {
+            margin-left: $spacing-16;
+            position: absolute;
+            color: $orange;
+            pointer-events: none;
+          }
 
           input {
-            border: none;
             padding: $spacing-16;
+            padding-left: $spacing-48 + $spacing-16;
+            border: none;
+            outline: none;
           }
         }
 
-        select {
-          border: none;
-          padding: $spacing-16;
-          background: $white;
-          color: $orange;
-          cursor: pointer;
+        .filter-item {
+          width: 100%;
+          height: 100%;
+          border-top: $orange solid $border-xsmall;
+
+          @include desktop() {
+            border-top: none;
+
+            &:not(:first-of-type) {
+              border-left: $orange solid $border-small;
+            }
+          }
+
+          select {
+            all: unset;
+            width: 100%;
+            height: $spacing-32;
+            padding: $spacing-8;
+            display: grid;
+            place-items: center;
+            font-family: $font-inter;
+            background-color: $white;
+            color: $orange;
+            font-weight: 600;
+            @include fontSize(tag);
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%23f07c68'%3E%3Cpath d='M4 6l4 4 4-4'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right $spacing-24 center;
+            background-size: $spacing-24;
+            appearance: none;
+            outline: none;
+            cursor: pointer;
+
+            @include desktop() {
+              height: 100%;
+              padding: 0;
+              padding-left: $spacing-16;
+            }
+
+            option {
+              all: unset;
+              cursor: pointer;
+            }
+          }
+        }
+      }
+    }
+  }
+
+  .content {
+    .width-wrap {
+      color: $orange;
+      h1 {
+        text-align: center;
+        @include fontSize(h4);
+
+        @include tablet() {
+          @include fontSize(h2);
+        }
+        @include desktop() {
+          @include fontSize(h1);
         }
       }
 
       h2 {
-        margin-top: $spacing-16;
-        color: $orange;
+        margin-top: $spacing-32;
+        margin-bottom: $spacing-16;
         font-family: $font-inter;
-        font-weight: 900;
-        text-align: center;
+        font-weight: 400;
+        @include fontSize(p);
       }
 
       .games-ctr {
-        margin-top: $spacing-24;
         display: grid;
-        gap: $spacing-16;
+        place-items: center;
+        grid-template-columns: 1fr 1fr;
+        gap: $spacing-8;
 
-        @include tablet() {
-          grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        @include desktop() {
+          grid-template-columns: repeat(3, 1fr);
+          gap: $spacing-16;
+        }
+
+        @include desktop-large() {
+          grid-template-columns: repeat(4, 1fr);
+          gap: $spacing-24;
         }
 
         .card {
-          display: grid;
-          gap: $spacing-8;
+          width: 100%;
+          min-height: 400px;
+          max-width: 400px;
           padding: $spacing-16;
-          border: $border-small solid $black;
-          border-radius: $border-medium;
-        }
-
-        .info {
           display: flex;
           flex-direction: column;
-          gap: $spacing-4;
+          justify-content: end;
+          color: $white;
+          font-family: $font-inter;
+          border-radius: $border-large;
+          background-color: $black;
+          position: relative;
+          overflow: hidden;
 
-          .name {
-            font-weight: 700;
-            letter-spacing: -0.8px;
-            @include fontSize(p);
-            overflow: hidden;
-            max-width: 20ch;
-            white-space: nowrap;
-            text-overflow: ellipsis;
-            font-family: $font-inter;
+          &::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+
+            background: linear-gradient(
+              to top,
+              rgba($black, 0.9) 0%,
+              rgba($black, 0.6) 30%,
+              rgba($black, 0.2) 60%,
+              rgba($black, 0) 100%
+            );
+
+            z-index: 1;
+            pointer-events: none;
           }
 
-          .listedBy {
-            font-size: 0.9rem;
-            opacity: 0.7;
-            font-family: $font-inter;
+          @include tablet() {
+            min-height: 480px;
+            max-width: 480px;
           }
 
-          ul {
+          @include desktop() {
+            border-radius: $border-xlarge;
+          }
+
+          p {
+            position: relative;
+            width: fit-content;
+            padding: $spacing-4 $spacing-8;
+            background-color: $white;
+            color: $orange;
+            border-radius: $border-medium;
+            font-weight: 600;
+            position: absolute;
+            z-index: $z-index-top;
+            right: $spacing-16;
+            top: $spacing-16;
+          }
+
+          img {
+            position: absolute;
+            inset: 0;
+            height: 100%;
+          }
+
+          .head {
+            margin-bottom: $spacing-16;
+            position: relative;
+            z-index: $z-index-top;
+
+            h3,
+            h4 {
+              font-family: $font-inter;
+              text-transform: none;
+              display: -webkit-box;
+              max-width: 20ch;
+              -webkit-box-orient: vertical;
+              -webkit-line-clamp: 1;
+              line-clamp: 1;
+              overflow: hidden;
+              text-overflow: ellipsis;
+            }
+
+            h3 {
+              font-weight: 600;
+            }
+
+            h4 {
+              font-weight: 300;
+            }
+          }
+
+          .details {
+            display: flex;
+            flex-wrap: wrap;
             gap: $spacing-8;
-            text-transform: uppercase;
-            font-family: $font-inter;
-          }
+            position: relative;
+            z-index: $z-index-top;
 
-          .genre {
-            text-transform: uppercase;
-            font-weight: 500;
-            @include fontSize(tag);
-            opacity: 0.6;
+            li {
+              padding: $spacing-4 $spacing-16;
+              display: flex;
+              gap: $spacing-4;
+              border-radius: $border-medium;
+              border: $white solid $border-xxsmall;
+              @include fontSize(tiny);
+
+              .platform-badge {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                span:first-of-type {
+                  display: none;
+                }
+              }
+            }
           }
         }
       }

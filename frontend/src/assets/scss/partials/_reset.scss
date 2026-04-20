@@ -35,6 +35,7 @@ img {
   font-style: italic;
   text-transform: none;
   font-family: $font-inter;
+  background-color: $black;
 }
 
 // ! Links
@@ -63,7 +64,7 @@ p {
   overflow-wrap: break-word;
   text-wrap: balance;
   font-weight: 300;
-  max-width: 70ch;
+  max-width: 75ch;
   font-family: $font-inter;
 }
 
@@ -127,11 +128,6 @@ legend {
 
 textarea {
   resize: vertical;
-}
-
-.icon {
-  width: $spacing-32;
-  height: $spacing-32;
 }
 
 .width-wrap {
@@ -251,12 +247,12 @@ form {
         justify-content: center;
         width: 100%;
         position: relative;
-        border: dotted $border-small $orange;
+        border: dashed $border-small $orange;
 
         input {
           position: absolute;
           inset: 0;
-          border: dotted $border-small $orange;
+          border: dashed $border-small $orange;
           opacity: 0;
           cursor: pointer;
         }
@@ -277,52 +273,28 @@ form {
   }
 }
 
+.icon {
+  width: $spacing-32;
+  height: $spacing-32;
+}
+
 .pixel {
   font-family: $font-vcr;
 }
 
-// ? Secondary Hero For Sub Pages
-.secondary-hero {
-  min-height: 50vh;
-  padding: $spacing-48;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: $spacing-16;
-  color: $white;
-  background-color: $black;
+.invisible {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
   overflow: hidden;
-  position: relative;
-  @include fontSize(h6);
-  text-align: center;
-
-  @include tablet() {
-    @include fontSize(h5);
-  }
-
-  @include desktop() {
-    @include fontSize(h3);
-  }
-
-  .pixel {
-    display: contents;
-  }
-
-  .secondary-img {
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    position: absolute;
-    opacity: 0.2;
-    filter: blur(3px);
-  }
-
-  * {
-    position: relative;
-  }
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
 }
 
-// ? Opts Container for Forms
+// ? Options/Actions Container
 .opts-ctr {
   display: grid;
   grid-template-columns: auto 1fr;
@@ -365,7 +337,7 @@ form {
   }
 }
 
-// ? For Titles Per Section
+// ? Titles Per Section
 .title {
   margin-left: $spacing-32;
   margin-right: $spacing-32;
@@ -391,7 +363,7 @@ form {
   }
 }
 
-// ? For Item Sliders
+// ? Item Sliders
 .item-slider .width-wrap {
   padding: 0;
   padding-block: $section-block-small;
@@ -491,7 +463,7 @@ form {
   }
 }
 
-// ? For Pagination
+// ? Pagination
 .page-opts {
   margin-top: $spacing-24;
   display: flex;
@@ -502,7 +474,7 @@ form {
   @include fontSize(p);
 
   button {
-    padding: $spacing-16 $spacing-32;
+    padding: $spacing-16;
     display: flex;
     gap: $spacing-8;
     align-items: center;
@@ -510,7 +482,7 @@ form {
     color: $orange;
     text-transform: uppercase;
     border: $orange solid $border-small;
-    border-radius: $border-xxlarge;
+    border-radius: $border-large;
 
     .icon2 {
       @include fontSize(h6);
@@ -537,6 +509,7 @@ form {
   }
 }
 
+// ? Toasts
 .toast {
   padding: $spacing-16 $spacing-24;
   display: flex;

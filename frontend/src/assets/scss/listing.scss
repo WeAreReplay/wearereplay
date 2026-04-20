@@ -29,35 +29,99 @@
       }
     }
 
+    h2 {
+      color: $orange;
+    }
+
     .left {
+      display: grid;
+
       h2 {
-        color: $orange;
-        margin-bottom: $spacing-24;
+        padding-block: $spacing-32;
       }
 
-      span {
-        font-family: $font-inter;
-      }
-
-      .listing-wrapper {
-        padding-block: $spacing-24;
-
-        &:not(:last-of-type) {
-          border-bottom: $orange solid $border-xsmall;
-        }
-
+      .details {
         ul {
           display: grid;
           gap: $spacing-16;
+          border-bottom: $orange dashed $border-xsmall;
+          padding-block: $spacing-48;
+          text-transform: capitalize;
 
           @include tablet() {
             grid-template-columns: 1fr 1fr;
           }
 
-          li {
-            display: grid;
-            gap: $spacing-8;
+          @include desktop() {
+            grid-template-columns: 1fr 1fr 1fr;
+
+            &:not(:first-of-type) li:not(:first-child) {
+              grid-column: span 2;
+            }
           }
+
+          &:first-of-type {
+            padding-top: 0;
+          }
+
+          li {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: flex-end;
+            gap: $spacing-8;
+            color: $black;
+
+            div {
+              display: flex;
+              gap: $spacing-4;
+            }
+
+            span {
+              font-weight: 300;
+              font-family: $font-inter;
+              @include fontSize(tag);
+              line-height: normal;
+
+              &.platform-badge {
+                display: flex;
+                flex-direction: row-reverse;
+                justify-content: center;
+                align-items: center;
+                gap: $spacing-8;
+              }
+            }
+          }
+        }
+      }
+
+      .about {
+        display: grid;
+        border-bottom: $orange solid $border-xsmall;
+        padding-bottom: $spacing-48;
+
+        p {
+          white-space: pre-line;
+          color: $black;
+        }
+      }
+
+      .read {
+        display: grid;
+        margin-bottom: $spacing-32;
+
+        @include tablet() {
+          margin-bottom: 0;
+        }
+
+        p {
+          color: $black;
+        }
+
+        ul {
+          display: grid;
+          gap: $spacing-16;
+          padding-left: $spacing-32;
+          list-style: square;
         }
       }
     }
@@ -75,23 +139,14 @@
         display: grid;
         gap: $spacing-24;
 
-        h2,
-        h3 {
-          font-weight: 900;
+        h2 {
           flex-wrap: wrap;
           display: flex;
           align-items: center;
           justify-content: space-between;
-
-          span {
-            &:first-of-type {
-              font-family: $font-pt;
-            }
-
-            &:last-of-type {
-              font-family: $font-inter;
-            }
-          }
+          color: $white;
+          font-family: $font-inter;
+          font-weight: 900;
         }
 
         p {

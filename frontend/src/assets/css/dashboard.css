@@ -20,7 +20,7 @@
   width: 100%;
   max-height: 900px;
   position: absolute;
-  right: 0;
+  inset-inline: 0;
   margin: auto;
   top: 0;
   z-index: 1;
@@ -33,7 +33,7 @@
 @media (min-width: 768px) {
   .dashboard-header .width-wrap nav {
     max-width: 640px;
-    border-left: #f07c68 solid 0.25rem;
+    border-inline: #f07c68 solid 0.25rem;
   }
 }
 .dashboard-header .width-wrap nav > .nav-items {

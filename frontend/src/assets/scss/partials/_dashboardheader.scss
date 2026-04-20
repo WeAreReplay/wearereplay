@@ -25,7 +25,7 @@
       max-height: 900px;
       position: absolute;
       // ? Adjust position of the navigation
-      right: 0;
+      inset-inline: 0;
       margin: auto;
       top: 0;
       // ? ---------------------------------
@@ -38,7 +38,7 @@
 
       @include tablet() {
         max-width: 640px;
-        border-left: $orange solid $border-small;
+        border-inline: $orange solid $border-small;
       }
 
       > .nav-items {
