@@ -107,6 +107,9 @@
     margin-bottom: 0;
   }
 }
+.listing-main section .width-wrap .left .read > p {
+  margin-bottom: 1rem;
+}
 .listing-main section .width-wrap .left .read p {
   color: #292828;
 }

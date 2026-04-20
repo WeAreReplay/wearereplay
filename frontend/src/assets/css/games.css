@@ -6,7 +6,6 @@
   padding-inline: 0;
   padding-block: 7.5rem 0;
   position: relative;
-  overflow: hidden;
 }
 .games-main .hero .width-wrap::before {
   content: "";
@@ -32,7 +31,7 @@
   gap: 1rem;
   scrollbar-width: none;
 }
-@media (min-width: 1024px) {
+@media (min-width: 768px) {
   .games-main .hero .width-wrap .platform-filters {
     grid-template-columns: repeat(4, 1fr);
   }
@@ -71,38 +70,43 @@
   border-color: #fbead9;
 }
 .games-main .hero .width-wrap .filter-bar {
-  position: relative;
   z-index: 1;
   margin-inline: 1.5rem;
   margin-top: 2rem;
   max-width: 1200px;
   display: grid;
-  border: #f07c68 solid 0.25rem;
-  border-radius: 1.5rem;
-  overflow: hidden;
+  position: relative;
 }
-@media (min-width: 1024px) {
+@media (min-width: 768px) {
   .games-main .hero .width-wrap .filter-bar {
-    margin-inline: 3rem;
     grid-template-rows: 1fr;
-    grid-template-columns: 1fr;
-    grid-template-columns: 1fr repeat(3, 160px);
+    grid-template-columns: 1fr 1fr;
   }
 }
 @media (min-width: 1440px) {
   .games-main .hero .width-wrap .filter-bar {
     margin-inline: auto;
-    border-radius: 3rem;
   }
 }
 .games-main .hero .width-wrap .filter-bar .search {
-  flex: 1;
-  display: grid;
+  display: flex;
   align-items: center;
-  background-color: #fbead9;
   position: relative;
+  overflow: hidden;
+  background-color: #fbead9;
+  border: #f07c68 solid 0.125rem;
+  border-top-left-radius: 1.5rem;
+  border-top-right-radius: 1.5rem;
 }
-.games-main .hero .width-wrap .filter-bar .search .icon {
+@media (min-width: 768px) {
+  .games-main .hero .width-wrap .filter-bar .search {
+    border-right: none;
+    border-radius: 0;
+    border-top-left-radius: 1.5rem;
+    border-bottom-left-radius: 1.5rem;
+  }
+}
+.games-main .hero .width-wrap .filter-bar .search > .icon {
   margin-left: 1rem;
   position: absolute;
   color: #f07c68;
@@ -114,52 +118,100 @@
   border: none;
   outline: none;
 }
-.games-main .hero .width-wrap .filter-bar .filter-item {
+.games-main .hero .width-wrap .filter-bar .search button {
+  padding-inline: 1rem;
+  color: #f07c68;
+}
+.games-main .hero .width-wrap .filter-bar .group-filters {
+  display: flex;
+  border: #f07c68 solid 0.125rem;
+  border-top: 0;
+  border-bottom-left-radius: 1.5rem;
+  border-bottom-right-radius: 1.5rem;
+  overflow: hidden;
+}
+@media (min-width: 768px) {
+  .games-main .hero .width-wrap .filter-bar .group-filters {
+    border-top: #f07c68 solid 0.125rem;
+    border-bottom-left-radius: 0;
+    border-top-right-radius: 1.5rem;
+    border-bottom-right-radius: 1.5rem;
+  }
+}
+.games-main .hero .width-wrap .filter-bar .group-filters .filter-item {
   width: 100%;
   height: 100%;
-  border-top: #f07c68 solid 0.125rem;
 }
-@media (min-width: 1024px) {
-  .games-main .hero .width-wrap .filter-bar .filter-item {
-    border-top: none;
-  }
-  .games-main .hero .width-wrap .filter-bar .filter-item:not(:first-of-type) {
-    border-left: #f07c68 solid 0.25rem;
-  }
+.games-main .hero .width-wrap .filter-bar .group-filters .filter-item:nth-of-type(2) {
+  border-inline: #f07c68 solid 0.125rem;
 }
-.games-main .hero .width-wrap .filter-bar .filter-item select {
-  all: unset;
+.games-main .hero .width-wrap .filter-bar .group-filters .filter-item button {
   width: 100%;
-  height: 2rem;
-  padding: 0.5rem;
-  display: grid;
-  place-items: center;
-  font-family: "Inter", sans-serif;
+  height: 100%;
   background-color: #fbead9;
   color: #f07c68;
-  font-weight: 600;
-  font-size: 1rem;
-  line-height: 1.6;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%23f07c68'%3E%3Cpath d='M4 6l4 4 4-4'/%3E%3C/svg%3E");
-  background-repeat: no-repeat;
-  background-position: right 1.5rem center;
-  background-size: 1.5rem;
-  -webkit-appearance: none;
-     -moz-appearance: none;
-          appearance: none;
-  outline: none;
-  cursor: pointer;
+  font-family: "Inter", sans-serif;
+  display: flex;
+  align-items: center;
+  padding-block: 1.5rem;
+  padding-left: 1rem;
+  overflow: hidden;
+  position: relative;
+}
+.games-main .hero .width-wrap .filter-bar .group-filters .filter-item button span {
+  position: absolute;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  max-width: 120px;
+  overflow: hidden;
 }
 @media (min-width: 1024px) {
-  .games-main .hero .width-wrap .filter-bar .filter-item select {
-    height: 100%;
-    padding: 0;
-    padding-left: 1rem;
+  .games-main .hero .width-wrap .filter-bar .group-filters .filter-item button span {
+    max-width: 170px;
   }
 }
-.games-main .hero .width-wrap .filter-bar .filter-item select option {
-  all: unset;
+.games-main .hero .width-wrap .filter-bar .group-filters .filter-item button .clear-btn {
+  position: absolute;
+  right: 1rem;
+  background-color: #fbead9;
+}
+.games-main .hero .width-wrap .filter-bar .group-filters .checkbox-ctr {
+  max-width: 480px;
+  padding: 1rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+  position: absolute;
+  z-index: 100;
+  background-color: #fbead9;
+  border: #f07c68 solid 0.125rem;
+  border-radius: 1rem;
+  top: 8rem;
+}
+.games-main .hero .width-wrap .filter-bar .group-filters .checkbox-ctr label {
+  position: relative;
+  padding: 0.25rem 0.5rem;
   cursor: pointer;
+  border: #f07c68 solid 0.125rem;
+  border-radius: 0.5rem;
+  font-family: "Inter", sans-serif;
+  font-weight: 600;
+  color: #f07c68;
+}
+.games-main .hero .width-wrap .filter-bar .group-filters .checkbox-ctr label.selected {
+  background-color: #f07c68;
+  color: #fbead9;
+}
+.games-main .hero .width-wrap .filter-bar .group-filters .checkbox-ctr label input {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+@media (min-width: 768px) {
+  .games-main .hero .width-wrap .filter-bar .group-filters .checkbox-ctr {
+    top: 5rem;
+  }
 }
 .games-main .content .width-wrap {
   color: #f07c68;
@@ -251,7 +303,6 @@
   border-radius: 0.5rem;
   font-weight: 600;
   position: absolute;
-  z-index: 50;
   right: 1rem;
   top: 1rem;
 }
@@ -306,4 +357,10 @@
 }
 .games-main .content .width-wrap .games-ctr .card .details li .platform-badge span:first-of-type {
   display: none;
+}
+.games-main .content .width-wrap .games-ctr .card .details li .array {
+  max-width: 100px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }/*# sourceMappingURL=games.css.map */

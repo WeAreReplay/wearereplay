@@ -39,7 +39,13 @@ const CONFIRM_CONFIG = {
 };
 
 const getValue = (obj, path) => {
-  return path.split(".").reduce((acc, key) => acc?.[key], obj);
+  const value = path.split(".").reduce((acc, key) => acc?.[key], obj);
+
+  if (Array.isArray(value)) {
+    return value.join(", ");
+  }
+
+  return value;
 };
 
 // ! ---------------- COLUMNS CONFIG ----------------

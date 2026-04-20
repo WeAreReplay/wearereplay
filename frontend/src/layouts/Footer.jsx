@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { IoDocumentText } from "react-icons/io5";
-import { MdOutlineCopyright, MdPolicy } from "react-icons/md";
+import { MdPolicy } from "react-icons/md";
+import { FaCopyright } from "react-icons/fa";
 import FooterTitle from "../components/SVGs/FooterTitle";
 import FooterLogo from "../components/SVGs/FooterLogo";
 
@@ -81,7 +82,7 @@ export default function Footer() {
             })}
           </ul>
           <p className="copyright">
-            <MdOutlineCopyright className="icon" />
+            <FaCopyright className="icon" />
             <span>2026 Re:Play. All Rights Reserved.</span>
           </p>
         </div>

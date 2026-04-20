@@ -4,6 +4,7 @@ export default function Legal({ type }) {
   const content = {
     privacy: {
       title: "Privacy Policy",
+      desc: "Your privacy matters to us. This Privacy Policy explains how RE collects, uses, stores, and protects your information when you use our platform. By accessing or using RE, you agree to the practices described below.",
       sections: [
         {
           h2: "Introduction",
@@ -26,6 +27,7 @@ export default function Legal({ type }) {
 
     terms: {
       title: "Terms & Conditions",
+      desc: "Our platform is designed to provide users with a seamless and secure experience for engaging with our services. By accessing or using RE, you acknowledge that you have read, understood, and agree to comply with and be bound by the following Terms & Conditions.These terms outline your rights and responsibilities as a user, as well as the rules governing the use of our platform. Please read them carefully before proceeding.",
       sections: [
         {
           h2: "Acceptance of Terms",
@@ -61,6 +63,10 @@ export default function Legal({ type }) {
 
       <section className="legal-content">
         <div className="width-wrap">
+          <div>
+            <h2>PLAY FAIR. STAY PROTECTED. KNOW THE RULES:</h2>
+            <p>{page.desc}</p>
+          </div>
           {page.sections.map((item, index) => (
             <div key={index}>
               <h2>
@@ -69,7 +75,7 @@ export default function Legal({ type }) {
                 </span>{" "}
                 {item.h2}
               </h2>
-              <p>{item.p}</p>
+              {item.p && <p>{item.p}</p>}
             </div>
           ))}
         </div>

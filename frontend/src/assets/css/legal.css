@@ -8,7 +8,7 @@
   display: grid;
 }
 .legal-main .legal-content .width-wrap > div {
-  border: 0.25rem solid #f07c68;
+  border-bottom: 0.25rem solid #f07c68;
   background-color: #fbead9;
   display: grid;
 }

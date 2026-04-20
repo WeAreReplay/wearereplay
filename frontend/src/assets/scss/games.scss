@@ -9,7 +9,6 @@
       padding-inline: 0;
       padding-block: $section-block-large 0;
       position: relative;
-      overflow: hidden;
 
       &::before {
         content: "";
@@ -36,7 +35,7 @@
 
         scrollbar-width: none;
 
-        @include desktop() {
+        @include tablet() {
           grid-template-columns: repeat(4, 1fr);
         }
 
@@ -80,36 +79,40 @@
       }
 
       .filter-bar {
-        position: relative;
         z-index: 1;
         margin-inline: $section-spacing;
         margin-top: $spacing-32;
         max-width: 1200px;
         display: grid;
-        border: $orange solid $border-small;
-        border-radius: $border-xlarge;
-        overflow: hidden;
+        position: relative;
 
-        @include desktop() {
-          margin-inline: $spacing-48;
+        @include tablet() {
           grid-template-rows: 1fr;
-          grid-template-columns: 1fr;
-          grid-template-columns: 1fr repeat(3, 160px);
+          grid-template-columns: 1fr 1fr;
         }
 
         @include desktop-large() {
           margin-inline: auto;
-          border-radius: $border-xxlarge;
         }
 
         .search {
-          flex: 1;
-          display: grid;
+          display: flex;
           align-items: center;
-          background-color: $white;
           position: relative;
+          overflow: hidden;
+          background-color: $white;
+          border: $orange solid $border-xsmall;
+          border-top-left-radius: $border-xlarge;
+          border-top-right-radius: $border-xlarge;
 
-          .icon {
+          @include tablet() {
+            border-right: none;
+            border-radius: 0;
+            border-top-left-radius: $border-xlarge;
+            border-bottom-left-radius: $border-xlarge;
+          }
+
+          > .icon {
             margin-left: $spacing-16;
             position: absolute;
             color: $orange;
@@ -122,50 +125,107 @@
             border: none;
             outline: none;
           }
+
+          button {
+            padding-inline: $spacing-16;
+            color: $orange;
+          }
         }
 
-        .filter-item {
-          width: 100%;
-          height: 100%;
-          border-top: $orange solid $border-xsmall;
+        .group-filters {
+          display: flex;
+          border: $orange solid $border-xsmall;
+          border-top: 0;
+          border-bottom-left-radius: $border-xlarge;
+          border-bottom-right-radius: $border-xlarge;
+          overflow: hidden;
 
-          @include desktop() {
-            border-top: none;
+          @include tablet() {
+            border-top: $orange solid $border-xsmall;
+            border-bottom-left-radius: 0;
+            border-top-right-radius: $border-xlarge;
+            border-bottom-right-radius: $border-xlarge;
+          }
 
-            &:not(:first-of-type) {
-              border-left: $orange solid $border-small;
+          .filter-item {
+            width: 100%;
+            height: 100%;
+
+            &:nth-of-type(2) {
+              border-inline: $orange solid $border-xsmall;
+            }
+
+            button {
+              width: 100%;
+              height: 100%;
+              background-color: $white;
+              color: $orange;
+              font-family: $font-inter;
+              display: flex;
+              align-items: center;
+              padding-block: $spacing-24;
+              padding-left: $spacing-16;
+              overflow: hidden;
+              position: relative;
+
+              span {
+                position: absolute;
+                white-space: nowrap;
+                text-overflow: ellipsis;
+                max-width: 120px;
+                overflow: hidden;
+
+                @include desktop() {
+                  max-width: 170px;
+                }
+              }
+
+              .clear-btn {
+                position: absolute;
+                right: $spacing-16;
+                background-color: $white;
+              }
             }
           }
 
-          select {
-            all: unset;
-            width: 100%;
-            height: $spacing-32;
-            padding: $spacing-8;
-            display: grid;
-            place-items: center;
-            font-family: $font-inter;
+          .checkbox-ctr {
+            max-width: 480px;
+            padding: $spacing-16;
+            display: flex;
+            flex-wrap: wrap;
+            gap: $spacing-4;
+            position: absolute;
+            z-index: $z-index-maxtop;
             background-color: $white;
-            color: $orange;
-            font-weight: 600;
-            @include fontSize(tag);
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%23f07c68'%3E%3Cpath d='M4 6l4 4 4-4'/%3E%3C/svg%3E");
-            background-repeat: no-repeat;
-            background-position: right $spacing-24 center;
-            background-size: $spacing-24;
-            appearance: none;
-            outline: none;
-            cursor: pointer;
+            border: $orange solid $border-xsmall;
+            border-radius: $border-large;
+            top: 8rem;
 
-            @include desktop() {
-              height: 100%;
-              padding: 0;
-              padding-left: $spacing-16;
+            label {
+              position: relative;
+              padding: $spacing-4 $spacing-8;
+              cursor: pointer;
+              border: $orange solid $border-xsmall;
+              border-radius: $border-medium;
+              font-family: $font-inter;
+              font-weight: 600;
+              color: $orange;
+
+              &.selected {
+                background-color: $orange;
+                color: $white;
+              }
+
+              input {
+                position: absolute;
+                inset: 0;
+                opacity: 0;
+                cursor: pointer;
+              }
             }
 
-            option {
-              all: unset;
-              cursor: pointer;
+            @include tablet() {
+              top: 5rem;
             }
           }
         }
@@ -262,7 +322,6 @@
             border-radius: $border-medium;
             font-weight: 600;
             position: absolute;
-            z-index: $z-index-top;
             right: $spacing-16;
             top: $spacing-16;
           }
@@ -322,6 +381,13 @@
                 span:first-of-type {
                   display: none;
                 }
+              }
+
+              .array {
+                max-width: 100px;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
               }
             }
           }

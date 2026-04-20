@@ -189,6 +189,46 @@ export default function InputField({
               </label>
             ))}
           </>
+        ) : type === "checkbox" ? (
+          <>
+            {options.map((option) => (
+              <label
+                key={option}
+                className={`radio-btn ${
+                  value?.includes(option) ? "selected" : ""
+                }`}
+              >
+                <input
+                  type="checkbox"
+                  name={name}
+                  value={option}
+                  checked={value?.includes(option)}
+                  onChange={(e) => {
+                    if (disabled) return;
+
+                    const checked = e.target.checked;
+
+                    let newValue = Array.isArray(value) ? [...value] : [];
+
+                    if (checked) {
+                      newValue.push(option);
+                    } else {
+                      newValue = newValue.filter((v) => v !== option);
+                    }
+
+                    onChange({
+                      target: {
+                        name,
+                        value: newValue,
+                      },
+                    });
+                  }}
+                  disabled={disabled}
+                />
+                {option}
+              </label>
+            ))}
+          </>
         ) : (
           // * Default Input
           <input
@@ -211,6 +251,7 @@ export default function InputField({
           type !== "password" &&
           type !== "file" &&
           type !== "radio" &&
+          type !== "checkbox" &&
           isValid && <FaCheck className="icon valid-icon" />}
 
         {

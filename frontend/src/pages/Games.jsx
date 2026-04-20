@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect, useRef } from "react";
 import GetPlatformIcon from "../components/GetPlatformIcon";
 import "../assets/css/games.css";
 import Pagination from "../components/Pagination";
@@ -8,7 +8,7 @@ import hogwarts from "../assets/images/hogwarts.webp";
 import indianaJones from "../assets/images/indiana-jones.webp";
 import zelda from "../assets/images/zelda.webp";
 import pokemon from "../assets/images/pokemon.webp";
-import { useRef } from "react";
+import { IoClose } from "react-icons/io5";
 
 const gamesData = [
   {
@@ -18,8 +18,8 @@ const gamesData = [
     platform: "Xbox",
     consoleModel: "Xbox Series S",
     price: 100,
-    genre: "Racing",
-    tag: "Open World",
+    genre: ["Racing", "Adventure"],
+    tag: ["Open World", "Coop"],
     borrowDuration: 5,
     image: hogwarts,
   },
@@ -387,9 +387,15 @@ export default function Games() {
   const sectionRef = useRef(null);
   const [search, setSearch] = useState("");
   const [platformFilter, setPlatformFilter] = useState("All");
-  const [genreFilter, setGenreFilter] = useState("All");
-  const [tagFilter, setTagFilter] = useState("All");
-  const [modelFilter, setModelFilter] = useState("All");
+  const [genreFilter, setGenreFilter] = useState([]);
+  const [tagFilter, setTagFilter] = useState([]);
+  const [modelFilter, setModelFilter] = useState([]);
+  const [openFilter, setOpenFilter] = useState("");
+  const checkBoxRef = useRef(null);
+
+  const toggleFilter = (key) => {
+    setOpenFilter((prev) => (prev === key ? null : key));
+  };
 
   useEffect(() => {
     if (sectionRef.current) {
@@ -405,10 +411,25 @@ export default function Games() {
     * Ensures model/genre/tag don’t conflict with new platform
   */
   useEffect(() => {
-    setModelFilter("All");
-    setGenreFilter("All");
-    setTagFilter("All");
+    setModelFilter([]);
+    setGenreFilter([]);
+    setTagFilter([]);
+    setSearch("");
   }, [platformFilter]);
+
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (checkBoxRef.current && !checkBoxRef.current.contains(e.target)) {
+        setOpenFilter(null); // close it
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   /*
     ! Reset page on filter change
@@ -431,12 +452,12 @@ export default function Games() {
       const matchesPlatform =
         platformFilter === "All" || game.platform === platformFilter;
 
-      const matchesGenre = genreFilter === "All" || game.genre === genreFilter;
-
-      const matchesTag = tagFilter === "All" || game.tag === tagFilter;
+      const matchesGenre =
+        genreFilter.length === 0 || genreFilter.includes(game.genre);
+      const matchesTag = tagFilter.length === 0 || tagFilter.includes(game.tag);
 
       const matchesModel =
-        modelFilter === "All" || game.consoleModel === modelFilter;
+        modelFilter.length === 0 || modelFilter.includes(game.consoleModel);
 
       return (
         matchesSearch &&
@@ -458,6 +479,15 @@ export default function Games() {
     }
     return ["All", ...(PLATFORM_MODELS[platformFilter] || [])];
   }, [platformFilter]);
+
+  const getFilterLabel = (items, defaultLabel) => {
+    if (items.length === 0) return defaultLabel;
+    return items.join(", ");
+  };
+
+  const clearModel = () => setModelFilter([]);
+  const clearGenre = () => setGenreFilter([]);
+  const clearTag = () => setTagFilter([]);
 
   /*
     ! Pagination calculation
@@ -523,64 +553,146 @@ export default function Games() {
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
               />
+              {search && (
+                <button
+                  className="clear-btn"
+                  onClick={() => setSearch("")}
+                  type="button"
+                >
+                  <IoClose className="icon" />
+                </button>
+              )}
             </li>
-            {
-              // * Model Filter
-            }
-            <li className="filter-item">
-              <label htmlFor="consoleModel" className="invisible">
-                Console Model
-              </label>
-              <select
-                id="consoleModel"
-                value={modelFilter}
-                onChange={(e) => setModelFilter(e.target.value)}
-              >
-                {availableModels.map((model) => (
-                  <option key={model} value={model}>
-                    {model === "All" ? "All Models" : model}
-                  </option>
-                ))}
-              </select>
-            </li>
-            {
-              // * Genre Filter
-            }
-            <li className="filter-item">
-              <label htmlFor="genre" className="invisible">
-                Genre
-              </label>
-              <select
-                id="genre"
-                value={genreFilter}
-                onChange={(e) => setGenreFilter(e.target.value)}
-              >
-                {GENRE_OPTIONS.map((g) => (
-                  <option key={g} value={g}>
-                    {g === "All" ? "All Genres" : g}
-                  </option>
-                ))}
-              </select>
-            </li>
-            {
-              // * Tag Filter
-            }
-            <li className="filter-item">
-              <label htmlFor="tag" className="invisible">
-                Tag
-              </label>
-              <select
-                id="tag"
-                value={tagFilter}
-                onChange={(e) => setTagFilter(e.target.value)}
-              >
-                {TAG_OPTIONS.map((t) => (
-                  <option key={t} value={t}>
-                    {t === "All" ? "All Tags" : t}
-                  </option>
-                ))}
-              </select>
-            </li>
+            <ul className="group-filters" ref={checkBoxRef}>
+              {
+                // * Model Filter
+              }
+              <li className="filter-item">
+                <button onClick={() => toggleFilter("model")}>
+                  <span>{getFilterLabel(modelFilter, "All Models")}</span>
+                  {modelFilter.length > 0 && (
+                    <span
+                      className="clear-btn"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        clearModel();
+                      }}
+                    >
+                      <IoClose className="icon" />
+                    </span>
+                  )}
+                </button>
+              </li>
+              {
+                // * Genre Filter
+              }
+              <li className="filter-item">
+                <button onClick={() => toggleFilter("genre")}>
+                  <span>{getFilterLabel(genreFilter, "All Genres")}</span>
+                  {genreFilter.length > 0 && (
+                    <span
+                      className="clear-btn"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        clearGenre();
+                      }}
+                    >
+                      <IoClose className="icon" />
+                    </span>
+                  )}
+                </button>
+              </li>
+              {
+                // * Tag Filter
+              }
+              <li className="filter-item">
+                <button onClick={() => toggleFilter("tag")}>
+                  <span>{getFilterLabel(tagFilter, "All Tags")}</span>
+                  {tagFilter.length > 0 && (
+                    <span
+                      className="clear-btn"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        clearTag();
+                      }}
+                    >
+                      <IoClose className="icon" />
+                    </span>
+                  )}
+                </button>
+              </li>
+
+              {openFilter && (
+                <li className="checkbox-ctr">
+                  {openFilter === "tag" &&
+                    TAG_OPTIONS.filter((t) => t !== "All").map((t) => (
+                      <label
+                        key={t}
+                        className={tagFilter.includes(t) ? "selected" : ""}
+                      >
+                        <input
+                          type="checkbox"
+                          checked={tagFilter.includes(t)}
+                          onChange={() => {
+                            setTagFilter((prev) =>
+                              prev.includes(t)
+                                ? prev.filter((x) => x !== t)
+                                : [...prev, t],
+                            );
+                          }}
+                        />
+                        {t}
+                      </label>
+                    ))}
+
+                  {openFilter === "genre" &&
+                    GENRE_OPTIONS.filter((g) => g !== "All").map((g) => (
+                      <label
+                        key={g}
+                        className={genreFilter.includes(g) ? "selected" : ""}
+                      >
+                        <input
+                          type="checkbox"
+                          checked={genreFilter.includes(g)}
+                          onChange={() => {
+                            setGenreFilter((prev) =>
+                              prev.includes(g)
+                                ? prev.filter((x) => x !== g)
+                                : [...prev, g],
+                            );
+                          }}
+                        />
+                        {g}
+                      </label>
+                    ))}
+
+                  {openFilter === "model" &&
+                    availableModels
+                      .filter((m) => m !== "All")
+                      .map((model) => (
+                        <label
+                          key={model}
+                          className={
+                            modelFilter.includes(model) ? "selected" : ""
+                          }
+                        >
+                          <input
+                            type="checkbox"
+                            checked={modelFilter.includes(model)}
+                            onChange={() => {
+                              setModelFilter((prev) =>
+                                prev.includes(model)
+                                  ? prev.filter((x) => x !== model)
+                                  : [...prev, model],
+                              );
+                            }}
+                          />
+                          {model}
+                        </label>
+                      ))}
+                </li>
+              )}
+            </ul>
           </ul>
         </div>
       </section>
@@ -611,8 +723,20 @@ export default function Games() {
                       <GetPlatformIcon platform={game.platform} />
                       <span>{game.consoleModel}</span>
                     </li>
-                    <li>{game.genre}</li>
-                    <li>{game.tag}</li>
+                    <li>
+                      <span className="array">
+                        {Array.isArray(game.genre)
+                          ? game.genre.join(", ")
+                          : game.genre}
+                      </span>
+                    </li>
+                    <li>
+                      <span className="array">
+                        {Array.isArray(game.tag)
+                          ? game.tag.join(", ")
+                          : game.tag}
+                      </span>
+                    </li>
                   </ul>
                 </Link>
               ))}

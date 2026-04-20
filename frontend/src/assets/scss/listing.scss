@@ -113,6 +113,10 @@
           margin-bottom: 0;
         }
 
+        > p {
+          margin-bottom: $spacing-16;
+        }
+
         p {
           color: $black;
         }
