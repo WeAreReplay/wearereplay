@@ -42,6 +42,7 @@
   padding-block: 2rem;
 }
 .listing-main section .width-wrap .left .details ul {
+  align-items: start;
   display: grid;
   gap: 1rem;
   border-bottom: #f07c68 dashed 0.125rem;

@@ -33,7 +33,7 @@ const gamesData = [
     consoleModel: "Xbox One",
     price: 90,
     genre: "RPG",
-    tag: "Futuristic",
+    tag: ["Futuristic", "Coop", "Singleplayer", "Open World"],
     status: "Pending",
     about: "Updated version with DLC expansion.",
     borrowDuration: 90,
@@ -91,12 +91,18 @@ export default function Listing() {
 
                 <li>
                   <h3>Genre:</h3>
-                  <span>{item?.genre}</span>
+                  <span>
+                    {Array.isArray(item.genre)
+                      ? item.genre.join(", ")
+                      : item.genre}
+                  </span>
                 </li>
 
                 <li>
                   <h3>Tag:</h3>
-                  <span>{item?.tag}</span>
+                  <span>
+                    {Array.isArray(item.tag) ? item.tag.join(", ") : item.tag}
+                  </span>
                 </li>
               </ul>
 
