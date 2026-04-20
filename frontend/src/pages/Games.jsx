@@ -563,7 +563,7 @@ export default function Games() {
                 </button>
               )}
             </li>
-            <ul className="group-filters" ref={checkBoxRef}>
+            <ul className="group-filters">
               {
                 // * Model Filter
               }
@@ -622,76 +622,77 @@ export default function Games() {
                 </button>
               </li>
 
-              {openFilter && (
-                <li className="checkbox-ctr">
-                  {openFilter === "tag" &&
-                    TAG_OPTIONS.filter((t) => t !== "All").map((t) => (
+              <li
+                className={`checkbox-ctr ${openFilter ? "open" : ""}`}
+                ref={checkBoxRef}
+              >
+                {openFilter === "tag" &&
+                  TAG_OPTIONS.filter((t) => t !== "All").map((t) => (
+                    <label
+                      key={t}
+                      className={tagFilter.includes(t) ? "selected" : ""}
+                    >
+                      <input
+                        type="checkbox"
+                        checked={tagFilter.includes(t)}
+                        onChange={() => {
+                          setTagFilter((prev) =>
+                            prev.includes(t)
+                              ? prev.filter((x) => x !== t)
+                              : [...prev, t],
+                          );
+                        }}
+                      />
+                      {t}
+                    </label>
+                  ))}
+
+                {openFilter === "genre" &&
+                  GENRE_OPTIONS.filter((g) => g !== "All").map((g) => (
+                    <label
+                      key={g}
+                      className={genreFilter.includes(g) ? "selected" : ""}
+                    >
+                      <input
+                        type="checkbox"
+                        checked={genreFilter.includes(g)}
+                        onChange={() => {
+                          setGenreFilter((prev) =>
+                            prev.includes(g)
+                              ? prev.filter((x) => x !== g)
+                              : [...prev, g],
+                          );
+                        }}
+                      />
+                      {g}
+                    </label>
+                  ))}
+
+                {openFilter === "model" &&
+                  availableModels
+                    .filter((m) => m !== "All")
+                    .map((model) => (
                       <label
-                        key={t}
-                        className={tagFilter.includes(t) ? "selected" : ""}
+                        key={model}
+                        className={
+                          modelFilter.includes(model) ? "selected" : ""
+                        }
                       >
                         <input
                           type="checkbox"
-                          checked={tagFilter.includes(t)}
+                          checked={modelFilter.includes(model)}
                           onChange={() => {
-                            setTagFilter((prev) =>
-                              prev.includes(t)
-                                ? prev.filter((x) => x !== t)
-                                : [...prev, t],
+                            setModelFilter((prev) =>
+                              prev.includes(model)
+                                ? prev.filter((x) => x !== model)
+                                : [...prev, model],
                             );
                           }}
                         />
-                        {t}
+                        {model}
                       </label>
                     ))}
-
-                  {openFilter === "genre" &&
-                    GENRE_OPTIONS.filter((g) => g !== "All").map((g) => (
-                      <label
-                        key={g}
-                        className={genreFilter.includes(g) ? "selected" : ""}
-                      >
-                        <input
-                          type="checkbox"
-                          checked={genreFilter.includes(g)}
-                          onChange={() => {
-                            setGenreFilter((prev) =>
-                              prev.includes(g)
-                                ? prev.filter((x) => x !== g)
-                                : [...prev, g],
-                            );
-                          }}
-                        />
-                        {g}
-                      </label>
-                    ))}
-
-                  {openFilter === "model" &&
-                    availableModels
-                      .filter((m) => m !== "All")
-                      .map((model) => (
-                        <label
-                          key={model}
-                          className={
-                            modelFilter.includes(model) ? "selected" : ""
-                          }
-                        >
-                          <input
-                            type="checkbox"
-                            checked={modelFilter.includes(model)}
-                            onChange={() => {
-                              setModelFilter((prev) =>
-                                prev.includes(model)
-                                  ? prev.filter((x) => x !== model)
-                                  : [...prev, model],
-                              );
-                            }}
-                          />
-                          {model}
-                        </label>
-                      ))}
-                </li>
-              )}
+              </li>
             </ul>
           </ul>
         </div>

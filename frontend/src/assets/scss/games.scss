@@ -191,7 +191,7 @@
           .checkbox-ctr {
             max-width: 480px;
             padding: $spacing-16;
-            display: flex;
+            display: none;
             flex-wrap: wrap;
             gap: $spacing-4;
             position: absolute;
@@ -200,6 +200,10 @@
             border: $orange solid $border-xsmall;
             border-radius: $border-large;
             top: 8rem;
+
+            &.open {
+              display: flex;
+            }
 
             label {
               position: relative;

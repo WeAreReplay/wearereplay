@@ -178,7 +178,7 @@
 .games-main .hero .width-wrap .filter-bar .group-filters .checkbox-ctr {
   max-width: 480px;
   padding: 1rem;
-  display: flex;
+  display: none;
   flex-wrap: wrap;
   gap: 0.25rem;
   position: absolute;
@@ -187,6 +187,9 @@
   border: #f07c68 solid 0.125rem;
   border-radius: 1rem;
   top: 8rem;
+}
+.games-main .hero .width-wrap .filter-bar .group-filters .checkbox-ctr.open {
+  display: flex;
 }
 .games-main .hero .width-wrap .filter-bar .group-filters .checkbox-ctr label {
   position: relative;
