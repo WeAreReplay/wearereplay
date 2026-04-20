@@ -10,6 +10,7 @@ import Games from "./pages/Games";
 import NotFound from "./pages/NotFound";
 import Auth from "./pages/Auth";
 import Listing from "./pages/Listing";
+import Contact from "./pages/Contact";
 
 function App() {
   return (
@@ -22,6 +23,7 @@ function App() {
             <Route path="/" element={<Index />} />
             <Route path="/games" element={<Games />} />
             <Route path="/listing/:id" element={<Listing />} />
+            <Route path="/contact" element={<Contact />} />
 
             <Route path="/privacy-policy" element={<Legal type="privacy" />} />
             <Route

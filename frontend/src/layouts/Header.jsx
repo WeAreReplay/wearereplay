@@ -7,6 +7,7 @@ import {
   RiStoreFill,
   RiDashboardHorizontalFill,
   RiLogoutCircleFill,
+  RiMailFill,
 } from "react-icons/ri";
 import { FaShoppingBasket } from "react-icons/fa";
 
@@ -26,6 +27,7 @@ export default function Header() {
     { txt: "Games", path: "/games", icon: RiStoreFill },
     { txt: "Support", path: "/support", icon: RiQuestionFill },
     { txt: "About", path: "/about", icon: RiInformationFill },
+    { txt: "Contact", path: "/contact", icon: RiMailFill },
   ];
 
   const socialList = [
