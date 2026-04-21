@@ -308,7 +308,7 @@ export default function Listing() {
                 color="red"
                 icon="error"
                 title="Borrowing Restricted"
-                message={`You have reached your limit (${activeBorrowedGames}/${maxBorrows}).`}
+                message={`You can only borrow ${activeBorrowedGames} games. Upgrade to Premium for higher borrowing limits.`}
                 isVisible={true}
               />
             )}
