@@ -9,7 +9,7 @@ import {
   RiLogoutCircleFill,
   RiMailFill,
 } from "react-icons/ri";
-import { FaShoppingBasket } from "react-icons/fa";
+import { FaUser } from "react-icons/fa";
 
 import { BiLogoFacebookSquare, BiLogoInstagramAlt } from "react-icons/bi";
 import { MdGamepad } from "react-icons/md";
@@ -93,9 +93,9 @@ export default function Header() {
                           </Link>
                         </li>
                         <li>
-                          <Link to="/cart" className="user-link">
-                            <FaShoppingBasket className="icon" />
-                            <span>Cart</span>
+                          <Link to="/profile" className="user-link">
+                            <FaUser className="icon" />
+                            <span>Profile</span>
                           </Link>
                         </li>
                         <li>

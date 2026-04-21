@@ -4,6 +4,7 @@ import ResetScrollBehavior from "./components/ResetScrollBehavior";
 import PublicLayout from "./layouts/PublicLayout";
 import Index from "./pages/Index";
 import Dashboard from "./pages/UserDashboard";
+import Profile from "./pages/Profile";
 import Admin from "./pages/Admin";
 import Legal from "./pages/Legal";
 import Games from "./pages/Games";
@@ -31,6 +32,7 @@ function App() {
             />
           </Route>
           <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/profile" element={<Profile />} />
           <Route path="/admin" element={<Admin />} />
           <Route path="/login" element={<Auth mode="login" />} />
           <Route path="/register" element={<Auth mode="register" />} />
