@@ -233,7 +233,7 @@ export default function Dashboard() {
 
   // ! ---------------- USER ROLE ----------------
   const role = user?.role || "regular";
-  const currentRole = ROLE_CONFIG[role];
+  const currentRole = ROLE_CONFIG[role] || ROLE_CONFIG.regular;
 
   /*
     ! Modal State Grouping
