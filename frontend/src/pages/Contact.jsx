@@ -1,10 +1,11 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { RiHome7Fill, RiSendPlaneFill, RiMailFill, RiMessage3Fill } from "react-icons/ri";
+import { RiHome7Fill, RiSendPlaneFill, RiMailFill, RiMessage3Fill, RiAttachmentLine, RiCloseLine, RiImageLine } from "react-icons/ri";
 import { useAuth } from "../contexts/AuthContext";
 import Toast from "../components/Toast";
 import InputField from "../components/InputField";
 import "../assets/css/contact.css";
+import "../assets/css/contact-attachments.css";
 
 // API Base URL
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
@@ -25,6 +26,8 @@ export default function Contact() {
   const [toast, setToast] = useState(null);
   const [hasConversation, setHasConversation] = useState(false);
   const [conversation, setConversation] = useState([]);
+  const [attachments, setAttachments] = useState([]);
+  const fileInputRef = useRef(null);
 
   // Pre-fill user data if authenticated
   useEffect(() => {
@@ -69,11 +72,51 @@ export default function Contact() {
     }));
   };
 
+  // Handle file selection
+  const handleFileSelect = (e) => {
+    const files = Array.from(e.target.files);
+    if (files.length + attachments.length > 3) {
+      setToast({
+        color: "red",
+        icon: "error",
+        message: "Maximum 3 files allowed per message.",
+      });
+      return;
+    }
+
+    // Validate file size (5MB max)
+    const validFiles = files.filter((file) => {
+      if (file.size > 5 * 1024 * 1024) {
+        setToast({
+          color: "red",
+          icon: "error",
+          message: `${file.name} is too large. Maximum file size is 5MB.`,
+        });
+        return false;
+      }
+      return true;
+    });
+
+    setAttachments((prev) => [...prev, ...validFiles]);
+  };
+
+  // Remove attachment
+  const removeAttachment = (index) => {
+    setAttachments((prev) => prev.filter((_, i) => i !== index));
+  };
+
+  // Check if file is an image
+  const isImage = (file) => file.type.startsWith("image/");
+
   // Submit handler
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!formData.message.trim() || loading) return;
+    // Allow message with content or attachments
+    const hasContent = formData.message.trim().length > 0;
+    const hasAttachments = attachments.length > 0;
+
+    if ((!hasContent && !hasAttachments) || loading) return;
 
     // Check if user is authenticated
     if (!isAuthenticated()) {
@@ -91,16 +134,22 @@ export default function Contact() {
     setLoading(true);
 
     try {
+      // Create FormData for multipart upload
+      const formDataToSend = new FormData();
+      formDataToSend.append("content", formData.message);
+
+      // Add attachments
+      attachments.forEach((file) => {
+        formDataToSend.append("attachments", file);
+      });
+
       const response = await fetch(`${API_URL}/messages`, {
         method: "POST",
         headers: {
-          "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
+          // Don't set Content-Type - browser will set it with boundary for FormData
         },
-        body: JSON.stringify({
-          content: formData.message,
-          // receiverId is optional - backend will auto-find an admin
-        }),
+        body: formDataToSend,
       });
 
       const data = await response.json();
@@ -115,11 +164,12 @@ export default function Contact() {
         message: "Message sent successfully! We'll get back to you soon.",
       });
 
-      // Reset message field
+      // Reset form
       setFormData((prev) => ({
         ...prev,
         message: "",
       }));
+      setAttachments([]);
 
       // Refresh conversation
       fetchConversation();
@@ -172,7 +222,43 @@ export default function Contact() {
                   className={`message ${msg.sender.role === "admin" ? "admin" : "user"}`}
                 >
                   <div className="message-content">
-                    <p>{msg.content}</p>
+                    {msg.content && <p>{msg.content}</p>}
+                    {/* Display Attachments */}
+                    {msg.attachments && msg.attachments.length > 0 && (
+                      <div className="message-attachments">
+                        {msg.attachments.map((att, idx) => (
+                          <div key={idx} className="attachment-item">
+                            {att.mimeType?.startsWith("image/") ? (
+                              <a
+                                href={`${API_URL.replace("/api", "")}${att.url}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="attachment-image"
+                              >
+                                <img
+                                  src={`${API_URL.replace("/api", "")}${att.url}`}
+                                  alt={att.filename}
+                                  loading="lazy"
+                                />
+                              </a>
+                            ) : (
+                              <a
+                                href={`${API_URL.replace("/api", "")}${att.url}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="attachment-file"
+                              >
+                                <span className="file-icon">📄</span>
+                                <span className="file-name">{att.filename}</span>
+                                <span className="file-size">
+                                  {(att.size / 1024).toFixed(1)} KB
+                                </span>
+                              </a>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    )}
                     <span className="message-meta">
                       {msg.sender.firstName} • {formatDate(msg.createdAt)}
                     </span>
@@ -227,11 +313,62 @@ export default function Contact() {
                 placeholder="Type your message here..."
                 rows={5}
                 maxLength={5000}
-                required
               />
               <span className="char-count">
                 {formData.message.length}/5000
               </span>
+            </li>
+
+            {/* Attachments Field */}
+            <li className="field-item attachments-item">
+              <label>Attachments (Optional)</label>
+              <input
+                type="file"
+                ref={fileInputRef}
+                onChange={handleFileSelect}
+                multiple
+                accept="image/*,.pdf,.doc,.docx,.txt"
+                style={{ display: "none" }}
+              />
+              <button
+                type="button"
+                className="attach-btn"
+                onClick={() => fileInputRef.current?.click()}
+                disabled={attachments.length >= 3}
+              >
+                <RiAttachmentLine className="icon" />
+                <span>Add Files ({attachments.length}/3)</span>
+              </button>
+
+              {/* Attachment Previews */}
+              {attachments.length > 0 && (
+                <div className="attachment-previews">
+                  {attachments.map((file, index) => (
+                    <div key={index} className="attachment-preview">
+                      {isImage(file) ? (
+                        <div className="preview-image">
+                          <RiImageLine className="icon" />
+                          <span className="filename">{file.name}</span>
+                        </div>
+                      ) : (
+                        <div className="preview-file">
+                          <span className="filename">{file.name}</span>
+                          <span className="filesize">
+                            {(file.size / 1024).toFixed(1)} KB
+                          </span>
+                        </div>
+                      )}
+                      <button
+                        type="button"
+                        className="remove-btn"
+                        onClick={() => removeAttachment(index)}
+                      >
+                        <RiCloseLine />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
             </li>
           </ul>
 
@@ -251,11 +388,18 @@ export default function Contact() {
 
             <button
               type="submit"
-              disabled={!formData.message.trim() || loading}
+              disabled={
+                (!formData.message.trim() && attachments.length === 0) ||
+                loading
+              }
               className="send-btn"
             >
               <RiSendPlaneFill className="icon" />
-              <span>{loading ? "Sending..." : "Send Message"}</span>
+              <span>
+                {loading ? "Sending..." : attachments.length > 0
+                  ? `Send Message (${attachments.length} file${attachments.length > 1 ? "s" : ""})`
+                  : "Send Message"}
+              </span>
             </button>
           </div>
         </form>

@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import "../assets/css/dashboard.css";
+import "../assets/css/contact-attachments.css";
 import DashboardHeader from "../layouts/DashboardHeader";
 import { useAuth } from "../contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
@@ -702,7 +703,43 @@ export default function Admin() {
                           }`}
                         >
                           <div className="message-content">
-                            <p>{msg.content}</p>
+                            {msg.content && <p>{msg.content}</p>}
+                            {/* Display Attachments */}
+                            {msg.attachments && msg.attachments.length > 0 && (
+                              <div className="message-attachments">
+                                {msg.attachments.map((att, idx) => (
+                                  <div key={idx} className="attachment-item">
+                                    {att.mimeType?.startsWith("image/") ? (
+                                      <a
+                                        href={`${API_URL.replace("/api", "")}${att.url}`}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="attachment-image"
+                                      >
+                                        <img
+                                          src={`${API_URL.replace("/api", "")}${att.url}`}
+                                          alt={att.filename}
+                                          loading="lazy"
+                                        />
+                                      </a>
+                                    ) : (
+                                      <a
+                                        href={`${API_URL.replace("/api", "")}${att.url}`}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="attachment-file"
+                                      >
+                                        <span className="file-icon">📄</span>
+                                        <span className="file-name">{att.filename}</span>
+                                        <span className="file-size">
+                                          {(att.size / 1024).toFixed(1)} KB
+                                        </span>
+                                      </a>
+                                    )}
+                                  </div>
+                                ))}
+                              </div>
+                            )}
                             <span className="message-meta">
                               {msg.sender.firstName} • {formatDate(msg.createdAt)}
                             </span>

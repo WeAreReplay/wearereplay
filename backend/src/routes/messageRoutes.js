@@ -11,17 +11,18 @@ import {
 } from '../controllers/messageController.js';
 import protect from '../middleware/authMiddleware.js';
 import admin from '../middleware/adminMiddleware.js';
+import { uploadAttachments, handleUploadError } from '../middleware/uploadMiddleware.js';
 
 const router = Router();
 
 /**
  * Validation rules for sending messages
+ * Content is optional if attachments are provided
  */
 const messageValidation = [
   body('content')
+    .optional()
     .trim()
-    .notEmpty()
-    .withMessage('Message content is required')
     .isLength({ max: 5000 })
     .withMessage('Message cannot exceed 5000 characters'),
 ];
@@ -41,10 +42,17 @@ const adminReplyValidation = [
 
 /**
  * @route   POST /api/messages
- * @desc    Send a message (User -> Admin)
+ * @desc    Send a message (User -> Admin) with optional attachments
  * @access  Private (Authenticated users)
  */
-router.post('/', protect, messageValidation, sendMessage);
+router.post(
+  '/',
+  protect,
+  uploadAttachments,
+  handleUploadError,
+  messageValidation,
+  sendMessage
+);
 
 /**
  * @route   GET /api/messages/my-conversation

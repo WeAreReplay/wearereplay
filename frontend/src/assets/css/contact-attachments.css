@@ -1,0 +1,162 @@
+/* Attachments */
+.attachments-item {
+  gap: 0.75rem;
+}
+
+.attach-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  background: transparent;
+  border: 2px dashed rgba(255, 255, 255, 0.3);
+  border-radius: 8px;
+  color: #fff;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 0.9rem;
+}
+
+.attach-btn:hover:not(:disabled) {
+  border-color: #fbead9;
+  background: rgba(251, 234, 217, 0.1);
+}
+
+.attach-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.attachment-previews {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-top: 0.5rem;
+}
+
+.attachment-preview {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.preview-image,
+.preview-file {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex: 1;
+}
+
+.preview-image .icon {
+  width: 1.25rem;
+  height: 1.25rem;
+  color: #fbead9;
+}
+
+.filename {
+  font-size: 0.85rem;
+  color: #fff;
+  max-width: 150px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.filesize {
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.remove-btn {
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.6);
+  cursor: pointer;
+  padding: 0.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.2s ease;
+}
+
+.remove-btn:hover {
+  color: #ff6b6b;
+}
+
+/* Message Attachments Display */
+.message-attachments {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: 0.5rem 0;
+}
+
+.attachment-item {
+  max-width: 200px;
+}
+
+.attachment-image img {
+  max-width: 180px;
+  max-height: 120px;
+  border-radius: 8px;
+  object-fit: cover;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  transition: transform 0.2s ease;
+}
+
+.attachment-image img:hover {
+  transform: scale(1.02);
+}
+
+.attachment-file {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 6px;
+  text-decoration: none;
+  color: #fff;
+  font-size: 0.85rem;
+  transition: background 0.2s ease;
+}
+
+.attachment-file:hover {
+  background: rgba(0, 0, 0, 0.3);
+}
+
+.file-icon {
+  font-size: 1.2rem;
+}
+
+.file-name {
+  max-width: 120px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.file-size {
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 0.75rem;
+}
+
+/* Admin conversation attachments */
+.messages-list-admin .message-attachments {
+  margin: 0.5rem 0;
+}
+
+.messages-list-admin .attachment-image img {
+  max-width: 150px;
+  max-height: 100px;
+}
+
+.messages-list-admin .attachment-file {
+  font-size: 0.8rem;
+  padding: 0.4rem 0.6rem;
+}

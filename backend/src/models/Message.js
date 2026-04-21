@@ -35,6 +35,27 @@ const messageSchema = new mongoose.Schema(
       required: [true, 'Conversation ID is required'],
       index: true,
     },
+    // Attachments (images, files)
+    attachments: [
+      {
+        url: {
+          type: String,
+          required: true,
+        },
+        filename: {
+          type: String,
+          required: true,
+        },
+        mimeType: {
+          type: String,
+          required: true,
+        },
+        size: {
+          type: Number,
+          required: true,
+        },
+      },
+    ],
   },
   {
     timestamps: true,

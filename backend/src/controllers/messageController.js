@@ -11,11 +11,14 @@ export const sendMessage = async (req, res) => {
     const { content, receiverId } = req.body;
     const senderId = req.userId;
 
-    // Validate content
-    if (!content || content.trim().length === 0) {
+    // Validate that either content or attachments are provided
+    const hasContent = content && content.trim().length > 0;
+    const hasAttachments = req.files && req.files.length > 0;
+
+    if (!hasContent && !hasAttachments) {
       return res.status(400).json({
         success: false,
-        message: 'Message content is required',
+        message: 'Message must contain either text content or attachments',
       });
     }
 
@@ -58,12 +61,23 @@ export const sendMessage = async (req, res) => {
     // If sender is user, conversation is with sender (user)
     const conversationId = sender.role === 'admin' ? receiver._id : senderId;
 
+    // Process attachments if any files were uploaded
+    const attachments = req.files
+      ? req.files.map((file) => ({
+          url: `/uploads/messages/${file.filename}`,
+          filename: file.originalname,
+          mimeType: file.mimetype,
+          size: file.size,
+        }))
+      : [];
+
     // Create the message
     const message = await Message.create({
       sender: senderId,
       receiver: receiver._id,
       content: content.trim(),
       conversationId,
+      attachments,
     });
 
     // Populate sender and receiver info for the response
