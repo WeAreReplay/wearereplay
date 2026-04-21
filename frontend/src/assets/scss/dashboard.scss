@@ -25,17 +25,27 @@
 
     .table-header {
       display: flex;
+      flex-wrap: wrap;
       align-items: center;
       justify-content: space-between;
+      gap: $spacing-16;
       padding-inline: $spacing-16;
 
       button,
       a {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: $spacing-16;
         border-radius: $border-large;
         padding: $spacing-16;
         border: $border-small solid $orange;
         text-transform: uppercase;
         color: $orange;
+
+        .icon {
+          width: $spacing-16;
+        }
       }
     }
 

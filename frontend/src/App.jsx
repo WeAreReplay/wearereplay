@@ -24,7 +24,6 @@ function App() {
             <Route path="/games" element={<Games />} />
             <Route path="/listing/:id" element={<Listing />} />
             <Route path="/contact" element={<Contact />} />
-
             <Route path="/privacy-policy" element={<Legal type="privacy" />} />
             <Route
               path="/terms-and-conditions"

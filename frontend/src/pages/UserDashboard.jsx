@@ -12,6 +12,7 @@ import {
   FaCheck,
   FaShoppingBasket,
   FaList,
+  FaPlus,
 } from "react-icons/fa";
 import { MdReport, MdChatBubble } from "react-icons/md";
 import Toast from "../components/Toast";
@@ -27,6 +28,27 @@ import { useAuth } from "../contexts/AuthContext";
 // TODO: Replace borrowed games, listings and history data and connect to backend API (current borrowed games, rental history, active listings, listing history endpoint)
 
 // ! ---------------- HELPERS ----------------
+
+const ROLE_CONFIG = {
+  regular: {
+    maxListings: 6,
+    maxBorrows: 3,
+    protectionFeeMin: 6,
+    protectionFeeMax: 10,
+    gracePeriod: 0,
+    hasPrioritySupport: false,
+    hasBadge: false,
+  },
+
+  premium: {
+    maxListings: Infinity,
+    maxBorrows: 10,
+    protectionFeeCap: 6,
+    gracePeriod: 2,
+    hasPrioritySupport: true,
+    hasBadge: true,
+  },
+};
 
 const STATUS = {
   AVAILABLE: "available",
@@ -87,12 +109,16 @@ const calculateDueDate = (startDate, borrowDuration) => {
   return due;
 };
 
-const isOverdue = (startDate, borrowDuration) => {
+const isOverdue = (startDate, borrowDuration, role) => {
   if (!startDate) return false;
 
   const start = new Date(startDate);
   const due = new Date(start);
-  due.setDate(due.getDate() + Number(borrowDuration));
+
+  const grace = ROLE_CONFIG[role]?.gracePeriod || 0;
+
+  // * Add a grace period to the due date
+  due.setDate(due.getDate() + Number(borrowDuration) + grace);
 
   return new Date() > due;
 };
@@ -104,9 +130,9 @@ const isOverdue = (startDate, borrowDuration) => {
   * Determines state of a listed game
   ? Used for lender's listing availability
 */
-const getLenderStatus = (game) => {
+const getLenderStatus = (game, role) => {
   const status = game.status?.toLowerCase();
-  const overdue = isOverdue(game.startDate, game.borrowDuration);
+  const overdue = isOverdue(game.startDate, game.borrowDuration, role);
 
   if (status === STATUS.PENDING) return STATUS.PENDING;
   if (status === STATUS.DELIVERING) return STATUS.DELIVERING;
@@ -151,9 +177,9 @@ const getLenderActions = (game) => {
   * Determines state of a rented game
   ? Used for UI status badges
 */
-const getBorrowStatus = (game) => {
+const getBorrowStatus = (game, role) => {
   const status = game.status?.toLowerCase();
-  const overdue = isOverdue(game.startDate, game.borrowDuration);
+  const overdue = isOverdue(game.startDate, game.borrowDuration, role);
 
   if (status === STATUS.DELIVERING) return STATUS.DELIVERING;
   if (status === STATUS.RETURNING) return STATUS.RETURNING;
@@ -204,6 +230,10 @@ export default function Dashboard() {
   const [editData, setEditData] = useState(null);
   const [confirmAction, setConfirmAction] = useState(null);
   const [activeTab, setActiveTab] = useState("borrowed_games");
+
+  // ! ---------------- USER ROLE ----------------
+  const role = user?.role || "regular";
+  const currentRole = ROLE_CONFIG[role];
 
   /*
     ! Modal State Grouping
@@ -444,7 +474,7 @@ export default function Dashboard() {
       platform: "Xbox",
       consoleModel: "Xbox Series X",
       listedBy: "PlayerSeven",
-      status: "returning",
+      status: "returned",
       startDate: "2026-04-05",
       dueDate: "2026-04-15",
       price: 80,
@@ -520,6 +550,20 @@ export default function Dashboard() {
     },
   ];
 
+  const isActiveBorrow = (game) => {
+    const status = game.status?.toLowerCase();
+
+    return status !== "returned";
+  };
+
+  const activeBorrowedGames = borrowedGames.filter(isActiveBorrow).length;
+
+  const activeListings = listedGames.filter(
+    (game) => game.status?.toLowerCase() !== "returned",
+  ).length;
+
+  const totalListings = activeListings + pendingListings.length;
+
   // ! ---------------- LENDER HANDLERS ----------------
 
   /*
@@ -546,7 +590,9 @@ export default function Dashboard() {
         status: "Pending",
       };
 
-      setPendingListings((prev) => [updatedItem, ...prev]);
+      setPendingListings((prev) =>
+        prev.map((item) => (item.id === editData.id ? updatedItem : item)),
+      );
 
       setToast({
         color: "blue",
@@ -555,6 +601,15 @@ export default function Dashboard() {
         message: "sent for re-approval!",
       });
     } else {
+      if (totalListings >= currentRole.maxListings) {
+        setToast({
+          color: "red",
+          title: "Limit reached",
+          message: `You can only list ${currentRole.maxListings} games. Upgrade to Premium for unlimited listings.`,
+        });
+        return;
+      }
+
       const newItem = {
         id: Date.now(),
         name: newListing.name,
@@ -635,10 +690,10 @@ export default function Dashboard() {
 */
   const handleConfirmDelete = () => {
     const game = confirmAction?.game;
-
     if (!game) return;
 
     setListedGames((prev) => prev.filter((l) => l.id !== game.id));
+    setPendingListings((prev) => prev.filter((l) => l.id !== game.id));
 
     setToast({
       color: "red",
@@ -916,6 +971,7 @@ export default function Dashboard() {
             COLS.text("Delivery Method", "deliveryMethod"),
             COLS.text("Borrow Duration (Days)", "borrowDuration"),
             COLS.status,
+            COLS.actions,
           ],
         },
         {
@@ -996,16 +1052,38 @@ export default function Dashboard() {
 
                   {table.title === "Active Borrowed Games" && (
                     <Link to="/games" className="table-action-link">
-                      Browse More Games
+                      <FaShoppingBasket className="icon" />
+                      <span>
+                        {currentRole.maxBorrows === Infinity
+                          ? "Browse More Games"
+                          : `Browse More Games (${activeBorrowedGames}/${currentRole.maxBorrows})`}
+                      </span>
                     </Link>
                   )}
 
                   {table.title === "Active Listings" && (
                     <button
                       className="table-action-link"
-                      onClick={() => setShowForm(true)}
+                      onClick={() => {
+                        if (totalListings >= currentRole.maxListings) {
+                          setToast({
+                            color: "red",
+                            title: "Limit reached",
+                            message: `You can only list ${currentRole.maxListings} games. Upgrade to Premium for unlimited listings.`,
+                          });
+                          return;
+                        }
+
+                        setShowForm(true);
+                      }}
                     >
-                      Create Listing
+                      <FaPlus className="icon" />
+
+                      <span>
+                        {currentRole.maxListings === Infinity
+                          ? "Create Listing"
+                          : `Create Listing (${totalListings}/${currentRole.maxListings})`}
+                      </span>
                     </button>
                   )}
                 </div>
@@ -1022,7 +1100,7 @@ export default function Dashboard() {
                     <ul className="table-content">
                       {table.data.map((row, rowIndex) => {
                         const statusClass = table.statusFn
-                          ? table.statusFn(row)
+                          ? table.statusFn(row, role)
                           : null;
 
                         return (
@@ -1091,10 +1169,16 @@ export default function Dashboard() {
                                 // ! ACTIONS
                               }
                               if (col.isActions) {
-                                const actions =
-                                  table.title === "Active Listings"
-                                    ? getLenderActions(row)
-                                    : getBorrowerActions(row);
+                                let actions = [];
+
+                                if (table.title === "Active Listings") {
+                                  actions = getLenderActions(row);
+                                } else if (table.title === "Pending Listings") {
+                                  actions = ["edit", "delete"];
+                                } else {
+                                  actions = getBorrowerActions(row);
+                                }
+
                                 if (!actions.length) {
                                   return (
                                     <span

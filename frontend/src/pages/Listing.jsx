@@ -8,6 +8,7 @@ import indianaJones from "../assets/images/indiana-jones.webp";
 import zelda from "../assets/images/zelda.webp";
 import hogwarts from "../assets/images/hogwarts.webp";
 import pokemon from "../assets/images/pokemon.webp";
+import Toast from "../components/Toast";
 
 const gamesData = [
   {
@@ -60,10 +61,102 @@ const gamesData = [
   },
 ];
 
+const ROLE_LIMITS = {
+  regular: 3,
+  premium: Infinity,
+};
+
 export default function Listing() {
+  const borrowedGames = [
+    {
+      id: 2,
+      name: "Elden Ring",
+      platform: "PlayStation",
+      consoleModel: "PS5",
+      listedBy: "PlayerSix",
+      status: "rented",
+      startDate: "2026-04-10",
+      dueDate: "2026-04-25",
+      price: 140,
+      genre: ["RPG"],
+      tag: ["Challenging"],
+      about: "Hardcore RPG experience.",
+      borrowDuration: 15,
+      hasExpansions: "yes",
+      deliveryMethod: "Meet-up",
+      image: indianaJones,
+    },
+
+    {
+      id: 3,
+      name: "Halo Infinite",
+      platform: "Xbox",
+      consoleModel: "Xbox Series X",
+      listedBy: "PlayerSeven",
+      status: "returned",
+      startDate: "2026-04-05",
+      dueDate: "2026-04-15",
+      price: 80,
+      genre: ["Shooter"],
+      tag: ["Multiplayer"],
+      about: "Includes multiplayer pass.",
+      borrowDuration: 10,
+      hasExpansions: "no",
+      deliveryMethod: "Drop-off",
+      image: pokemon,
+    },
+
+    {
+      id: 10,
+      name: "Halo Infinite",
+      platform: "Xbox",
+      consoleModel: "Xbox Series X",
+      listedBy: "PlayerSeven",
+      status: "rented",
+      startDate: "2026-04-05",
+      dueDate: "2026-04-15",
+      price: 80,
+      genre: ["Shooter"],
+      tag: ["Multiplayer"],
+      about: "Includes multiplayer pass.",
+      borrowDuration: 10,
+      hasExpansions: "no",
+      deliveryMethod: "Drop-off",
+      image: pokemon,
+    },
+
+    {
+      id: 4,
+      name: "Zelda Tears of the Kingdom",
+      platform: "Nintendo",
+      consoleModel: "Switch OLED",
+      listedBy: "PlayerEight",
+      status: "delivering",
+      startDate: null,
+      dueDate: null,
+      price: 160,
+      genre: ["Adventure"],
+      tag: ["Open World"],
+      about: "Brand new sealed.",
+      borrowDuration: 7,
+      hasExpansions: "no",
+      deliveryMethod: "Pick-up",
+      image: zelda,
+    },
+  ];
+
+  const activeBorrowedGames = borrowedGames.filter(
+    (g) => g.status !== "returned",
+  ).length;
+
   const { id } = useParams();
 
   const item = gamesData.find((l) => l.id === Number(id));
+
+  // ! ---------------- USER ROLE ----------------
+  const userRole = "regular";
+  const maxBorrows = ROLE_LIMITS[userRole];
+  const isBorrowBlocked = activeBorrowedGames >= maxBorrows;
 
   if (!item) {
     return <Navigate to="/notfound" replace />;
@@ -204,12 +297,21 @@ export default function Listing() {
                 </button>
               </li>
               <li>
-                <button>
+                <button disabled={isBorrowBlocked}>
                   <FaMoneyBill className="icon" />
                   <span>Borrow</span>
                 </button>
               </li>
             </ul>
+            {isBorrowBlocked && (
+              <Toast
+                color="red"
+                icon="error"
+                title="Borrowing Restricted"
+                message={`You have reached your limit (${activeBorrowedGames}/${maxBorrows}).`}
+                isVisible={true}
+              />
+            )}
           </aside>
         </div>
       </section>

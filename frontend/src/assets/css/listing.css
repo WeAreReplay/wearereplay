@@ -125,11 +125,12 @@
   top: 5.5rem;
   height: -moz-fit-content;
   height: fit-content;
-  border-radius: 1.5rem;
-  background-color: #f07c68;
   color: #fbead9;
 }
 .listing-main section .width-wrap .right .top {
+  border-top-left-radius: 1.5rem;
+  border-top-right-radius: 1.5rem;
+  background-color: #f07c68;
   padding: 2rem;
   display: grid;
   gap: 1.5rem;
@@ -152,10 +153,15 @@
   display: flex;
 }
 .listing-main section .width-wrap .right .bottom li {
+  background-color: #f07c68;
   width: 100%;
 }
 .listing-main section .width-wrap .right .bottom li:first-of-type {
   border-right: #fbead9 solid 0.125rem;
+  border-bottom-left-radius: 1.5rem;
+}
+.listing-main section .width-wrap .right .bottom li:last-of-type {
+  border-bottom-right-radius: 1.5rem;
 }
 .listing-main section .width-wrap .right .bottom li button {
   width: 100%;
@@ -169,4 +175,19 @@
 .listing-main section .width-wrap .right .bottom li button span {
   font-family: "VCR", monospace;
   text-transform: uppercase;
+}
+.listing-main section .width-wrap .right .toast {
+  margin-top: 1rem;
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  bottom: auto;
+  border-radius: 1.5rem;
+}
+.listing-main section .width-wrap .right .toast .icon {
+  margin-top: 0.25rem;
+}
+.listing-main section .width-wrap .right .toast .toast-content {
+  display: grid;
 }/*# sourceMappingURL=listing.css.map */

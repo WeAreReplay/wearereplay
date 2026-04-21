@@ -135,11 +135,12 @@
       position: sticky;
       top: $spacing-64 + $spacing-24;
       height: fit-content;
-      border-radius: $border-xlarge;
-      background-color: $orange;
       color: $white;
 
       .top {
+        border-top-left-radius: $border-xlarge;
+        border-top-right-radius: $border-xlarge;
+        background-color: $orange;
         padding: $spacing-32;
         display: grid;
         gap: $spacing-24;
@@ -165,10 +166,16 @@
         display: flex;
 
         li {
+          background-color: $orange;
           width: 100%;
 
           &:first-of-type {
             border-right: $white solid $border-xsmall;
+            border-bottom-left-radius: $border-xlarge;
+          }
+
+          &:last-of-type {
+            border-bottom-right-radius: $border-xlarge;
           }
 
           button {
@@ -185,6 +192,24 @@
               text-transform: uppercase;
             }
           }
+        }
+      }
+
+      .toast {
+        margin-top: $spacing-16;
+        position: relative;
+        display: flex;
+        align-items: flex-start;
+        gap: $spacing-8;
+        bottom: auto;
+        border-radius: $border-xlarge;
+
+        .icon {
+          margin-top: $spacing-4;
+        }
+
+        .toast-content {
+          display: grid;
         }
       }
     }
