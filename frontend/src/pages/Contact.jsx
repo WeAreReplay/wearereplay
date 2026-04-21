@@ -42,6 +42,16 @@ export default function Contact() {
     }
   }, [isAuthenticated, user]);
 
+  // Auto-dismiss toast after 3 seconds
+  useEffect(() => {
+    if (toast) {
+      const timer = setTimeout(() => {
+        setToast(null);
+      }, 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [toast]);
+
   // Fetch user's conversation with admin
   const fetchConversation = async () => {
     if (!token) return;
