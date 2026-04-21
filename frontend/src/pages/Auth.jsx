@@ -193,10 +193,10 @@ export default function Auth({ mode }) {
         });
 
         // Redirect based on role after a short delay
-        // Admin users → /dashboard, Regular users → /
+        // Admin users → /admin, Regular users → /
         setTimeout(() => {
           if (data.data.role === "admin") {
-            navigate("/dashboard", { replace: true });
+            navigate("/admin", { replace: true });
           } else {
             navigate("/", { replace: true });
           }
