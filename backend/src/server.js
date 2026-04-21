@@ -12,6 +12,7 @@ import connectDB from './config/database.js';
 import authRoutes from './routes/authRoutes.js';
 import adminRoutes from './routes/adminRoutes.js';
 import messageRoutes from './routes/messageRoutes.js';
+import userRoutes from './routes/userRoutes.js';
 import { notFound, errorHandler } from './middleware/errorMiddleware.js';
 
 // Initialize Express app
@@ -77,6 +78,7 @@ app.get('/api/health', (req, res) => {
 app.use('/api/auth', authRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/messages', messageRoutes);
+app.use('/api/users', userRoutes);
 
 // Root endpoint
 app.get('/', (req, res) => {

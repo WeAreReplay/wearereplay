@@ -852,4 +852,32 @@
   }
 }
 
+/* Profile Page Responsive Layout */
+@media (min-width: 900px) {
+  .profile-card {
+    grid-template-columns: 280px 1fr !important;
+    padding: 2.5rem !important;
+  }
+
+  .profile-card .profile-content {
+    display: contents !important;
+  }
+
+  .profile-card .profile-left-col {
+    border-bottom: none !important;
+    border-right: 2px solid #f07c68;
+    padding-bottom: 0 !important;
+    padding-right: 2rem;
+    align-items: flex-start !important;
+  }
+
+  .profile-card .profile-left-col > div:first-child {
+    align-self: flex-start !important;
+  }
+
+  .profile-card .profile-right-col {
+    padding-left: 1rem;
+  }
+}
+
 /*# sourceMappingURL=dashboard.css.map */

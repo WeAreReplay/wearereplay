@@ -40,6 +40,43 @@ const userSchema = new mongoose.Schema(
       enum: ['user', 'admin'],
       default: 'user',
     },
+    // Subscription fields
+    subscriptionStatus: {
+      type: String,
+      enum: ['inactive', 'active'],
+      default: 'inactive',
+    },
+    subscriptionType: {
+      type: String,
+      enum: ['regular', 'premium'],
+      default: 'regular',
+    },
+    subscriptionExpiry: {
+      type: Date,
+      default: null,
+    },
+    // User metrics (admin-controlled)
+    metrics: {
+      damageReports: { type: Number, default: 0 },
+      successfulReturns: { type: Number, default: 0 },
+      lateReturns: { type: Number, default: 0 },
+      lends: { type: Number, default: 0 },
+      borrows: { type: Number, default: 0 },
+      completionRate: { type: Number, default: 0 },
+      responseTime: { type: String, default: '< 24 Hours' },
+    },
+    // Admin-assigned rating (1-5 stars)
+    rating: {
+      type: Number,
+      min: 0,
+      max: 5,
+      default: 0,
+    },
+    // Profile picture URL/path
+    profilePicture: {
+      type: String,
+      default: null,
+    },
   },
   {
     timestamps: {

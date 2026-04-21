@@ -4,7 +4,7 @@ import "../assets/css/contact-attachments.css";
 import DashboardHeader from "../layouts/DashboardHeader";
 import { useAuth } from "../contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
-import { FaCheck, FaTimes, FaEye, FaList } from "react-icons/fa";
+import { FaCheck, FaTimes, FaEye, FaList, FaStar, FaRegStar, FaUsers, FaSave } from "react-icons/fa";
 import { MdReport, MdMessage } from "react-icons/md";
 import { RiSendPlaneFill } from "react-icons/ri";
 import donkeyKong from "../assets/images/donkey-kong.webp";
@@ -86,6 +86,7 @@ export default function Admin() {
     { key: "approvals", icon: FaList, label: "Listing Approvals" },
     { key: "reports", icon: MdReport, label: "User Reports" },
     { key: "messages", icon: MdMessage, label: "Messages" },
+    { key: "users", icon: FaUsers, label: "User Management" },
   ];
 
   useEffect(() => {
@@ -105,6 +106,158 @@ export default function Admin() {
       fetchUnreadCount();
     }
   }, [activeTab, token]);
+
+  // User Management State
+  const [users, setUsers] = useState([]);
+  const [selectedUser, setSelectedUser] = useState(null);
+  const [userMetricsForm, setUserMetricsForm] = useState({
+    damageReports: 0,
+    successfulReturns: 0,
+    lateReturns: 0,
+    lends: 0,
+    borrows: 0,
+    completionRate: 0,
+    responseTime: "< 24 Hours",
+  });
+  const [userRating, setUserRating] = useState(0);
+  const [usersLoading, setUsersLoading] = useState(false);
+
+  // Fetch users when users tab is active
+  useEffect(() => {
+    if (activeTab === "users" && token) {
+      fetchUsers();
+    }
+  }, [activeTab, token]);
+
+  const fetchUsers = async () => {
+    try {
+      setUsersLoading(true);
+      const response = await fetch(`${API_URL}/users`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      const data = await response.json();
+      if (data.success) {
+        setUsers(data.data.users);
+      }
+    } catch (error) {
+      console.error("Error fetching users:", error);
+      setToast({
+        color: "red",
+        icon: "error",
+        message: "Failed to load users",
+      });
+    } finally {
+      setUsersLoading(false);
+    }
+  };
+
+  const handleSelectUser = (user) => {
+    setSelectedUser(user);
+    setUserMetricsForm({
+      damageReports: user.metrics?.damageReports || 0,
+      successfulReturns: user.metrics?.successfulReturns || 0,
+      lateReturns: user.metrics?.lateReturns || 0,
+      lends: user.metrics?.lends || 0,
+      borrows: user.metrics?.borrows || 0,
+      completionRate: user.metrics?.completionRate || 0,
+      responseTime: user.metrics?.responseTime || "< 24 Hours",
+    });
+    setUserRating(user.rating || 0);
+  };
+
+  const handleUpdateMetrics = async () => {
+    try {
+      const response = await fetch(`${API_URL}/users/${selectedUser.id}/metrics`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(userMetricsForm),
+      });
+
+      const data = await response.json();
+      if (data.success) {
+        setToast({
+          color: "green",
+          icon: "check",
+          message: "User metrics updated successfully!",
+        });
+        fetchUsers();
+      } else {
+        throw new Error(data.message);
+      }
+    } catch (error) {
+      console.error("Error updating metrics:", error);
+      setToast({
+        color: "red",
+        icon: "error",
+        message: error.message || "Failed to update metrics",
+      });
+    }
+  };
+
+  const handleUpdateRating = async (newRating) => {
+    setUserRating(newRating);
+    try {
+      const response = await fetch(`${API_URL}/users/${selectedUser.id}/rating`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ rating: newRating }),
+      });
+
+      const data = await response.json();
+      if (data.success) {
+        setToast({
+          color: "green",
+          icon: "check",
+          message: "User rating updated successfully!",
+        });
+        fetchUsers();
+      } else {
+        throw new Error(data.message);
+      }
+    } catch (error) {
+      console.error("Error updating rating:", error);
+      setToast({
+        color: "red",
+        icon: "error",
+        message: error.message || "Failed to update rating",
+      });
+    }
+  };
+
+  // Star Rating Component for Admin
+  const StarRatingAdmin = ({ rating, onRate }) => {
+    const stars = [];
+    for (let i = 1; i <= 5; i++) {
+      stars.push(
+        <button
+          key={i}
+          onClick={() => onRate(i)}
+          style={{
+            background: "none",
+            border: "none",
+            cursor: "pointer",
+            padding: "0.25rem",
+          }}
+        >
+          {i <= rating ? (
+            <FaStar style={{ color: "#f07c68", fontSize: "1.5rem" }} />
+          ) : (
+            <FaRegStar style={{ color: "#f07c68", fontSize: "1.5rem", opacity: 0.3 }} />
+          )}
+        </button>
+      );
+    }
+    return <div style={{ display: "flex", gap: "0.25rem" }}>{stars}</div>;
+  };
 
   // ! ---------------- MESSAGING HANDLERS ----------------
 
@@ -769,6 +922,304 @@ export default function Admin() {
                   </form>
                 </div>
               )}
+            </div>
+          </section>
+        )}
+
+        {/* User Management Section */}
+        {activeTab === "users" && (
+          <section className="dashboard-content users-section">
+            <div className="title">
+              <h2>User Management</h2>
+            </div>
+
+            <div
+              style={{
+                display: "grid",
+                gridTemplateColumns: "1fr 1fr",
+                gap: "2rem",
+                padding: "1.5rem",
+              }}
+            >
+              {/* Users List */}
+              <div
+                style={{
+                  background: "#fff8f0",
+                  borderRadius: "12px",
+                  padding: "1.5rem",
+                  border: "2px solid #f07c68",
+                  maxHeight: "600px",
+                  overflowY: "auto",
+                }}
+              >
+                <h3
+                  style={{
+                    color: "#f07c68",
+                    marginBottom: "1rem",
+                    textTransform: "uppercase",
+                    fontSize: "1.1rem",
+                  }}
+                >
+                  All Users
+                </h3>
+                {usersLoading ? (
+                  <p style={{ color: "#666" }}>Loading users...</p>
+                ) : users.length === 0 ? (
+                  <p style={{ color: "#666" }}>No users found</p>
+                ) : (
+                  <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
+                    {users.map((u) => (
+                      <div
+                        key={u.id}
+                        onClick={() => handleSelectUser(u)}
+                        style={{
+                          padding: "1rem",
+                          background: selectedUser?.id === u.id ? "#fbead9" : "#fff",
+                          border: "2px solid #f07c68",
+                          borderRadius: "8px",
+                          cursor: "pointer",
+                          transition: "all 0.2s ease",
+                        }}
+                      >
+                        <div
+                          style={{
+                            display: "flex",
+                            justifyContent: "space-between",
+                            alignItems: "center",
+                            marginBottom: "0.5rem",
+                          }}
+                        >
+                          <span
+                            style={{
+                              fontWeight: "600",
+                              color: "#2c1810",
+                              fontSize: "1rem",
+                            }}
+                          >
+                            {u.firstName} {u.lastName}
+                          </span>
+                          <span
+                            style={{
+                              padding: "0.25rem 0.5rem",
+                              background:
+                                u.subscriptionStatus === "active" && u.subscriptionType === "premium"
+                                  ? "#e5ffe5"
+                                  : "#f5f5f5",
+                              color:
+                                u.subscriptionStatus === "active" && u.subscriptionType === "premium"
+                                  ? "#2d8a2d"
+                                  : "#666",
+                              borderRadius: "4px",
+                              fontSize: "0.75rem",
+                              textTransform: "uppercase",
+                            }}
+                          >
+                            {u.subscriptionStatus === "active" && u.subscriptionType === "premium"
+                              ? "Premium"
+                              : "Regular"}
+                          </span>
+                        </div>
+                        <p
+                          style={{
+                            color: "#666",
+                            fontSize: "0.85rem",
+                            marginBottom: "0.25rem",
+                          }}
+                        >
+                          {u.email}
+                        </p>
+                        <div style={{ display: "flex", gap: "0.25rem" }}>
+                          {[1, 2, 3, 4, 5].map((star) =>
+                            star <= (u.rating || 0) ? (
+                              <FaStar
+                                key={star}
+                                style={{ color: "#f07c68", fontSize: "0.875rem" }}
+                              />
+                            ) : (
+                              <FaRegStar
+                                key={star}
+                                style={{ color: "#f07c68", fontSize: "0.875rem", opacity: 0.3 }}
+                              />
+                            )
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* User Edit Panel */}
+              <div
+                style={{
+                  background: "#fff8f0",
+                  borderRadius: "12px",
+                  padding: "1.5rem",
+                  border: "2px solid #f07c68",
+                }}
+              >
+                <h3
+                  style={{
+                    color: "#f07c68",
+                    marginBottom: "1rem",
+                    textTransform: "uppercase",
+                    fontSize: "1.1rem",
+                  }}
+                >
+                  Edit User
+                </h3>
+                {selectedUser ? (
+                  <div style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}>
+                    {/* User Info */}
+                    <div
+                      style={{
+                        padding: "1rem",
+                        background: "#fff",
+                        borderRadius: "8px",
+                        border: "1px solid #f07c68",
+                      }}
+                    >
+                      <h4 style={{ color: "#2c1810", marginBottom: "0.5rem" }}>
+                        {selectedUser.firstName} {selectedUser.lastName}
+                      </h4>
+                      <p style={{ color: "#666", fontSize: "0.9rem" }}>
+                        {selectedUser.email}
+                      </p>
+                    </div>
+
+                    {/* Rating Section */}
+                    <div>
+                      <label
+                        style={{
+                          display: "block",
+                          color: "#f07c68",
+                          fontSize: "0.875rem",
+                          marginBottom: "0.5rem",
+                          textTransform: "uppercase",
+                        }}
+                      >
+                        User Rating
+                      </label>
+                      <StarRatingAdmin rating={userRating} onRate={handleUpdateRating} />
+                    </div>
+
+                    {/* Metrics Form */}
+                    <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
+                      <h4
+                        style={{
+                          color: "#f07c68",
+                          fontSize: "0.875rem",
+                          textTransform: "uppercase",
+                        }}
+                      >
+                        User Metrics
+                      </h4>
+
+                      {[
+                        { key: "damageReports", label: "Damage Reports" },
+                        { key: "successfulReturns", label: "Successful Returns" },
+                        { key: "lateReturns", label: "Late Returns" },
+                        { key: "lends", label: "Lends" },
+                        { key: "borrows", label: "Borrows" },
+                        { key: "completionRate", label: "Completion Rate (%)" },
+                      ].map((field) => (
+                        <div key={field.key}>
+                          <label
+                            style={{
+                              display: "block",
+                              color: "#666",
+                              fontSize: "0.8rem",
+                              marginBottom: "0.25rem",
+                              textTransform: "uppercase",
+                            }}
+                          >
+                            {field.label}
+                          </label>
+                          <input
+                            type="number"
+                            value={userMetricsForm[field.key]}
+                            onChange={(e) =>
+                              setUserMetricsForm({
+                                ...userMetricsForm,
+                                [field.key]: parseInt(e.target.value) || 0,
+                              })
+                            }
+                            style={{
+                              width: "100%",
+                              padding: "0.5rem",
+                              border: "2px solid #f07c68",
+                              borderRadius: "4px",
+                              background: "#fff",
+                              color: "#2c1810",
+                              fontFamily: "inherit",
+                            }}
+                          />
+                        </div>
+                      ))}
+
+                      <div>
+                        <label
+                          style={{
+                            display: "block",
+                            color: "#666",
+                            fontSize: "0.8rem",
+                            marginBottom: "0.25rem",
+                            textTransform: "uppercase",
+                          }}
+                        >
+                          Response Time
+                        </label>
+                        <input
+                          type="text"
+                          value={userMetricsForm.responseTime}
+                          onChange={(e) =>
+                            setUserMetricsForm({
+                              ...userMetricsForm,
+                              responseTime: e.target.value,
+                            })
+                          }
+                          style={{
+                            width: "100%",
+                            padding: "0.5rem",
+                            border: "2px solid #f07c68",
+                            borderRadius: "4px",
+                            background: "#fff",
+                            color: "#2c1810",
+                            fontFamily: "inherit",
+                          }}
+                        />
+                      </div>
+                    </div>
+
+                    {/* Save Button */}
+                    <button
+                      onClick={handleUpdateMetrics}
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        gap: "0.5rem",
+                        padding: "0.75rem",
+                        background: "#f07c68",
+                        border: "2px solid #f07c68",
+                        borderRadius: "8px",
+                        color: "#fbead9",
+                        fontWeight: "600",
+                        textTransform: "uppercase",
+                        cursor: "pointer",
+                        fontFamily: "inherit",
+                      }}
+                    >
+                      <FaSave />
+                      Save Metrics
+                    </button>
+                  </div>
+                ) : (
+                  <p style={{ color: "#666", textAlign: "center", padding: "2rem" }}>
+                    Select a user from the list to edit their metrics and rating.
+                  </p>
+                )}
+              </div>
             </div>
           </section>
         )}
