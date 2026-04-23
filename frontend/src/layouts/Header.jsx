@@ -57,7 +57,9 @@ export default function Header() {
         }}
       />
 
-      <header className="public-header">
+      <header
+        className={`public-header ${(menuOpen || submenuOpen) && "front"}`}
+      >
         <div className="width-wrap">
           <nav>
             {

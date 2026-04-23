@@ -32,13 +32,13 @@
       z-index: $z-index-mid;
       display: grid;
       grid-template-columns: 1fr auto;
+      border-inline: $orange solid $border-small;
       border-bottom: $orange solid $border-small;
       background-color: $white;
       text-transform: uppercase;
 
       @include tablet() {
         max-width: 640px;
-        border-inline: $orange solid $border-small;
       }
 
       > .nav-items {
@@ -84,7 +84,7 @@
             li {
               color: $orange;
 
-              &:first-of-type {
+              &:not(:last-of-type) {
                 border-bottom: $orange solid $border-small;
               }
 

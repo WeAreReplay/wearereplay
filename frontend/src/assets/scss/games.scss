@@ -339,7 +339,7 @@
           .head {
             margin-bottom: $spacing-16;
             position: relative;
-            z-index: $z-index-top;
+            z-index: 40;
 
             h3,
             h4 {
@@ -368,7 +368,7 @@
             flex-wrap: wrap;
             gap: $spacing-8;
             position: relative;
-            z-index: $z-index-top;
+            z-index: 40;
 
             li {
               padding: $spacing-4 $spacing-16;

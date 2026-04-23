@@ -1,26 +1,73 @@
-import { Link } from "react-router-dom";
+import GetPlatformIcon from "./GetPlatformIcon";
+import { useRef, useState, useEffect } from "react";
 
 /*
   ! ItemSlider 
   --------------------------------------------------
-  ? Displays a horizontal slider of items (games, products, etc.)
+  ? Displays a horizontal slider of items (items, products, etc.)
 
   * Props:
   * - title (string): section title
   * - items (array): list of items to display
-  * - moreLink (string): optional link to view more items
   * - right (boolean): flips layout direction (for styling)
+  *  - draggable (boolean): allows the motion dragging for certain sliders only
 */
 
 export default function ItemSlider({
   title,
-  items = [], // ! Prevents crash if items is undefined
-  moreLink,
+  children,
   right = false,
+  pageLink,
+  draggable = false,
+  sliderClass = "",
 }) {
+  const containerRef = useRef(null);
+  const isDown = useRef(false);
+  const startX = useRef(0);
+  const scrollLeft = useRef(0);
+
+  useEffect(() => {
+    if (!draggable) return;
+
+    const el = containerRef.current;
+    if (!el) return;
+
+    const onMouseDown = (e) => {
+      isDown.current = true;
+      startX.current = e.pageX - el.offsetLeft;
+      scrollLeft.current = el.scrollLeft;
+    };
+
+    const onMouseMove = (e) => {
+      if (!isDown.current) return;
+
+      e.preventDefault();
+      const x = e.pageX - el.offsetLeft;
+      const walk = (x - startX.current) * 1.5;
+
+      el.scrollLeft = scrollLeft.current - walk;
+    };
+
+    const stop = () => {
+      isDown.current = false;
+    };
+
+    el.addEventListener("mousedown", onMouseDown);
+    el.addEventListener("mousemove", onMouseMove);
+    el.addEventListener("mouseup", stop);
+    el.addEventListener("mouseleave", stop);
+
+    return () => {
+      el.removeEventListener("mousedown", onMouseDown);
+      el.removeEventListener("mousemove", onMouseMove);
+      el.removeEventListener("mouseup", stop);
+      el.removeEventListener("mouseleave", stop);
+    };
+  }, [draggable]);
+
   return (
     <section className="item-slider">
-      <div className="width-wrap">
+      <div className={`width-wrap ${sliderClass}`}>
         {
           // * Section Title
           // ? Direction changes arrow position
@@ -40,41 +87,10 @@ export default function ItemSlider({
         {
           // * Slider Container
         }
-        <div className="slider-ctr">
-          {items.map((item, i) => (
-            <div className="card" key={item.id || i} draggable="false">
-              {
-                // * Item Image
-                // ? Fallback in case there's no image
-              }
-              <div className="img-ctr">
-                <img
-                  src={item.img || "/placeholder.png"}
-                  alt={item.name || "Item"}
-                  loading="lazy"
-                />
-              </div>
-
-              {
-                // * Item Info
-              }
-              <div className="info">
-                <h3 className="name">{item.name || "Unknown"}</h3>
-                <p className="genre">{item.genre || "N/A"}</p>
-              </div>
-            </div>
-          ))}
+        <div ref={containerRef} className="slider-ctr">
+          {children}
         </div>
-
-        {
-          // * View More Link
-          // ? Only shows if moreLink is provided
-        }
-        {moreLink && (
-          <Link to={moreLink} className={`more-link ${right ? "right" : ""}`}>
-            <span>View More</span>
-          </Link>
-        )}
+        {pageLink}
       </div>
     </section>
   );

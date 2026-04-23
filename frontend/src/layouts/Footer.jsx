@@ -23,6 +23,7 @@ export default function Footer() {
     { txt: "Games", path: "/games" },
     { txt: "Support", path: "/support" },
     { txt: "About", path: "/about" },
+    { txt: "Contact", path: "/contact" },
   ];
 
   const contactList = [

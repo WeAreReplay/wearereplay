@@ -9,11 +9,14 @@ import indianaJones from "../assets/images/indiana-jones.webp";
 import zelda from "../assets/images/zelda.webp";
 import pokemon from "../assets/images/pokemon.webp";
 import { IoClose } from "react-icons/io5";
+import ItemSlider from "../components/ItemSlider";
+import NewReleases from "../components/NewReleases";
 
 const gamesData = [
   {
     id: 1,
     name: "Forza Horizon 5",
+    createdAt: "2026-03-01",
     listedBy: "PlayerOne",
     platform: "Xbox",
     consoleModel: "Xbox Series S",
@@ -26,6 +29,7 @@ const gamesData = [
   {
     id: 2,
     name: "Halo Infinite",
+    createdAt: "2026-03-02",
     listedBy: "PlayerTwo",
     platform: "Xbox",
     consoleModel: "Xbox Series X",
@@ -38,6 +42,7 @@ const gamesData = [
   {
     id: 3,
     name: "The Last of Us Part II",
+    createdAt: "2026-03-03",
     listedBy: "PlayerThree",
     platform: "PlayStation",
     consoleModel: "PS5",
@@ -50,6 +55,7 @@ const gamesData = [
   {
     id: 8,
     name: "God of War Ragnarök",
+    createdAt: "2026-03-05",
     listedBy: "PlayerFour",
     platform: "PlayStation",
     consoleModel: "PS5",
@@ -62,6 +68,7 @@ const gamesData = [
   {
     id: 9,
     name: "Spider-Man 2",
+    createdAt: "2026-03-06",
     listedBy: "PlayerFive",
     platform: "PlayStation",
     consoleModel: "PS5",
@@ -74,6 +81,7 @@ const gamesData = [
   {
     id: 10,
     name: "Gran Turismo 7",
+    createdAt: "2026-03-07",
     listedBy: "PlayerSix",
     platform: "PlayStation",
     consoleModel: "PS5",
@@ -86,6 +94,7 @@ const gamesData = [
   {
     id: 11,
     name: "Gears 5",
+    createdAt: "2026-03-08",
     listedBy: "PlayerSeven",
     platform: "Xbox",
     consoleModel: "Xbox Series X",
@@ -98,6 +107,7 @@ const gamesData = [
   {
     id: 12,
     name: "Flight Simulator",
+    createdAt: "2026-03-09",
     listedBy: "PlayerEight",
     platform: "Xbox",
     consoleModel: "Xbox Series S",
@@ -110,6 +120,7 @@ const gamesData = [
   {
     id: 13,
     name: "Zelda: Tears of the Kingdom",
+    createdAt: "2026-03-10",
     listedBy: "PlayerNine",
     platform: "Nintendo",
     consoleModel: "Switch",
@@ -122,6 +133,7 @@ const gamesData = [
   {
     id: 14,
     name: "Mario Kart 8 Deluxe",
+    createdAt: "2026-03-11",
     listedBy: "PlayerTen",
     platform: "Nintendo",
     consoleModel: "Switch",
@@ -134,6 +146,7 @@ const gamesData = [
   {
     id: 15,
     name: "Animal Crossing",
+    createdAt: "2026-03-12",
     listedBy: "PlayerEleven",
     platform: "Nintendo",
     consoleModel: "Switch",
@@ -146,6 +159,7 @@ const gamesData = [
   {
     id: 16,
     name: "Call of Duty MW3",
+    createdAt: "2026-03-13",
     listedBy: "PlayerTwelve",
     platform: "Xbox",
     consoleModel: "Xbox Series X",
@@ -158,6 +172,7 @@ const gamesData = [
   {
     id: 17,
     name: "Elden Ring",
+    createdAt: "2026-03-14",
     listedBy: "PlayerThirteen",
     platform: "PlayStation",
     consoleModel: "PS5",
@@ -170,6 +185,7 @@ const gamesData = [
   {
     id: 18,
     name: "Dark Souls III",
+    createdAt: "2026-03-15",
     listedBy: "PlayerFourteen",
     platform: "Xbox",
     consoleModel: "Xbox Series S",
@@ -182,6 +198,7 @@ const gamesData = [
   {
     id: 19,
     name: "Horizon Forbidden West",
+    createdAt: "2026-03-16",
     listedBy: "PlayerFifteen",
     platform: "PlayStation",
     consoleModel: "PS5",
@@ -194,6 +211,7 @@ const gamesData = [
   {
     id: 20,
     name: "FIFA 24",
+    createdAt: "2026-03-17",
     listedBy: "PlayerSixteen",
     platform: "PlayStation",
     consoleModel: "PS5",
@@ -206,6 +224,7 @@ const gamesData = [
   {
     id: 21,
     name: "NBA 2K24",
+    createdAt: "2026-03-18",
     listedBy: "PlayerSeventeen",
     platform: "Xbox",
     consoleModel: "Xbox Series X",
@@ -218,6 +237,7 @@ const gamesData = [
   {
     id: 22,
     name: "Minecraft",
+    createdAt: "2026-03-19",
     listedBy: "PlayerEighteen",
     platform: "Nintendo",
     consoleModel: "Switch",
@@ -230,6 +250,7 @@ const gamesData = [
   {
     id: 23,
     name: "Fortnite",
+    createdAt: "2026-03-20",
     listedBy: "PlayerNineteen",
     platform: "PlayStation",
     consoleModel: "PS5",
@@ -242,6 +263,7 @@ const gamesData = [
   {
     id: 24,
     name: "Apex Legends",
+    createdAt: "2026-03-21",
     listedBy: "PlayerTwenty",
     platform: "Xbox",
     consoleModel: "Xbox Series S",
@@ -254,6 +276,7 @@ const gamesData = [
   {
     id: 25,
     name: "Resident Evil 4",
+    createdAt: "2026-03-22",
     listedBy: "PlayerTwentyOne",
     platform: "PlayStation",
     consoleModel: "PS5",
@@ -266,6 +289,7 @@ const gamesData = [
   {
     id: 26,
     name: "Dead Space",
+    createdAt: "2026-03-23",
     listedBy: "PlayerTwentyTwo",
     platform: "Xbox",
     consoleModel: "Xbox Series X",
@@ -278,6 +302,7 @@ const gamesData = [
   {
     id: 27,
     name: "Cyberpunk 2077",
+    createdAt: "2026-03-24",
     listedBy: "PlayerTwentyThree",
     platform: "PlayStation",
     consoleModel: "PS5",
@@ -290,6 +315,7 @@ const gamesData = [
   {
     id: 28,
     name: "Assassin's Creed Mirage",
+    createdAt: "2026-03-25",
     listedBy: "PlayerTwentyFour",
     platform: "Xbox",
     consoleModel: "Xbox Series S",
@@ -302,6 +328,7 @@ const gamesData = [
   {
     id: 29,
     name: "Super Smash Bros Ultimate",
+    createdAt: "2026-03-26",
     listedBy: "PlayerTwentyFive",
     platform: "Nintendo",
     consoleModel: "Switch",
@@ -314,6 +341,7 @@ const gamesData = [
   {
     id: 30,
     name: "Splatoon 3",
+    createdAt: "2026-03-27",
     listedBy: "PlayerTwentySix",
     platform: "Nintendo",
     consoleModel: "Switch",
@@ -326,6 +354,7 @@ const gamesData = [
   {
     id: 31,
     name: "Starfield",
+    createdAt: "2026-03-28",
     listedBy: "PlayerTwentySeven",
     platform: "Xbox",
     consoleModel: "Xbox Series X",
@@ -338,6 +367,7 @@ const gamesData = [
   {
     id: 32,
     name: "Metroid Dread",
+    createdAt: "2026-03-29",
     listedBy: "PlayerTwentyEight",
     platform: "Nintendo",
     consoleModel: "Switch",
@@ -488,6 +518,12 @@ export default function Games() {
   const clearModel = () => setModelFilter([]);
   const clearGenre = () => setGenreFilter([]);
   const clearTag = () => setTagFilter([]);
+
+  const latestGames = useMemo(() => {
+    return [...gamesData]
+      .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+      .slice(0, 4);
+  }, []);
 
   /*
     ! Pagination calculation
@@ -756,6 +792,8 @@ export default function Games() {
           )}
         </div>
       </section>
+
+      <NewReleases />
     </main>
   );
 }

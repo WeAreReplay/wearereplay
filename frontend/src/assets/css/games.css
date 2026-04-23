@@ -317,7 +317,7 @@
 .games-main .content .width-wrap .games-ctr .card .head {
   margin-bottom: 1rem;
   position: relative;
-  z-index: 50;
+  z-index: 40;
 }
 .games-main .content .width-wrap .games-ctr .card .head h3,
 .games-main .content .width-wrap .games-ctr .card .head h4 {
@@ -342,7 +342,7 @@
   flex-wrap: wrap;
   gap: 0.5rem;
   position: relative;
-  z-index: 50;
+  z-index: 40;
 }
 .games-main .content .width-wrap .games-ctr .card .details li {
   padding: 0.25rem 1rem;
