@@ -11,7 +11,6 @@ import NewReleases from "../components/NewReleases";
 // API Base URL
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
 
-
 const GENRE_OPTIONS = [
   "All",
   "Action",
@@ -39,9 +38,23 @@ const TAG_OPTIONS = [
 ];
 
 const PLATFORM_MODELS = {
-  Xbox: ["Xbox One", "Xbox Series S", "Xbox Series X"],
-  PlayStation: ["PS4", "PS4 Pro", "PS5"],
-  Nintendo: ["Switch", "Switch OLED", "Switch Lite"],
+  Xbox: ["Xbox", "Xbox 360", "Xbox One", "Xbox Series X"],
+  PlayStation: [
+    "Playstation",
+    "Playstation 2",
+    "Playstation 3",
+    "Playstation 4",
+    "Playstation 5",
+  ],
+  Nintendo: [
+    "Nintendo Entertainment System",
+    "Super Nintendo Entertainment System",
+    "Nintendo 64",
+    "Nintendo GameCube",
+    "Wii",
+    "Wii U",
+    "Nintendo Switch",
+  ],
 };
 
 export default function Games() {
@@ -149,16 +162,19 @@ export default function Games() {
         platformFilter === "All" || game.platform === platformFilter;
 
       // Handle genre as array or string
-      const gameGenres = Array.isArray(game.genre) ? game.genre : [game.genre].filter(Boolean);
+      const gameGenres = Array.isArray(game.genre)
+        ? game.genre
+        : [game.genre].filter(Boolean);
       const matchesGenre =
         genreFilter.length === 0 ||
         gameGenres.some((g) => genreFilter.includes(g));
 
       // Handle tag as array or string
-      const gameTags = Array.isArray(game.tag) ? game.tag : [game.tag].filter(Boolean);
+      const gameTags = Array.isArray(game.tag)
+        ? game.tag
+        : [game.tag].filter(Boolean);
       const matchesTag =
-        tagFilter.length === 0 ||
-        gameTags.some((t) => tagFilter.includes(t));
+        tagFilter.length === 0 || gameTags.some((t) => tagFilter.includes(t));
 
       const matchesModel =
         modelFilter.length === 0 || modelFilter.includes(game.consoleModel);
@@ -429,10 +445,14 @@ export default function Games() {
                   margin: "0 auto",
                 }}
               />
-              <p style={{ marginTop: "1rem", color: "#666" }}>Loading games...</p>
+              <p style={{ marginTop: "1rem", color: "#666" }}>
+                Loading games...
+              </p>
             </div>
           ) : error ? (
-            <div style={{ textAlign: "center", padding: "3rem", color: "#d32f2f" }}>
+            <div
+              style={{ textAlign: "center", padding: "3rem", color: "#d32f2f" }}
+            >
               <p>Failed to load games. Please try again later.</p>
               <button
                 onClick={() => window.location.reload()}
@@ -450,7 +470,9 @@ export default function Games() {
               </button>
             </div>
           ) : filteredGames.length === 0 ? (
-            <div style={{ textAlign: "center", padding: "3rem", color: "#666" }}>
+            <div
+              style={{ textAlign: "center", padding: "3rem", color: "#666" }}
+            >
               <p>No games found matching your criteria.</p>
             </div>
           ) : (
@@ -458,43 +480,57 @@ export default function Games() {
               {paginatedGames.map((game) => {
                 // Build full image URL - handle both uploaded files and external URLs
                 const imageUrl = game.image
-                  ? game.image.startsWith('http')
+                  ? game.image.startsWith("http")
                     ? game.image
-                    : `${API_URL.replace('/api', '')}${game.image}`
+                    : `${API_URL.replace("/api", "")}${game.image}`
                   : "/placeholder-game.jpg";
 
-                console.log("Game:", game.name, "Image URL:", imageUrl, "Raw image:", game.image);
+                console.log(
+                  "Game:",
+                  game.name,
+                  "Image URL:",
+                  imageUrl,
+                  "Raw image:",
+                  game.image,
+                );
 
                 return (
-                <Link key={game._id || game.id} to={`/listing/${game._id || game.id}`} className="card">
-                  <img src={imageUrl} alt={game.name} />
-                  <p>AED {game.price}</p>
-                  <div className="head">
-                    <h3>{game.name}</h3>
-                    <h4>By {game.lender?.firstName || game.listedBy || "Unknown"}</h4>
-                  </div>
+                  <Link
+                    key={game._id || game.id}
+                    to={`/listing/${game._id || game.id}`}
+                    className="card"
+                  >
+                    <img src={imageUrl} alt={game.name} />
+                    <p>AED {game.price}</p>
+                    <div className="head">
+                      <h3>{game.name}</h3>
+                      <h4>
+                        By{" "}
+                        {game.lender?.firstName || game.listedBy || "Unknown"}
+                      </h4>
+                    </div>
 
-                  <ul className="details">
-                    <li>
-                      <GetPlatformIcon platform={game.platform} />
-                      <span>{game.consoleModel}</span>
-                    </li>
-                    <li>
-                      <span className="array">
-                        {Array.isArray(game.genre)
-                          ? game.genre.join(", ")
-                          : game.genre}
-                      </span>
-                    </li>
-                    <li>
-                      <span className="array">
-                        {Array.isArray(game.tag)
-                          ? game.tag.join(", ")
-                          : game.tag}
-                      </span>
-                    </li>
-                  </ul>
-                </Link>
+                    <ul className="details">
+                      <li>
+                        <GetPlatformIcon platform={game.platform} />
+                        <span>{game.consoleModel}</span>
+                      </li>
+                      <li>
+                        <span className="array">
+                          {Array.isArray(game.genre)
+                            ? game.genre.join(", ")
+                            : game.genre}
+                        </span>
+                      </li>
+                      <li>
+                        <span className="array">
+                          {Array.isArray(game.tag)
+                            ? game.tag.join(", ")
+                            : game.tag}
+                        </span>
+                      </li>
+                    </ul>
+                  </Link>
                 );
               })}
             </div>

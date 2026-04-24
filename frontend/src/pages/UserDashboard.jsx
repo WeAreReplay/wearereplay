@@ -93,9 +93,23 @@ const CONFIRM_CONFIG = {
 };
 
 const PLATFORM_MODELS = {
-  Xbox: ["Xbox One", "Xbox Series S", "Xbox Series X"],
-  PlayStation: ["PS4", "PS4 Pro", "PS5"],
-  Nintendo: ["Switch", "Switch OLED", "Switch Lite"],
+  Xbox: ["Xbox", "Xbox 360", "Xbox One", "Xbox Series X"],
+  PlayStation: [
+    "Playstation",
+    "Playstation 2",
+    "Playstation 3",
+    "Playstation 4",
+    "Playstation 5",
+  ],
+  Nintendo: [
+    "Nintendo Entertainment System",
+    "Super Nintendo Entertainment System",
+    "Nintendo 64",
+    "Nintendo GameCube",
+    "Wii",
+    "Wii U",
+    "Nintendo Switch",
+  ],
 };
 
 const calculateDueDate = (startDate, borrowDuration) => {
@@ -499,7 +513,24 @@ export default function Dashboard() {
         setListedGames((prev) =>
           prev.filter((l) => (l._id || l.id) !== (formData._id || formData.id)),
         );
-        setPendingListings((prev) => [data.data.listing, ...prev]);
+        setPendingListings((prev) => {
+          const exists = prev.some(
+            (l) =>
+              (l._id || l.id) ===
+              (data.data.listing._id || data.data.listing.id),
+          );
+
+          if (exists) {
+            return prev.map((l) =>
+              (l._id || l.id) ===
+              (data.data.listing._id || data.data.listing.id)
+                ? data.data.listing
+                : l,
+            );
+          }
+
+          return [data.data.listing, ...prev];
+        });
 
         setToast({
           color: "blue",
@@ -555,13 +586,23 @@ export default function Dashboard() {
     }
   };
 
+  const formatDateForInput = (date) => {
+    if (!date) return "";
+    return new Date(date).toISOString().split("T")[0];
+  };
+
   /*
     ! Edit Listing 
     * Opens form pre-filled with data
   */
   const handleEditListing = (listing) => {
     setFormMode("edit");
-    setFormData(listing);
+
+    setFormData({
+      ...listing,
+      startDate: formatDateForInput(listing.startDate),
+      endDate: formatDateForInput(listing.dueDate),
+    });
   };
 
   /*

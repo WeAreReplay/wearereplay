@@ -52,11 +52,20 @@ export default function InputField({
   // * File preview state
   const [preview, setPreview] = useState(null);
 
+  const BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
+
   useEffect(() => {
-    if (type === "file" && value && typeof value === "string") {
-      setPreview(value);
+    if (type === "file" && value) {
+      if (typeof value === "string") {
+        const fullUrl = value.startsWith("http")
+          ? value
+          : `${BASE_URL}${value}`;
+
+        setPreview(fullUrl);
+      }
     }
   }, [value, type]);
+
   /*
     ! Handle File Selection
     * Creates preview URL + sends file to parent form
