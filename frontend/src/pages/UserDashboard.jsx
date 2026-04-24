@@ -466,6 +466,10 @@ export default function Dashboard() {
         submitFormData.append("hasExpansions", newListing.hasExpansions);
       }
 
+      if (newListing.commercialBulking) {
+        submitFormData.append("commercialBulking", newListing.commercialBulking);
+      }
+
       // Handle image - append file if it's a File object
       if (newListing.image instanceof File) {
         submitFormData.append("image", newListing.image);
@@ -916,6 +920,20 @@ export default function Dashboard() {
       options: ["yes", "no"],
       isValid: (data) =>
         data.hasExpansions === "yes" || data.hasExpansions === "no",
+    },
+
+    {
+      name: "commercialBulking",
+      label: "Available for Commercial Bulking?",
+      type: "radio",
+      inputClass: "radio-ctr",
+      options: [
+        { value: "short-term", label: "Short Term" },
+        { value: "long-term", label: "Long Term" },
+        { value: "no", label: "No" },
+      ],
+      isValid: (data) =>
+        ["short-term", "long-term", "no"].includes(data.commercialBulking),
     },
 
     {

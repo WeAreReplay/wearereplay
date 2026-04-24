@@ -352,6 +352,16 @@ export default function ViewItem() {
                   <span>{listing.hasExpansions || "no"}</span>
                 </li>
                 <li>
+                  <h3>Commercial Bulking:</h3>
+                  <span>
+                    {listing.commercialBulking === "short-term"
+                      ? "Short Term"
+                      : listing.commercialBulking === "long-term"
+                        ? "Long Term"
+                        : "No"}
+                  </span>
+                </li>
+                <li>
                   <h3>Original Price:</h3>
                   <span>{listing.price} AED</span>
                 </li>

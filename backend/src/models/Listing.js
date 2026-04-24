@@ -50,6 +50,12 @@ const listingSchema = new mongoose.Schema(
       enum: ['yes', 'no'],
       default: 'no',
     },
+    commercialBulking: {
+      type: String,
+      enum: ['short-term', 'long-term', 'no'],
+      default: 'no',
+      required: [true, 'Commercial bulking availability is required'],
+    },
     deliveryMethod: {
       type: String,
       required: [true, 'Delivery method is required'],

@@ -142,7 +142,6 @@ export default function InputField({
               disabled={disabled}
               onChange={handleFileChange}
               onClick={(e) => e.stopPropagation()}
-              disabled={disabled}
             />
 
             {preview ? (
@@ -168,26 +167,31 @@ export default function InputField({
             {
               // ! Loop through radio options
             }
-            {options.map((option) => (
-              <label
-                key={option}
-                className={`radio-btn ${value === option ? "selected" : ""}`}
-              >
-                <input
-                  type="radio"
-                  name={name}
-                  value={option}
-                  checked={value === option}
-                  onChange={onChange}
-                  disabled={disabled}
-                />
+            {options.map((option) => {
+              // Handle both string options and object options {value, label}
+              const optionValue = typeof option === "object" ? option.value : option;
+              const optionLabel = typeof option === "object" ? option.label : option;
+              return (
+                <label
+                  key={optionValue}
+                  className={`radio-btn ${value === optionValue ? "selected" : ""}`}
+                >
+                  <input
+                    type="radio"
+                    name={name}
+                    value={optionValue}
+                    checked={value === optionValue}
+                    onChange={onChange}
+                    disabled={disabled}
+                  />
 
-                {
-                  // * Radio Text
-                }
-                {option}
-              </label>
-            ))}
+                  {
+                    // * Radio Text
+                  }
+                  {optionLabel}
+                </label>
+              );
+            })}
           </>
         ) : type === "checkbox" ? (
           <>

@@ -101,6 +101,7 @@ export const createListing = async (req, res) => {
       about,
       borrowDuration,
       hasExpansions,
+      commercialBulking,
       deliveryMethod,
       image,
     } = req.body;
@@ -173,6 +174,7 @@ export const createListing = async (req, res) => {
       about,
       borrowDuration: Number(borrowDuration),
       hasExpansions: hasExpansions || "no",
+      commercialBulking: commercialBulking || "no",
       deliveryMethod,
       image: imageUrl,
       status: "pending",
@@ -246,6 +248,7 @@ export const updateListing = async (req, res) => {
       "about",
       "borrowDuration",
       "hasExpansions",
+      "commercialBulking",
       "deliveryMethod",
       "image",
     ];
