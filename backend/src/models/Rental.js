@@ -77,3 +77,4 @@ rentalSchema.index({ listing: 1 });
 const Rental = mongoose.model('Rental', rentalSchema);
 
 export default Rental;
+
