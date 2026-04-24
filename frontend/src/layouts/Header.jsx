@@ -24,7 +24,7 @@ export default function Header() {
   const navigate = useNavigate();
 
   const navList = [
-    { txt: "Games", path: "/games", icon: RiStoreFill },
+    { txt: "Catalogue", path: "/catalogue", icon: RiStoreFill },
     { txt: "Support", path: "/support", icon: RiQuestionFill },
     { txt: "About", path: "/about", icon: RiInformationFill },
     { txt: "Contact", path: "/contact", icon: RiMailFill },

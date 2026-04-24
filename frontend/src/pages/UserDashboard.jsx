@@ -226,10 +226,10 @@ export default function Dashboard() {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const [toast, setToast] = useState(null);
-  const [showForm, setShowForm] = useState(false);
-  const [editData, setEditData] = useState(null);
   const [confirmAction, setConfirmAction] = useState(null);
   const [activeTab, setActiveTab] = useState("borrowed_games");
+  const [formMode, setFormMode] = useState(null); // null | "create" | "edit" | "report"
+  const [formData, setFormData] = useState(null);
 
   // ! ---------------- USER ROLE ----------------
   const role = user?.role || "regular";
@@ -239,7 +239,7 @@ export default function Dashboard() {
     ! Modal State Grouping
     * True if any modal is open
   */
-  const isAnyModalOpen = showForm || !!confirmAction;
+  const isAnyModalOpen = formMode !== null || !!confirmAction;
 
   const tabs = [
     {
@@ -251,6 +251,11 @@ export default function Dashboard() {
       key: "listings",
       icon: FaList,
       label: "My Listings",
+    },
+    {
+      key: "reports",
+      icon: MdReport,
+      label: "My Reports",
     },
   ];
 
@@ -571,11 +576,11 @@ export default function Dashboard() {
     * Handles both new listing creation and edits
   */
   const handleSaveListing = (newListing) => {
-    if (editData) {
-      setListedGames((prev) => prev.filter((l) => l.id !== editData.id));
+    if (formMode === "edit") {
+      setListedGames((prev) => prev.filter((l) => l.id !== formData.id));
 
       const updatedItem = {
-        ...editData,
+        ...formData,
         name: newListing.name,
         platform: newListing.platform,
         consoleModel: newListing.consoleModel,
@@ -591,7 +596,7 @@ export default function Dashboard() {
       };
 
       setPendingListings((prev) =>
-        prev.map((item) => (item.id === editData.id ? updatedItem : item)),
+        prev.map((item) => (item.id === formData.id ? updatedItem : item)),
       );
 
       setToast({
@@ -616,7 +621,6 @@ export default function Dashboard() {
         platform: newListing.platform,
         consoleModel: newListing.consoleModel,
         rentedBy: null,
-        daysLeft: null,
         startDate: null,
         dueDate: null,
         status: "Pending",
@@ -640,8 +644,8 @@ export default function Dashboard() {
       });
     }
 
-    setShowForm(false);
-    setEditData(null);
+    setFormMode(null);
+    setFormData(null);
   };
 
   /*
@@ -649,8 +653,8 @@ export default function Dashboard() {
     * Opens form pre-filled with data
   */
   const handleEditListing = (listing) => {
-    setEditData(listing);
-    setShowForm(true);
+    setFormMode("edit");
+    setFormData(listing);
   };
 
   /*
@@ -703,6 +707,25 @@ export default function Dashboard() {
     });
 
     setConfirmAction(null);
+  };
+
+  /*
+  ! Submit Report
+  * Report the borrowed user
+*/
+  const handleSubmitReport = (data) => {
+    console.log("Reported item:", formData);
+    console.log("Report data:", data);
+
+    setToast({
+      color: "red",
+      icon: "check",
+      title: formData?.rentedBy || "Report Submitted",
+      message: "Your report has been sent for review.",
+    });
+
+    setFormMode(null);
+    setFormData(null);
   };
 
   // ! ---------------- BORROWER HANDLERS ----------------
@@ -773,7 +796,6 @@ export default function Dashboard() {
 
     setConfirmAction(null);
   };
-
   /*
   ! Listing Form Fields
   * Used for create + edit listing
@@ -897,11 +919,69 @@ export default function Dashboard() {
   ];
 
   /*
+  ! Report Form Fields
+  * Used for reporting the user
+  */
+  const reportFields = [
+    {
+      name: "reason",
+      label: "Report Reason",
+      type: "radio",
+      inputClass: "radio-ctr",
+      options: [
+        "Communication Problems",
+        "Legal & Policy Violations",
+        "Platform Misuse",
+        "Fraud & Trust Issues",
+        "Safety & Harassment",
+      ],
+      isValid: (data) => !!data.reason,
+    },
+    {
+      name: "description",
+      label: "Description",
+      type: "textarea",
+      placeholder: "Provide additional details...",
+      isValid: (data) => data.description?.trim().length > 10,
+    },
+  ];
+
+  /*
     ! Dashboard Table Configuration
     * Controls how tables are rendered dynamically
   */
+
+  const reportedUsers = [
+    {
+      id: 1,
+      firstName: "PlayerX",
+      email: "playerX@email.com",
+      category: "Game Return Issue",
+      reason: "Did not return game",
+      submittedOn: "2026-04-18",
+    },
+  ];
+
   const USER_TABLES = [
     {
+      key: "reports",
+      sectionTitle: "My Reports",
+      tables: [
+        {
+          title: "Reported Users",
+          data: reportedUsers,
+          columns: [
+            COLS.text("Submitted On", "submittedOn"),
+            COLS.text("Reported User (Name)", "firstName"),
+            COLS.text("Reported User (Email)", "email"),
+            COLS.text("Category", "category"),
+            COLS.text("Reason", "reason"),
+          ],
+        },
+      ],
+    },
+    {
+      key: "borrowed_games",
       sectionTitle: "My Borrowed Games",
       tables: [
         {
@@ -952,6 +1032,7 @@ export default function Dashboard() {
     },
 
     {
+      key: "listings",
       sectionTitle: "My Listings",
       tables: [
         {
@@ -1022,6 +1103,10 @@ export default function Dashboard() {
     },
   ];
 
+  const visibleSections = USER_TABLES.filter(
+    (section) => section.key === activeTab,
+  );
+
   return (
     <>
       <DashboardHeader
@@ -1035,11 +1120,7 @@ export default function Dashboard() {
         }}
       />
       <main className="dashboard-main">
-        {USER_TABLES.filter((section) =>
-          activeTab === "borrowed_games"
-            ? section.sectionTitle === "My Borrowed Games"
-            : section.sectionTitle === "My Listings",
-        ).map((section, i) => (
+        {visibleSections.map((section, i) => (
           <section className="dashboard-content" key={i}>
             <div className="title">
               <h2>{section.sectionTitle}</h2>
@@ -1074,7 +1155,8 @@ export default function Dashboard() {
                           return;
                         }
 
-                        setShowForm(true);
+                        setFormMode("create");
+                        setFormData(null);
                       }}
                     >
                       <FaPlus className="icon" />
@@ -1198,7 +1280,13 @@ export default function Dashboard() {
                                     )}
 
                                     {actions.includes("report") && (
-                                      <button className="icon-btn report">
+                                      <button
+                                        className="icon-btn report"
+                                        onClick={() => {
+                                          setFormMode("report");
+                                          setFormData(row);
+                                        }}
+                                      >
                                         <MdReport /> Report
                                       </button>
                                     )}
@@ -1293,23 +1381,38 @@ export default function Dashboard() {
         <Overlay
           isModalOpen={isAnyModalOpen}
           onClick={() => {
-            setShowForm(false);
-            setEditData(null);
+            setFormMode(null);
+            setFormData(null);
             setConfirmAction(null);
           }}
         />
 
-        {showForm && (
+        {(formMode === "create" || formMode === "edit") && (
           <DashboardForm
-            title={editData ? "Edit Listing" : "Create Listing"}
-            mode={editData ? "edit" : "create"}
+            title={formMode === "edit" ? "Edit Listing" : "Create Listing"}
+            mode={formMode}
             fields={listingFields}
-            initialData={editData || {}}
+            initialData={formData || {}}
             onClose={() => {
-              setShowForm(false);
-              setEditData(null);
+              setFormMode(null);
+              setFormData(null);
             }}
             onSubmit={handleSaveListing}
+          />
+        )}
+
+        {formMode === "report" && (
+          <DashboardForm
+            title="Report User"
+            subtitle={formData?.rentedBy}
+            mode="report"
+            fields={reportFields}
+            initialData={{}}
+            onClose={() => {
+              setFormMode(null);
+              setFormData(null);
+            }}
+            onSubmit={handleSubmitReport}
           />
         )}
 

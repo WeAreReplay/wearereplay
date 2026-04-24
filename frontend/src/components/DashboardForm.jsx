@@ -29,6 +29,7 @@ export default function DashboardForm({
   onClose,
   onSubmit,
   title = "Form",
+  subtitle = "",
 }) {
   /*
     ! Build Initial State
@@ -49,7 +50,7 @@ export default function DashboardForm({
     ! Form State
     * Holds all input values dynamically
   */
-  const [formData, setFormData] = useState(buildInitialState());
+  const [formData, setFormData] = useState(() => buildInitialState());
 
   /*
     ! Sync Form on Edit
@@ -58,7 +59,7 @@ export default function DashboardForm({
   */
   useEffect(() => {
     setFormData(buildInitialState());
-  }, [initialData]);
+  }, [initialData, fields]);
 
   /*
     ! Handle Input Change
@@ -74,7 +75,7 @@ export default function DashboardForm({
       };
 
       if (name === "platform") {
-        updated.model = "";
+        updated.consoleModel = "";
       }
 
       return updated;
@@ -102,11 +103,20 @@ export default function DashboardForm({
     onClose();
   };
 
+  const getSubmitLabel = () => {
+    if (mode === "report") return "Report User";
+    if (mode === "edit") return "Update";
+    return "Create";
+  };
+
   return (
     <div className="form-ctr">
       <form onSubmit={handleSubmit}>
         <div className="head">
-          <h1>{title}</h1>
+          <div className="info">
+            <h1>{title}</h1>
+            {subtitle && <h2>{subtitle}</h2>}
+          </div>
 
           <button type="button" className="close-btn" onClick={onClose}>
             <IoClose size={22} />
@@ -145,7 +155,7 @@ export default function DashboardForm({
           {/* Submit Button */}
           <li>
             <button type="submit" disabled={!isFormValid}>
-              {mode === "create" ? "Create" : "Update"}
+              {getSubmitLabel()}
             </button>
           </li>
         </ul>

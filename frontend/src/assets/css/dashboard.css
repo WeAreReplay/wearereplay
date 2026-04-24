@@ -26,6 +26,7 @@
   z-index: 1;
   display: grid;
   grid-template-columns: 1fr auto;
+  border-inline: #f07c68 solid 0.25rem;
   border-bottom: #f07c68 solid 0.25rem;
   background-color: #fbead9;
   text-transform: uppercase;
@@ -33,7 +34,6 @@
 @media (min-width: 768px) {
   .dashboard-header .width-wrap nav {
     max-width: 640px;
-    border-inline: #f07c68 solid 0.25rem;
   }
 }
 .dashboard-header .width-wrap nav > .nav-items {
@@ -77,7 +77,7 @@
 .dashboard-header .width-wrap nav > .nav-items > li .submenu li {
   color: #f07c68;
 }
-.dashboard-header .width-wrap nav > .nav-items > li .submenu li:first-of-type {
+.dashboard-header .width-wrap nav > .nav-items > li .submenu li:not(:last-of-type) {
   border-bottom: #f07c68 solid 0.25rem;
 }
 .dashboard-header .width-wrap nav > .nav-items > li .submenu li > a,
@@ -301,6 +301,20 @@
   pointer-events: none;
   overflow: hidden;
 }
+.dashboard-main .form-ctr .info {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.5rem;
+}
+.dashboard-main .form-ctr .info h2 {
+  max-width: 300px;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  padding: 0;
+  font-family: "Inter", sans-serif;
+  opacity: 0.7;
+}
 .dashboard-main .form-ctr button,
 .dashboard-main .form-ctr a {
   pointer-events: visible;
@@ -445,7 +459,6 @@
 /* ========================================
    MESSAGES SECTION - Admin Dashboard
    ======================================== */
-
 /* Messages Section Layout */
 .messages-section {
   display: flex;
@@ -787,6 +800,10 @@
   border-color: #f07c68;
 }
 
+.reply-form textarea::-moz-placeholder {
+  color: #999;
+}
+
 .reply-form textarea::placeholder {
   color: #999;
 }
@@ -828,41 +845,33 @@
   .messages-container {
     grid-template-columns: 1fr;
   }
-
   .conversations-list {
     border-right: none;
     border-bottom: 2px solid #f07c68;
     max-height: 300px;
   }
-
   .conversations-list.hidden {
     display: none;
   }
-
   .conversation-detail.hidden {
     display: none;
   }
-
   .back-btn {
     display: flex;
   }
-
   .message {
     max-width: 85%;
   }
 }
-
 /* Profile Page Responsive Layout */
 @media (min-width: 900px) {
   .profile-card {
     grid-template-columns: 280px 1fr !important;
     padding: 2.5rem !important;
   }
-
   .profile-card .profile-content {
     display: contents !important;
   }
-
   .profile-card .profile-left-col {
     border-bottom: none !important;
     border-right: 2px solid #f07c68;
@@ -870,14 +879,10 @@
     padding-right: 2rem;
     align-items: flex-start !important;
   }
-
   .profile-card .profile-left-col > div:first-child {
     align-self: flex-start !important;
   }
-
   .profile-card .profile-right-col {
     padding-left: 1rem;
   }
-}
-
-/*# sourceMappingURL=dashboard.css.map */
+}/*# sourceMappingURL=dashboard.css.map */

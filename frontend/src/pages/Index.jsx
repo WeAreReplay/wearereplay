@@ -39,7 +39,7 @@ export default function Index() {
       <Benefits />
       <NewReleases
         link={
-          <Link to="/games" className="more-link right">
+          <Link to="/catalogue" className="more-link right">
             <span>View More</span>
             <span className="pixel">►</span>
           </Link>

@@ -8,10 +8,10 @@ import Dashboard from "./pages/UserDashboard";
 import Profile from "./pages/Profile";
 import Admin from "./pages/Admin";
 import Legal from "./pages/Legal";
-import Games from "./pages/Games";
+import Catalogue from "./pages/Catalogue";
 import NotFound from "./pages/NotFound";
 import Auth from "./pages/Auth";
-import Listing from "./pages/Listing";
+import ViewItem from "./pages/ViewItem";
 import Contact from "./pages/Contact";
 
 function App() {
@@ -23,8 +23,8 @@ function App() {
           {/* Public Routes */}
           <Route element={<PublicLayout />}>
             <Route path="/" element={<Index />} />
-            <Route path="/games" element={<Games />} />
-            <Route path="/listing/:id" element={<Listing />} />
+            <Route path="/catalogue" element={<Catalogue />} />
+            <Route path="/listing/:id" element={<ViewItem />} />
             <Route path="/contact" element={<Contact />} />
             <Route path="/privacy-policy" element={<Legal type="privacy" />} />
             <Route
