@@ -435,7 +435,7 @@ export default function Dashboard() {
           setToast({
             color: "red",
             title: "Invalid Dates",
-            message: "Borrow period must be between 1 and 10 days",
+            message: "Borrow period must be between 1 and 30 days",
           });
           return;
         }
@@ -882,16 +882,16 @@ export default function Dashboard() {
     },
     {
       name: "endDate",
-      label: "End Date (Max 10 days)",
+      label: "End Date (Max 30 days)",
       type: "date",
       isValid: (data) => {
         if (!data.startDate || !data.endDate) return false;
         const start = new Date(data.startDate);
         const end = new Date(data.endDate);
         const diffDays = Math.ceil((end - start) / (1000 * 60 * 60 * 24));
-        return diffDays >= 1 && diffDays <= 10;
+        return diffDays >= 1 && diffDays <= 30;
       },
-      validationMessage: "Borrow period must be between 1 and 10 days",
+      validationMessage: "Borrow period must be between 1 and 30 days",
     },
 
     {

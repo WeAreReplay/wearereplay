@@ -572,6 +572,22 @@
   margin-top: 0.75rem;
 }
 
+/* Fee Notes */
+.fee-note {
+  font-size: 0.75rem;
+  color: #666;
+  font-style: italic;
+  margin: 0.25rem 0 0.75rem 0;
+  padding-left: 0.5rem;
+  border-left: 2px solid rgba(240, 124, 104, 0.3);
+}
+
+.fee-note.highlight {
+  color: #f07c68;
+  font-weight: 600;
+  border-left-color: #f07c68;
+}
+
 /* Payment Section */
 .payment-section {
   margin-bottom: 1.5rem;

@@ -122,12 +122,19 @@ export default function ViewItem() {
     fetchUserInfo();
   }, []);
 
-  // Calculate protection fee based on subscription
+  // Calculate fees based on subscription and listing details
   const isPremium = userSubscription.type === "premium" && userSubscription.status === "active";
+
+  // Calculate deposit (40% normally, 50% if has expansions, max 80 AED)
+  const depositRate = listing?.hasExpansions === "yes" ? 0.5 : 0.4;
+  const depositAmount = Math.min(Math.round((listing?.price || 0) * depositRate), 80);
+
+  // Calculate protection fee (10% of 50% deposit value)
+  const protectionBase = Math.round(depositAmount * 0.5 * 0.1);
   const protectionFee = isPremium
-    ? 6
-    : Math.min(10, Math.max(6, Math.round(listing?.price * 0.05 || 0)));
-  const depositAmount = Math.min(Math.round((listing?.price || 0) * 0.4), 80);
+    ? Math.min(6, Math.max(6, protectionBase)) // Premium: max 6 AED
+    : Math.min(10, Math.max(6, protectionBase)); // Standard: min 6, max 10 AED
+
   const totalAmount = (listing?.price || 0) + protectionFee + depositAmount;
 
   // Fetch listing data from backend
@@ -587,10 +594,15 @@ export default function ViewItem() {
                     <span>Protection Fee:</span>
                     <span>{protectionFee} AED {isPremium ? "(Premium Rate)" : ""}</span>
                   </div>
+                  <p className="fee-note">Non-refundable • Covers damage protection</p>
                   <div className="total-row">
                     <span>Refundable Deposit:</span>
                     <span>{depositAmount} AED</span>
                   </div>
+                  <p className="fee-note">Fully refundable upon safe return</p>
+                  {listing.hasExpansions === "yes" && (
+                    <p className="fee-note highlight">Higher deposit (50%) due to game expansions included</p>
+                  )}
                   <div className="total-row grand-total">
                     <span>Total:</span>
                     <span>{totalAmount} AED</span>

@@ -85,6 +85,11 @@ const rentalSchema = new mongoose.Schema(
       type: Number,
       default: 0,
     },
+    subscriptionType: {
+      type: String,
+      enum: ['standard', 'premium'],
+      default: 'standard',
+    },
     // Tracking dates
     deliveredAt: {
       type: Date,

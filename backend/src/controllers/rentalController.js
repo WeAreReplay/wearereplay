@@ -167,16 +167,21 @@ export const createRental = async (req, res) => {
       });
     }
 
-    // Calculate protection fee based on subscription
-    const protectionFee = isPremium ? 6 : Math.min(10, Math.max(6, Math.round(listing.price * 0.05)));
+    // Calculate deposit (40% normally, 50% if has expansions, max 80 AED)
+    const depositRate = listing.hasExpansions === 'yes' ? 0.5 : 0.4;
+    const depositAmount = Math.min(Math.round(listing.price * depositRate), 80);
+
+    // Calculate protection fee (10% of 50% deposit value)
+    // 50% of deposit = half the deposit amount, then 10% of that
+    const protectionBase = Math.round(depositAmount * 0.5 * 0.1);
+    const protectionFee = isPremium
+      ? Math.min(6, Math.max(6, protectionBase))  // Premium: max 6 AED
+      : Math.min(10, Math.max(6, protectionBase)); // Standard: min 6, max 10 AED
 
     // Calculate due date with grace period for premium users
     const gracePeriod = isPremium ? 2 : 0;
     const dueDate = new Date();
     dueDate.setDate(dueDate.getDate() + listing.borrowDuration + gracePeriod);
-
-    // Calculate deposit (40% of price, max 80 AED)
-    const depositAmount = Math.min(Math.round(listing.price * 0.4), 80);
 
     // Calculate total
     const totalAmount = listing.price + protectionFee + depositAmount;
@@ -197,6 +202,7 @@ export const createRental = async (req, res) => {
       paymentStatus: paymentMethod === 'card' ? 'paid' : 'pending',
       deliveryAddress: deliveryAddress || '',
       gracePeriodDays: gracePeriod,
+      subscriptionType: isPremium ? 'premium' : 'standard',
     });
 
     // Update listing status
