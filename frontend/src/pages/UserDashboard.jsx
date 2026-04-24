@@ -455,13 +455,13 @@ export default function Dashboard() {
       submitFormData.append("deliveryMethod", newListing.deliveryMethod);
 
       // Handle arrays and optional fields
-      if (newListing.genre) {
-        submitFormData.append("genre", JSON.stringify(newListing.genre));
-      }
+      newListing.genre.forEach((g) => {
+        submitFormData.append("genre", g);
+      });
+      newListing.tag.forEach((t) => {
+        submitFormData.append("tag", t);
+      });
 
-      if (newListing.tag) {
-        submitFormData.append("tag", JSON.stringify(newListing.tag));
-      }
       if (newListing.hasExpansions) {
         submitFormData.append("hasExpansions", newListing.hasExpansions);
       }
