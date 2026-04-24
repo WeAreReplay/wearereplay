@@ -1408,4 +1408,11 @@ footer .width-wrap .bottom .copyright {
   white-space: wrap;
   overflow: hidden;
   font-weight: 500;
-}/*# sourceMappingURL=index.css.map */
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+/*# sourceMappingURL=index.css.map */

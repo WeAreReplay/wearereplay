@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "./contexts/AuthContext";
 import ResetScrollBehavior from "./components/ResetScrollBehavior";
+import AdminRoute from "./components/AdminRoute";
 import PublicLayout from "./layouts/PublicLayout";
 import Index from "./pages/Index";
 import Dashboard from "./pages/UserDashboard";
@@ -33,7 +34,14 @@ function App() {
           </Route>
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/profile" element={<Profile />} />
-          <Route path="/admin" element={<Admin />} />
+          <Route
+            path="/admin"
+            element={
+              <AdminRoute>
+                <Admin />
+              </AdminRoute>
+            }
+          />
           <Route path="/login" element={<Auth mode="login" />} />
           <Route path="/register" element={<Auth mode="register" />} />
           <Route path="*" element={<NotFound />} />
