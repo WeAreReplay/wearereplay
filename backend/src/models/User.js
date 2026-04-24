@@ -62,6 +62,7 @@ const userSchema = new mongoose.Schema(
       lateReturns: { type: Number, default: 0 },
       lends: { type: Number, default: 0 },
       borrows: { type: Number, default: 0 },
+      totalListings: { type: Number, default: 0 },
       completionRate: { type: Number, default: 0 },
       responseTime: { type: String, default: '< 24 Hours' },
     },

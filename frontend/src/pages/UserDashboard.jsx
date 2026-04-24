@@ -16,14 +16,12 @@ import {
 } from "react-icons/fa";
 import { MdReport, MdChatBubble } from "react-icons/md";
 import Toast from "../components/Toast";
-import donkeyKong from "../assets/images/donkey-kong.webp";
-import indianaJones from "../assets/images/indiana-jones.webp";
-import zelda from "../assets/images/zelda.webp";
-import hogwarts from "../assets/images/hogwarts.webp";
-import pokemon from "../assets/images/pokemon.webp";
 import { FormatDate } from "../components/FormatDate";
 import DashboardHeader from "../layouts/DashboardHeader";
 import { useAuth } from "../contexts/AuthContext";
+
+// API Base URL
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
 
 // TODO: Replace borrowed games, listings and history data and connect to backend API (current borrowed games, rental history, active listings, listing history endpoint)
 
@@ -223,13 +221,18 @@ const COLS = {
 export default function Dashboard() {
   // ! ---------------- UI STATES ----------------
 
-  const { user, logout } = useAuth();
+  const { user, logout, token } = useAuth();
   const navigate = useNavigate();
   const [toast, setToast] = useState(null);
   const [confirmAction, setConfirmAction] = useState(null);
   const [activeTab, setActiveTab] = useState("borrowed_games");
   const [formMode, setFormMode] = useState(null); // null | "create" | "edit" | "report"
   const [formData, setFormData] = useState(null);
+
+  // ! ---------------- API STATES ----------------
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [dataFetched, setDataFetched] = useState(false);
 
   // ! ---------------- USER ROLE ----------------
   const role = user?.role || "regular";
@@ -269,183 +272,113 @@ export default function Dashboard() {
     return () => clearTimeout(timer);
   }, [toast]);
 
+  // ! ---------------- API HELPER FUNCTIONS ----------------
+
+  const getAuthHeaders = () => ({
+    "Content-Type": "application/json",
+    Authorization: `Bearer ${token}`,
+  });
+
+  const handleApiError = (err, customMessage = "An error occurred") => {
+    console.error(customMessage, err);
+    setError(err.message || customMessage);
+    setToast({
+      color: "red",
+      title: "Error",
+      message: err.message || customMessage,
+    });
+  };
+
+  // ! ---------------- DATA FETCHING ----------------
+
+  const fetchDashboardData = async () => {
+    if (!token) return;
+
+    setLoading(true);
+    setError(null);
+
+    try {
+      // Fetch listings
+      const listingsRes = await fetch(`${API_URL}/dashboard/listings/my`, {
+        headers: getAuthHeaders(),
+      });
+
+      if (!listingsRes.ok) {
+        throw new Error("Failed to fetch listings");
+      }
+
+      const listingsData = await listingsRes.json();
+
+      if (listingsData.success) {
+        setPendingListings(listingsData.data.pending || []);
+        setListedGames(listingsData.data.active || []);
+        setListingHistory(listingsData.data.history || []);
+      }
+
+      // Fetch borrowed games
+      const rentalsRes = await fetch(`${API_URL}/dashboard/rentals/my-borrowed`, {
+        headers: getAuthHeaders(),
+      });
+
+      if (!rentalsRes.ok) {
+        throw new Error("Failed to fetch borrowed games");
+      }
+
+      const rentalsData = await rentalsRes.json();
+
+      if (rentalsData.success) {
+        setBorrowedGames(rentalsData.data.active || []);
+        setBorrowedGamesHistory(rentalsData.data.history || []);
+      }
+
+      // Fetch reports
+      const reportsRes = await fetch(`${API_URL}/dashboard/reports/my`, {
+        headers: getAuthHeaders(),
+      });
+
+      if (!reportsRes.ok) {
+        throw new Error("Failed to fetch reports");
+      }
+
+      const reportsData = await reportsRes.json();
+
+      if (reportsData.success) {
+        setReportedUsers(reportsData.data.reports || []);
+      }
+
+      setDataFetched(true);
+    } catch (err) {
+      handleApiError(err, "Failed to load dashboard data");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (token && !dataFetched) {
+      fetchDashboardData();
+    }
+  }, [token]);
+
   // ! ---------------- LENDER DATABASE ----------------
 
   /*
     ! State: Pending Listings
     * Games currently sent to the admin for approval
   */
-  const [pendingListings, setPendingListings] = useState([
-    {
-      id: 101,
-      name: "Red Dead Redemption 2",
-      platform: "PlayStation",
-      consoleModel: "PS4",
-      price: 130,
-      genre: ["Action"],
-      tag: ["Open World"],
-      status: "Pending",
-      about: "Excellent condition disc, original case included.",
-      borrowDuration: 180,
-      hasExpansions: "no",
-      deliveryMethod: "Meet-up",
-      image: hogwarts,
-    },
-    {
-      id: 102,
-      name: "Cyberpunk 2077",
-      platform: "Xbox",
-      consoleModel: "Xbox One",
-      price: 90,
-      genre: ["RPG"],
-      tag: ["Futuristic"],
-      status: "Pending",
-      about: "Updated version with DLC expansion.",
-      borrowDuration: 90,
-      hasExpansions: "yes",
-      deliveryMethod: "Drop-off",
-      image: pokemon,
-    },
-    {
-      id: 103,
-      name: "Animal Crossing: New Horizons",
-      platform: "Nintendo",
-      consoleModel: "Switch",
-      price: 70,
-      genre: ["Simulation"],
-      tag: ["Relaxing"],
-      status: "Pending",
-      about: "Lightly used cartridge in perfect condition.",
-      borrowDuration: 60,
-      hasExpansions: "yes",
-      deliveryMethod: "Pick-up",
-      image: donkeyKong,
-    },
-  ]);
+  const [pendingListings, setPendingListings] = useState([]);
 
   /*
     ! State: Active Listings
     * Games currently listed by the user
   */
-  const [listedGames, setListedGames] = useState([
-    {
-      id: 3,
-      name: "Call of Duty MW3",
-      platform: "Xbox",
-      consoleModel: "Xbox Series X",
-      price: 110,
-      genre: ["Shooter"],
-      tag: ["Competitive"],
-      status: "rented",
-      rentedBy: "PlayerTwo",
-      startDate: "2026-04-10",
-      dueDate: "2026-04-15", // should now be overdue
-      about: "Disc in perfect condition.",
-      borrowDuration: 5,
-      hasExpansions: "no",
-      deliveryMethod: "Meet-up",
-      image: pokemon,
-    },
-
-    {
-      id: 4,
-      name: "Spider-Man 2",
-      platform: "PlayStation",
-      consoleModel: "PS5",
-      price: 150,
-      genre: ["Action"],
-      tag: ["Story Rich"],
-      status: "returning",
-      rentedBy: "PlayerThree",
-      startDate: "2026-04-12",
-      dueDate: "2026-04-20",
-      about: "Includes bonus content.",
-      borrowDuration: 8,
-      hasExpansions: "yes",
-      deliveryMethod: "Drop-off",
-      image: hogwarts,
-    },
-
-    {
-      id: 5,
-      name: "Forza Horizon 5",
-      platform: "Xbox",
-      consoleModel: "Xbox Series S",
-      price: 100,
-      genre: ["Racing"],
-      tag: ["Open World"],
-      status: "available",
-      rentedBy: null,
-      startDate: null,
-      dueDate: null,
-      about: "Like new condition.",
-      borrowDuration: 120,
-      hasExpansions: "yes",
-      deliveryMethod: "Pick-up",
-      image: donkeyKong,
-    },
-    {
-      id: 6,
-      name: "The Legend of Zelda: Tears of the Kingdom",
-      platform: "Nintendo",
-      consoleModel: "Switch OLED",
-      price: 160,
-      genre: ["Adventure"],
-      tag: ["Open World"],
-      status: "delivering",
-      rentedBy: "PlayerFour",
-      startDate: null,
-      dueDate: null,
-      about: "On its way to the borrower.",
-      borrowDuration: 7,
-      hasExpansions: "no",
-      deliveryMethod: "Drop-off",
-      image: zelda,
-    },
-    {
-      id: 7,
-      name: "Elden Ring",
-      platform: "PlayStation",
-      consoleModel: "PS5",
-      price: 140,
-      genre: ["RPG"],
-      tag: ["Challenging"],
-      status: "rented",
-      rentedBy: "PlayerFive",
-      startDate: "2026-04-14",
-      dueDate: "2026-04-24",
-      about: "Highly rated RPG, well maintained disc.",
-      borrowDuration: 10,
-      hasExpansions: "yes",
-      deliveryMethod: "Meet-up",
-      image: indianaJones,
-    },
-  ]);
+  const [listedGames, setListedGames] = useState([]);
 
   /*
     ! Listing History
     * Past listings owned by user
   */
-  const listingHistory = [
-    {
-      id: 1,
-      name: "Hogwarts Legacy",
-      platform: "Nintendo",
-      consoleModel: "Switch",
-      rentedBy: "PlayerFour",
-      startDate: "2026-03-18",
-      dueDate: "2026-03-21",
-      returnedOn: "2026-03-22",
-      price: 120,
-      genre: ["Adventure"],
-      tag: ["Open World"],
-      about: "No scratches, well maintained disc.",
-      borrowDuration: 240,
-      hasExpansions: "yes",
-      deliveryMethod: "Meet-up",
-      image: indianaJones,
-    },
-  ];
+  const [listingHistory, setListingHistory] = useState([]);
 
   // ! ---------------- BORROWER DATABASE ----------------
 
@@ -453,107 +386,13 @@ export default function Dashboard() {
     ! Borrowed Games (Current)
     * Games user is currently renting
   */
-  const [borrowedGames, setBorrowedGames] = useState([
-    {
-      id: 2,
-      name: "Elden Ring",
-      platform: "PlayStation",
-      consoleModel: "PS5",
-      listedBy: "PlayerSix",
-      status: "rented",
-      startDate: "2026-04-10",
-      dueDate: "2026-04-25",
-      price: 140,
-      genre: ["RPG"],
-      tag: ["Challenging"],
-      about: "Hardcore RPG experience.",
-      borrowDuration: 15,
-      hasExpansions: "yes",
-      deliveryMethod: "Meet-up",
-      image: indianaJones,
-    },
+  const [borrowedGames, setBorrowedGames] = useState([]);
 
-    {
-      id: 3,
-      name: "Halo Infinite",
-      platform: "Xbox",
-      consoleModel: "Xbox Series X",
-      listedBy: "PlayerSeven",
-      status: "returned",
-      startDate: "2026-04-05",
-      dueDate: "2026-04-15",
-      price: 80,
-      genre: ["Shooter"],
-      tag: ["Multiplayer"],
-      about: "Includes multiplayer pass.",
-      borrowDuration: 10,
-      hasExpansions: "no",
-      deliveryMethod: "Drop-off",
-      image: pokemon,
-    },
-
-    {
-      id: 4,
-      name: "Zelda Tears of the Kingdom",
-      platform: "Nintendo",
-      consoleModel: "Switch OLED",
-      listedBy: "PlayerEight",
-      status: "delivering",
-      startDate: null,
-      dueDate: null,
-      price: 160,
-      genre: ["Adventure"],
-      tag: ["Open World"],
-      about: "Brand new sealed.",
-      borrowDuration: 7,
-      hasExpansions: "no",
-      deliveryMethod: "Pick-up",
-      image: zelda,
-    },
-
-    {
-      id: 5,
-      name: "NBA 2K24",
-      platform: "PlayStation",
-      consoleModel: "PS4",
-      listedBy: "PlayerNine",
-      status: "rented",
-      startDate: "2026-04-01",
-      dueDate: "2026-04-05", // overdue
-      price: 75,
-      genre: ["Sports"],
-      tag: ["Competitive"],
-      about: "Used but good condition.",
-      borrowDuration: 4,
-      hasExpansions: "no",
-      deliveryMethod: "Meet-up",
-      image: donkeyKong,
-    },
-  ]);
   /*
     ! Borrowed Games History
     * Past borrowed games completed by user
   */
-  const borrowedGamesHistory = [
-    {
-      id: 1,
-      name: "Breath of the Wild",
-      platform: "Nintendo",
-      consoleModel: "Switch OLED",
-      listedBy: "PlayerThree",
-      startDate: "2026-03-20",
-      dueDate: "2026-03-27",
-      returnedOn: "2026-03-28",
-      price: 150,
-      genre: ["Adventure"],
-      tag: ["Open World"],
-      about: "Complete edition in excellent condition.",
-      borrowDuration: 500,
-      hasExpansions: "yes",
-      deliveryMethod: "Meet-up",
-      image: zelda,
-    },
-  ];
+  const [borrowedGamesHistory, setBorrowedGamesHistory] = useState([]);
 
   const isActiveBorrow = (game) => {
     const status = game.status?.toLowerCase();
@@ -573,79 +412,129 @@ export default function Dashboard() {
 
   /*
     ! Create / Update Listing
-    * Handles both new listing creation and edits
+    * Handles both new listing creation and edits via API
   */
-  const handleSaveListing = (newListing) => {
-    if (formMode === "edit") {
-      setListedGames((prev) => prev.filter((l) => l.id !== formData.id));
+  const handleSaveListing = async (newListing) => {
+    try {
+      // Debug: Check image data
+      console.log("handleSaveListing called");
+      console.log("newListing.image:", newListing.image);
+      console.log("is File?", newListing.image instanceof File);
+      console.log("is String?", typeof newListing.image === "string");
 
-      const updatedItem = {
-        ...formData,
-        name: newListing.name,
-        platform: newListing.platform,
-        consoleModel: newListing.consoleModel,
-        price: Number(newListing.price),
-        genre: newListing.genre,
-        tag: newListing.tag,
-        about: newListing.about,
-        borrowDuration: newListing.borrowDuration,
-        hasExpansions: newListing.hasExpansions,
-        deliveryMethod: newListing.deliveryMethod,
-        image: newListing.image,
-        status: "Pending",
-      };
+      // Calculate borrowDuration from startDate and endDate
+      if (newListing.startDate && newListing.endDate) {
+        const start = new Date(newListing.startDate);
+        const end = new Date(newListing.endDate);
+        const diffDays = Math.ceil((end - start) / (1000 * 60 * 60 * 24));
 
-      setPendingListings((prev) =>
-        prev.map((item) => (item.id === formData.id ? updatedItem : item)),
-      );
+        if (diffDays < 1 || diffDays > 10) {
+          setToast({
+            color: "red",
+            title: "Invalid Dates",
+            message: "Borrow period must be between 1 and 10 days",
+          });
+          return;
+        }
 
-      setToast({
-        color: "blue",
-        icon: "edit",
-        title: newListing.name,
-        message: "sent for re-approval!",
-      });
-    } else {
-      if (totalListings >= currentRole.maxListings) {
-        setToast({
-          color: "red",
-          title: "Limit reached",
-          message: `You can only list ${currentRole.maxListings} games. Upgrade to Premium for unlimited listings.`,
-        });
-        return;
+        newListing.borrowDuration = diffDays;
+        newListing.dueDate = newListing.endDate;
       }
 
-      const newItem = {
-        id: Date.now(),
-        name: newListing.name,
-        platform: newListing.platform,
-        consoleModel: newListing.consoleModel,
-        rentedBy: null,
-        startDate: null,
-        dueDate: null,
-        status: "Pending",
-        price: Number(newListing.price),
-        genre: newListing.genre,
-        tag: newListing.tag,
-        about: newListing.about,
-        borrowDuration: newListing.borrowDuration,
-        hasExpansions: newListing.hasExpansions,
-        deliveryMethod: newListing.deliveryMethod,
-        image: newListing.image,
-      };
+      // Prepare form data for file upload
+      const submitFormData = new FormData();
+      submitFormData.append("name", newListing.name);
+      submitFormData.append("platform", newListing.platform);
+      submitFormData.append("consoleModel", newListing.consoleModel);
+      submitFormData.append("price", newListing.price);
+      submitFormData.append("about", newListing.about);
+      submitFormData.append("borrowDuration", newListing.borrowDuration);
+      submitFormData.append("deliveryMethod", newListing.deliveryMethod);
 
-      setPendingListings((prev) => [newItem, ...prev]);
+      // Handle arrays and optional fields
+      if (newListing.genre) {
+        submitFormData.append("genre", JSON.stringify(newListing.genre));
+      }
+      if (newListing.tag) {
+        submitFormData.append("tag", JSON.stringify(newListing.tag));
+      }
+      if (newListing.hasExpansions) {
+        submitFormData.append("hasExpansions", newListing.hasExpansions);
+      }
 
-      setToast({
-        color: "green",
-        icon: "plus",
-        title: newListing.name,
-        message: "is pending admin approval!",
-      });
+      // Handle image - append file if it's a File object
+      if (newListing.image instanceof File) {
+        submitFormData.append("image", newListing.image);
+      } else if (typeof newListing.image === "string" && newListing.image) {
+        submitFormData.append("image", newListing.image);
+      }
+
+      if (formMode === "edit") {
+        // Update existing listing
+        const response = await fetch(`${API_URL}/dashboard/listings/${formData._id || formData.id}`, {
+          method: "PUT",
+          headers: { Authorization: `Bearer ${token}` },
+          body: submitFormData,
+        });
+
+        if (!response.ok) {
+          const error = await response.json();
+          throw new Error(error.message || "Failed to update listing");
+        }
+
+        const data = await response.json();
+
+        // Update local state
+        setListedGames((prev) => prev.filter((l) => (l._id || l.id) !== (formData._id || formData.id)));
+        setPendingListings((prev) => [data.data.listing, ...prev]);
+
+        setToast({
+          color: "blue",
+          icon: "edit",
+          title: newListing.name,
+          message: "sent for re-approval!",
+        });
+      } else {
+        // Check listing limits
+        if (totalListings >= currentRole.maxListings) {
+          setToast({
+            color: "red",
+            title: "Limit reached",
+            message: `You can only list ${currentRole.maxListings} games. Upgrade to Premium for unlimited listings.`,
+          });
+          return;
+        }
+
+        // Create new listing
+        const response = await fetch(`${API_URL}/dashboard/listings`, {
+          method: "POST",
+          headers: { Authorization: `Bearer ${token}` },
+          body: submitFormData,
+        });
+
+        if (!response.ok) {
+          const error = await response.json();
+          throw new Error(error.message || "Failed to create listing");
+        }
+
+        const data = await response.json();
+
+        // Update local state
+        setPendingListings((prev) => [data.data.listing, ...prev]);
+
+        setToast({
+          color: "green",
+          icon: "plus",
+          title: newListing.name,
+          message: "is pending admin approval!",
+        });
+      }
+
+      setFormMode(null);
+      setFormData(null);
+    } catch (err) {
+      handleApiError(err, formMode === "edit" ? "Failed to update listing" : "Failed to create listing");
     }
-
-    setFormMode(null);
-    setFormData(null);
   };
 
   /*
@@ -659,140 +548,228 @@ export default function Dashboard() {
 
   /*
   ! Confirm Returned
-  * Confirms that a rented game has been returned to the lender
+  * Confirms that a rented game has been returned to the lender via API
 */
-  const handleConfirmReturned = () => {
+  const handleConfirmReturned = async () => {
     const game = confirmAction?.game;
 
     if (!game) return;
 
-    setListedGames((prev) =>
-      prev.map((g) =>
-        g.id === game.id
-          ? {
-              ...g,
-              status: "returned",
-            }
-          : g,
-      ),
-    );
+    try {
+      const rentalId = game._id || game.id;
+      
+      const response = await fetch(`${API_URL}/dashboard/rentals/${rentalId}/status`, {
+        method: "PATCH",
+        headers: getAuthHeaders(),
+        body: JSON.stringify({ status: "returned" }),
+      });
 
-    setToast({
-      color: "blue",
-      icon: "check",
-      title: game?.name || "Return Confirmed",
-      message: "Game marked as returned.",
-    });
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.message || "Failed to confirm return");
+      }
+
+      // Update local state
+      setListedGames((prev) =>
+        prev.map((g) =>
+          (g._id || g.id) === (game._id || game.id)
+            ? { ...g, status: "returned" }
+            : g,
+        ),
+      );
+
+      setToast({
+        color: "blue",
+        icon: "check",
+        title: game?.name || "Return Confirmed",
+        message: "Game marked as returned.",
+      });
+    } catch (err) {
+      handleApiError(err, "Failed to confirm return");
+    }
 
     setConfirmAction(null);
   };
 
   /*
   ! Confirm Delete 
-  * Permanently removes a game from the listed games state
+  * Permanently removes a game from the backend via API
   ? Triggered from ConfirmModal when user confirms deletion
 */
-  const handleConfirmDelete = () => {
+  const handleConfirmDelete = async () => {
     const game = confirmAction?.game;
     if (!game) return;
 
-    setListedGames((prev) => prev.filter((l) => l.id !== game.id));
-    setPendingListings((prev) => prev.filter((l) => l.id !== game.id));
+    try {
+      const listingId = game._id || game.id;
+      
+      const response = await fetch(`${API_URL}/dashboard/listings/${listingId}`, {
+        method: "DELETE",
+        headers: getAuthHeaders(),
+      });
 
-    setToast({
-      color: "red",
-      icon: "error",
-      title: game?.name,
-      message: "was deleted successfully!",
-    });
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.message || "Failed to delete listing");
+      }
+
+      // Update local state
+      setListedGames((prev) => prev.filter((l) => (l._id || l.id) !== (game._id || game.id)));
+      setPendingListings((prev) => prev.filter((l) => (l._id || l.id) !== (game._id || game.id)));
+
+      setToast({
+        color: "red",
+        icon: "error",
+        title: game?.name,
+        message: "was deleted successfully!",
+      });
+    } catch (err) {
+      handleApiError(err, "Failed to delete listing");
+    }
 
     setConfirmAction(null);
   };
 
   /*
   ! Submit Report
-  * Report the borrowed user
+  * Report the borrowed user via API
 */
-  const handleSubmitReport = (data) => {
-    console.log("Reported item:", formData);
-    console.log("Report data:", data);
+  const handleSubmitReport = async (data) => {
+    try {
+      const reportData = {
+        reportedUserId: formData?.lenderId || formData?.rentedBy,
+        listingId: formData?.listingId || formData?._id || formData?.id,
+        category: data.reason,
+        reason: data.reason,
+        description: data.description,
+      };
 
-    setToast({
-      color: "red",
-      icon: "check",
-      title: formData?.rentedBy || "Report Submitted",
-      message: "Your report has been sent for review.",
-    });
+      const response = await fetch(`${API_URL}/dashboard/reports`, {
+        method: "POST",
+        headers: getAuthHeaders(),
+        body: JSON.stringify(reportData),
+      });
 
-    setFormMode(null);
-    setFormData(null);
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.message || "Failed to submit report");
+      }
+
+      const result = await response.json();
+
+      // Update local state
+      setReportedUsers((prev) => [result.data.report, ...prev]);
+
+      setToast({
+        color: "red",
+        icon: "check",
+        title: "Report Submitted",
+        message: "Your report has been sent for review.",
+      });
+
+      setFormMode(null);
+      setFormData(null);
+    } catch (err) {
+      handleApiError(err, "Failed to submit report");
+    }
   };
 
   // ! ---------------- BORROWER HANDLERS ----------------
 
   /*
   ! Confirm Returning 
-  * Marks a game as being returned by the borrower
+  * Marks a game as being returned by the borrower via API
 */
-  const handleConfirmReturning = () => {
+  const handleConfirmReturning = async () => {
     const game = confirmAction?.game;
 
     if (!game) return;
 
-    setBorrowedGames((prev) =>
-      prev.map((g) =>
-        g.id === game.id
-          ? {
-              ...g,
-              status: "returning",
-            }
-          : g,
-      ),
-    );
+    try {
+      const rentalId = game._id || game.id;
+      
+      const response = await fetch(`${API_URL}/dashboard/rentals/${rentalId}/status`, {
+        method: "PATCH",
+        headers: getAuthHeaders(),
+        body: JSON.stringify({ status: "returning" }),
+      });
 
-    setToast({
-      color: "blue",
-      icon: "truck",
-      title: game?.name,
-      message: "will be returned.",
-    });
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.message || "Failed to initiate return");
+      }
+
+      // Update local state
+      setBorrowedGames((prev) =>
+        prev.map((g) =>
+          (g._id || g.id) === (game._id || game.id)
+            ? { ...g, status: "returning" }
+            : g,
+        ),
+      );
+
+      setToast({
+        color: "blue",
+        icon: "truck",
+        title: game?.name,
+        message: "will be returned.",
+      });
+    } catch (err) {
+      handleApiError(err, "Failed to initiate return");
+    }
 
     setConfirmAction(null);
   };
 
   /*
   ! Confirm Delivery 
-  * Marks a game delivery as confirmed by the borrower
+  * Marks a game delivery as confirmed by the borrower via API
 */
-  const handleConfirmDelivery = () => {
+  const handleConfirmDelivery = async () => {
     const game = confirmAction?.game;
 
     if (!game) return;
 
-    const today = new Date();
+    try {
+      const rentalId = game._id || game.id;
+      
+      const response = await fetch(`${API_URL}/dashboard/rentals/${rentalId}/status`, {
+        method: "PATCH",
+        headers: getAuthHeaders(),
+        body: JSON.stringify({ status: "active" }),
+      });
 
-    const startDate = today.toISOString();
-    const dueDate = calculateDueDate(today, game.borrowDuration).toISOString();
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.message || "Failed to confirm delivery");
+      }
 
-    setBorrowedGames((prev) =>
-      prev.map((g) =>
-        g.id === game.id
-          ? {
-              ...g,
-              status: "rented",
-              startDate,
-              dueDate,
-            }
-          : g,
-      ),
-    );
+      const data = await response.json();
+      const rental = data.data.rental;
 
-    setToast({
-      color: "green",
-      icon: "check",
-      title: game?.name,
-      message: "is now marked as rented.",
-    });
+      // Update local state
+      setBorrowedGames((prev) =>
+        prev.map((g) =>
+          (g._id || g.id) === (game._id || game.id)
+            ? {
+                ...g,
+                status: "rented",
+                startDate: rental.startDate,
+                dueDate: rental.dueDate,
+              }
+            : g,
+        ),
+      );
+
+      setToast({
+        color: "green",
+        icon: "check",
+        title: game?.name,
+        message: "is now marked as rented.",
+      });
+    } catch (err) {
+      handleApiError(err, "Failed to confirm delivery");
+    }
 
     setConfirmAction(null);
   };
@@ -864,12 +841,23 @@ export default function Dashboard() {
     },
 
     {
-      name: "borrowDuration",
-      label: "Borrow Duration (Days)",
-      type: "number",
-      placeholder: "e.g. 10",
-      isValid: (data) =>
-        Number(data.borrowDuration) > 0 && !isNaN(data.borrowDuration),
+      name: "startDate",
+      label: "Start Date",
+      type: "date",
+      isValid: (data) => !!data.startDate,
+    },
+    {
+      name: "endDate",
+      label: "End Date (Max 10 days)",
+      type: "date",
+      isValid: (data) => {
+        if (!data.startDate || !data.endDate) return false;
+        const start = new Date(data.startDate);
+        const end = new Date(data.endDate);
+        const diffDays = Math.ceil((end - start) / (1000 * 60 * 60 * 24));
+        return diffDays >= 1 && diffDays <= 10;
+      },
+      validationMessage: "Borrow period must be between 1 and 10 days",
     },
 
     {
@@ -951,16 +939,7 @@ export default function Dashboard() {
     * Controls how tables are rendered dynamically
   */
 
-  const reportedUsers = [
-    {
-      id: 1,
-      firstName: "PlayerX",
-      email: "playerX@email.com",
-      category: "Game Return Issue",
-      reason: "Did not return game",
-      submittedOn: "2026-04-18",
-    },
-  ];
+  const [reportedUsers, setReportedUsers] = useState([]);
 
   const USER_TABLES = [
     {
@@ -1001,9 +980,9 @@ export default function Dashboard() {
             COLS.text("Expansions", "hasExpansions"),
             COLS.text("Delivery Method", "deliveryMethod"),
             COLS.status,
-            COLS.text("Borrow Duration (Days)", "borrowDuration"),
             COLS.date("Start Date", "startDate"),
             COLS.date("Due Date", "dueDate"),
+            COLS.text("Duration (Days)", "borrowDuration"),
             COLS.actions,
           ],
         },
@@ -1022,9 +1001,9 @@ export default function Dashboard() {
             COLS.text("Tag", "tag"),
             COLS.text("Expansions", "hasExpansions"),
             COLS.text("Delivery Method", "deliveryMethod"),
-            COLS.text("Borrow Duration (Days)", "borrowDuration"),
             COLS.date("Start Date", "startDate"),
             COLS.date("Due Date", "dueDate"),
+            COLS.text("Duration (Days)", "borrowDuration"),
             COLS.date("Returned On", "returnedOn"),
           ],
         },
@@ -1072,9 +1051,9 @@ export default function Dashboard() {
             COLS.text("Expansions", "hasExpansions"),
             COLS.text("Delivery Method", "deliveryMethod"),
             COLS.status,
-            COLS.text("Borrow Duration (Days)", "borrowDuration"),
             COLS.date("Start Date", "startDate"),
             COLS.date("Due Date", "dueDate"),
+            COLS.text("Duration (Days)", "borrowDuration"),
             COLS.actions,
           ],
         },
@@ -1093,9 +1072,9 @@ export default function Dashboard() {
             COLS.text("Tag", "tag"),
             COLS.text("Expansions", "hasExpansions"),
             COLS.text("Delivery Method", "deliveryMethod"),
-            COLS.text("Borrow Duration (Days)", "borrowDuration"),
             COLS.date("Start Date", "startDate"),
             COLS.date("Due Date", "dueDate"),
+            COLS.text("Duration (Days)", "borrowDuration"),
             COLS.date("Returned On", "returnedOn"),
           ],
         },
@@ -1120,7 +1099,38 @@ export default function Dashboard() {
         }}
       />
       <main className="dashboard-main">
-        {visibleSections.map((section, i) => (
+        {/* Loading State */}
+        {loading && (
+          <section className="dashboard-content">
+            <div style={{ display: "flex", justifyContent: "center", alignItems: "center", padding: "3rem" }}>
+              <div style={{ width: "50px", height: "50px", border: "4px solid #f07c68", borderTopColor: "transparent", borderRadius: "50%", animation: "spin 1s linear infinite" }} />
+            </div>
+          </section>
+        )}
+
+        {/* Error State */}
+        {error && !loading && (
+          <section className="dashboard-content">
+            <div style={{ textAlign: "center", padding: "2rem", color: "#d32f2f" }}>
+              <p style={{ marginBottom: "1rem" }}>Failed to load dashboard data</p>
+              <button
+                onClick={fetchDashboardData}
+                style={{
+                  padding: "0.75rem 1.5rem",
+                  background: "#f07c68",
+                  color: "#fff",
+                  border: "none",
+                  borderRadius: "8px",
+                  cursor: "pointer",
+                }}
+              >
+                Retry
+              </button>
+            </div>
+          </section>
+        )}
+
+        {!loading && !error && visibleSections.map((section, i) => (
           <section className="dashboard-content" key={i}>
             <div className="title">
               <h2>{section.sectionTitle}</h2>
@@ -1224,14 +1234,24 @@ export default function Dashboard() {
                                   returning: "Returning",
                                   returned: "Returned",
                                   overdue: "Overdue",
+                                  rejected: "Rejected",
                                 };
+
+                                const status = statusLabels[statusClass] || "—";
+                                const rejectionReason = row.rejectionReason;
 
                                 return (
                                   <span
                                     key={colIndex}
                                     className={`status ${statusClass}`}
+                                    title={rejectionReason || undefined}
                                   >
-                                    {statusLabels[statusClass] || "—"}
+                                    {status}
+                                    {statusClass === 'rejected' && rejectionReason && (
+                                      <span style={{ display: 'block', fontSize: '0.75rem', fontStyle: 'italic', opacity: 0.8, marginTop: '2px' }}>
+                                        Reason: {rejectionReason}
+                                      </span>
+                                    )}
                                   </span>
                                 );
                               }
@@ -1431,19 +1451,19 @@ export default function Dashboard() {
                 onConfirm={() => {
                   switch (confirmAction.type) {
                     case ACTIONS.DELETE:
-                      handleConfirmDelete(confirmAction.game);
+                      handleConfirmDelete();
                       break;
 
                     case ACTIONS.DELIVERY_CONFIRM:
-                      handleConfirmDelivery(confirmAction.game);
+                      handleConfirmDelivery();
                       break;
 
                     case ACTIONS.RETURN_START:
-                      handleConfirmReturning(confirmAction.game);
+                      handleConfirmReturning();
                       break;
 
                     case ACTIONS.RETURN_CONFIRM:
-                      handleConfirmReturned(confirmAction.game);
+                      handleConfirmReturned();
                       break;
                   }
 

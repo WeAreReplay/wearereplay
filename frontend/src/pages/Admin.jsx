@@ -7,11 +7,6 @@ import { useNavigate } from "react-router-dom";
 import { FaCheck, FaTimes, FaEye, FaList, FaStar, FaRegStar, FaUsers, FaSave } from "react-icons/fa";
 import { MdReport, MdMessage } from "react-icons/md";
 import { RiSendPlaneFill } from "react-icons/ri";
-import donkeyKong from "../assets/images/donkey-kong.webp";
-import indianaJones from "../assets/images/indiana-jones.webp";
-import zelda from "../assets/images/zelda.webp";
-import hogwarts from "../assets/images/hogwarts.webp";
-import pokemon from "../assets/images/pokemon.webp";
 import AdminReview from "../components/AdminReview";
 import Overlay from "../components/Overlay";
 import Toast from "../components/Toast";
@@ -19,8 +14,6 @@ import GetPlatformIcon from "../components/GetPlatformIcon";
 
 // API Base URL
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
-
-// TODO: Replace approval listings and reported users data and connect to backend API (reported users, approval listings)
 
 // ! ---------------- HELPERS ----------------
 
@@ -59,6 +52,8 @@ const COLS = {
   text: (label, key) => ({ label, key }),
   image: { label: "Image", key: "image", isImage: true },
   platform: { label: "Platform", key: "platform", isIcon: true },
+  status: { label: "Status", key: "status", isStatus: true },
+  date: (label, key) => ({ label, key, isDate: true }),
   actions: { label: "Actions", key: "actions", isActions: true },
 };
 
@@ -71,6 +66,7 @@ export default function Admin() {
     data: null,
   });
   const [activeTab, setActiveTab] = useState("approvals");
+  const [rejectionReason, setRejectionReason] = useState("");
 
   // Messaging state
   const [conversations, setConversations] = useState([]);
@@ -84,6 +80,7 @@ export default function Admin() {
 
   const tabs = [
     { key: "approvals", icon: FaList, label: "Listing Approvals" },
+    { key: "all-listings", icon: FaEye, label: "All Listings" },
     { key: "reports", icon: MdReport, label: "User Reports" },
     { key: "messages", icon: MdMessage, label: "Messages" },
     { key: "users", icon: FaUsers, label: "User Management" },
@@ -397,32 +394,115 @@ export default function Admin() {
     });
   };
 
-  const handleApprove = () => {
-    setApprovalListings((prev) =>
-      prev.filter((item) => item.id !== modal.data.id),
-    );
+  const handleViewAllListing = (listing) => {
+    // For pending listings, show approval modal
+    if (listing.status === "pending") {
+      setModal({
+        type: "approval",
+        data: {
+          ...listing,
+          submittedBy: listing.owner,
+        },
+      });
+    } else {
+      // For other listings, just view details
+      setModal({
+        type: "view-listing",
+        data: listing,
+      });
+    }
+  };
 
-    setToast({
-      color: "green",
-      icon: "check",
-      title: modal.data.submittedBy.name,
-      message: "approved successfully!",
-    });
+  const handleApprove = async () => {
+    try {
+      const listingId = modal.data.id;
+      
+      const response = await fetch(`${API_URL}/dashboard/listings/${listingId}/approve`, {
+        method: "PATCH",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to approve listing");
+      }
+
+      setApprovalListings((prev) =>
+        prev.filter((item) => item.id !== listingId),
+      );
+
+      // Also update allListings if present
+      setAllListings((prev) =>
+        prev.map((item) =>
+          item.id === listingId
+            ? { ...item, status: "available", isApproved: true }
+            : item,
+        ),
+      );
+
+      setToast({
+        color: "green",
+        icon: "check",
+        title: modal.data.submittedBy?.name || modal.data.owner?.name || "Listing",
+        message: "approved successfully!",
+      });
+    } catch (err) {
+      console.error("Approve error:", err);
+      setToast({
+        color: "red",
+        title: "Error",
+        message: "Failed to approve listing",
+      });
+    }
 
     handleCloseModal();
   };
 
-  const handleReject = () => {
-    setApprovalListings((prev) =>
-      prev.filter((item) => item.id !== modal.data.id),
-    );
+  const handleReject = async () => {
+    try {
+      const listingId = modal.data.id;
+      
+      const response = await fetch(`${API_URL}/dashboard/listings/${listingId}/reject`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ reason: rejectionReason }),
+      });
 
-    setToast({
-      color: "red",
-      icon: "trash",
-      title: modal.data.submittedBy.name,
-      message: "was rejected!",
-    });
+      if (!response.ok) {
+        throw new Error("Failed to reject listing");
+      }
+
+      setApprovalListings((prev) =>
+        prev.filter((item) => item.id !== listingId),
+      );
+
+      // Also update allListings if present
+      setAllListings((prev) =>
+        prev.map((item) =>
+          item.id === listingId
+            ? { ...item, status: "rejected", rejectionReason: rejectionReason }
+            : item,
+        ),
+      );
+
+      setToast({
+        color: "red",
+        icon: "trash",
+        title: modal.data.submittedBy?.name || modal.data.owner?.name || "Listing",
+        message: "was rejected!",
+      });
+    } catch (err) {
+      console.error("Reject error:", err);
+      setToast({
+        color: "red",
+        title: "Error",
+        message: "Failed to reject listing",
+      });
+    }
 
     handleCloseModal();
   };
@@ -467,108 +547,128 @@ export default function Admin() {
       type: null,
       data: null,
     });
+    setRejectionReason("");
   };
 
   /*
     ! Pending Listings (for approval)
   */
-  const [approvalListings, setApprovalListings] = useState([
-    {
-      id: 101,
-      name: "Red Dead Redemption 2",
-      platform: "PlayStation",
-      consoleModel: "PS5",
-      price: 130,
-      genre: "Action",
-      tag: "Open World",
-      status: "Pending",
-      about: "Excellent condition disc, original case included.",
-      borrowDuration: 180,
-      hasExpansions: "no",
-      deliveryMethod: "Meet-Up",
-      image: hogwarts,
-      submittedBy: {
-        name: "PlayerOne",
-        email: "player@replay.com",
-      },
-      submittedOn: "2026-04-15",
-    },
-    {
-      id: 102,
-      name: "Cyberpunk 2077",
-      platform: "Xbox",
-      consoleModel: "Xbox Series X",
-      price: 90,
-      genre: "RPG",
-      tag: "Futuristic",
-      status: "Pending",
-      about: "Updated version with DLC expansion.",
-      borrowDuration: 90,
-      hasExpansions: "yes",
-      deliveryMethod: "Drop-off",
-      image: pokemon,
-      submittedBy: {
-        name: "PlayerThirty",
-        email: "player@third.com",
-      },
-      submittedOn: "2026-04-16",
-    },
-    {
-      id: 103,
-      name: "Animal Crossing: New Horizons",
-      platform: "Nintendo",
-      consoleModel: "Switch",
-      price: 70,
-      genre: "Simulation",
-      tag: "Relaxing",
-      status: "Pending",
-      about: "Lightly used cartridge in perfect condition.",
-      borrowDuration: 60,
-      hasExpansions: "yes",
-      deliveryMethod: "Pick-up",
-      image: donkeyKong,
-      submittedBy: {
-        name: "PlayerFive",
-        email: "player@five.com",
-      },
-      submittedOn: "2026-04-17",
-    },
-  ]);
+  const [approvalListings, setApprovalListings] = useState([]);
+
+  // Fetch pending listings when approvals tab is active
+  useEffect(() => {
+    if (activeTab === "approvals" && token) {
+      fetchPendingListings();
+    }
+  }, [activeTab, token]);
+
+  /*
+    ! All Listings (for admin overview)
+  */
+  const [allListings, setAllListings] = useState([]);
+  const [listingsFilter, setListingsFilter] = useState("all"); // all, pending, approved, rejected, rented
+
+  // Fetch all listings when all-listings tab is active
+  useEffect(() => {
+    if (activeTab === "all-listings" && token) {
+      fetchAllListings();
+    }
+  }, [activeTab, token]);
+
+  const fetchPendingListings = async () => {
+    try {
+      const response = await fetch(`${API_URL}/dashboard/listings/pending`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to fetch pending listings");
+      }
+
+      const data = await response.json();
+      if (data.success) {
+        setApprovalListings(data.data.listings || []);
+      }
+    } catch (err) {
+      console.error("Fetch pending listings error:", err);
+      setToast({
+        color: "red",
+        title: "Error",
+        message: "Failed to load pending listings",
+      });
+    }
+  };
+
+  const fetchAllListings = async (statusFilter = null) => {
+    try {
+      let url = `${API_URL}/dashboard/listings/admin/all`;
+      if (statusFilter && statusFilter !== "all") {
+        url += `?status=${statusFilter}`;
+      }
+
+      const response = await fetch(url, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to fetch listings");
+      }
+
+      const data = await response.json();
+      if (data.success) {
+        setAllListings(data.data.listings || []);
+      }
+    } catch (err) {
+      console.error("Fetch all listings error:", err);
+      setToast({
+        color: "red",
+        title: "Error",
+        message: "Failed to load listings",
+      });
+    }
+  };
 
   /*
     ! Reported Users
   */
-  const [reportedUsers, setReportedUsers] = useState([
-    {
-      id: 1,
-      reportedBy: {
-        name: "PlayerA",
-        email: "playerA@email.com",
-      },
-      reportedUser: {
-        name: "PlayerX",
-        email: "playerX@email.com",
-      },
-      category: "Game Return Issue",
-      reason: "Did not return game",
-      submittedOn: "2026-04-18",
-    },
+  const [reportedUsers, setReportedUsers] = useState([]);
 
-    {
-      id: 2,
-      reportedBy: {
-        name: "PlayerB",
-        email: "playerB@email.com",
-      },
-      reportedUser: {
-        name: "ToxicPlayer",
-        email: "toxic@email.com",
-      },
-      category: "Abusive Behavior",
-      reason: "Abusive behavior in chat",
-      submittedOn: "2026-04-19",
-    },
-  ]);
+  // Fetch reports when reports tab is active
+  useEffect(() => {
+    if (activeTab === "reports" && token) {
+      fetchReports();
+    }
+  }, [activeTab, token]);
+
+  const fetchReports = async () => {
+    try {
+      const response = await fetch(`${API_URL}/dashboard/reports`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to fetch reports");
+      }
+
+      const data = await response.json();
+      if (data.success) {
+        setReportedUsers(data.data.reports || []);
+      }
+    } catch (err) {
+      console.error("Fetch reports error:", err);
+      setToast({
+        color: "red",
+        title: "Error",
+        message: "Failed to load reports",
+      });
+    }
+  };
 
   /*
     ! Dashboard Table Configuration
@@ -594,6 +694,27 @@ export default function Admin() {
         COLS.text("Expansions", "hasExpansions"),
         COLS.text("Delivery", "deliveryMethod"),
         COLS.text("Borrow Duration (Days)", "borrowDuration"),
+        COLS.actions,
+      ],
+    },
+    {
+      section: "all-listings",
+      title: "All System Listings",
+      data: allListings,
+      statusFn: (row) => row.status?.toLowerCase(),
+      columns: [
+        COLS.date("Created", "createdAt"),
+        COLS.text("Owner", "owner.name"),
+        COLS.text("Owner Email", "owner.email"),
+        COLS.text("Game", "name"),
+        COLS.platform,
+        COLS.text("Console", "consoleModel"),
+        COLS.text("Price", "price"),
+        COLS.status,
+        COLS.text("Duration (Days)", "borrowDuration"),
+        COLS.date("Start Date", "startDate"),
+        COLS.date("Due Date", "dueDate"),
+        COLS.text("Rented By", "rentedBy.name"),
         COLS.actions,
       ],
     },
@@ -677,6 +798,65 @@ export default function Admin() {
     },
   ];
 
+  const allListingReviewLayout = (listing) => [
+    {
+      title: "Game Info",
+      items: [
+        { label: "Game", value: listing.name },
+        {
+          label: "Platform",
+          value: <GetPlatformIcon platform={listing.platform} />,
+        },
+        { label: "Console Model", value: listing.consoleModel },
+        { label: "Price", value: `${listing.price} AED` },
+        { label: "Genre", value: listing.genre },
+        { label: "Tag", value: listing.tag },
+        { label: "About", value: listing.about, isDescription: true },
+      ],
+    },
+    {
+      title: "Rental Info",
+      items: [
+        { label: "Status", value: listing.status },
+        { label: "Borrow Duration", value: `${listing.borrowDuration} days` },
+        { label: "Start Date", value: listing.startDate, isDate: true },
+        { label: "Due Date", value: listing.dueDate, isDate: true },
+        { label: "Delivery Method", value: listing.deliveryMethod },
+        { label: "Expansions", value: listing.hasExpansions },
+      ],
+    },
+    {
+      title: "Owner Info",
+      items: [
+        { label: "Owner", value: listing.owner?.name },
+        { label: "Email", value: listing.owner?.email },
+        { label: "Created", value: listing.createdAt, isDate: true },
+      ],
+    },
+    ...(listing.rentedBy
+      ? [
+          {
+            title: "Current Rental",
+            items: [
+              { label: "Rented By", value: listing.rentedBy?.name },
+              { label: "Renter Email", value: listing.rentedBy?.email },
+            ],
+          },
+        ]
+      : []),
+    ...(listing.rejectionReason
+      ? [
+          {
+            title: "Rejection Info",
+            items: [
+              { label: "Rejected At", value: listing.rejectedAt, isDate: true },
+              { label: "Reason", value: listing.rejectionReason, isDescription: true },
+            ],
+          },
+        ]
+      : []),
+  ];
+
   return (
     <>
       <DashboardHeader
@@ -692,8 +872,38 @@ export default function Admin() {
       <main className="dashboard-main">
         {ADMIN_TABLES.filter((t) => t.section === activeTab).map((table, i) => (
           <section className="dashboard-content" key={i}>
-            <div className="title">
+            <div className="title" style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "1rem" }}>
               <h2>{table.title}</h2>
+              
+              {/* Status Filter for All Listings */}
+              {table.section === "all-listings" && (
+                <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+                  <label style={{ fontWeight: 500, fontSize: "0.9rem" }}>Filter:</label>
+                  <select
+                    value={listingsFilter}
+                    onChange={(e) => {
+                      setListingsFilter(e.target.value);
+                      fetchAllListings(e.target.value);
+                    }}
+                    style={{
+                      padding: "0.5rem 1rem",
+                      borderRadius: "6px",
+                      border: "1px solid #ddd",
+                      background: "#fff",
+                      cursor: "pointer",
+                    }}
+                  >
+                    <option value="all">All Statuses</option>
+                    <option value="pending">Pending</option>
+                    <option value="available">Available</option>
+                    <option value="rented">Rented</option>
+                    <option value="delivering">Delivering</option>
+                    <option value="returning">Returning</option>
+                    <option value="returned">Returned</option>
+                    <option value="rejected">Rejected</option>
+                  </select>
+                </div>
+              )}
             </div>
             <div className="table-wrapper">
               <div className="dashboard-table">
@@ -738,6 +948,22 @@ export default function Admin() {
                                   onClick={() => handleViewListing(row)}
                                 >
                                   <FaEye /> View
+                                </button>
+                              </span>
+                            );
+                          }
+
+                          /*
+                              ! All Listings Actions
+                            */
+                          if (table.section === "all-listings") {
+                            return (
+                              <span key={colIndex} className="actions">
+                                <button
+                                  className="icon-btn view"
+                                  onClick={() => handleViewAllListing(row)}
+                                >
+                                  <FaEye /> {row.status === "pending" ? "Review" : "View"}
                                 </button>
                               </span>
                             );
@@ -1240,7 +1466,30 @@ export default function Admin() {
               label: "Approve",
               onClick: handleApprove,
             }}
-          />
+          >
+            <div style={{ margin: "1rem 0" }}>
+              <label style={{ display: "block", marginBottom: "0.5rem", fontWeight: 500 }}>
+                Rejection Reason (Optional):
+              </label>
+              <textarea
+                value={rejectionReason}
+                onChange={(e) => setRejectionReason(e.target.value)}
+                placeholder="Enter reason for rejection (visible to user)..."
+                style={{
+                  width: "100%",
+                  padding: "0.75rem",
+                  border: "1px solid #ddd",
+                  borderRadius: "8px",
+                  minHeight: "80px",
+                  resize: "vertical",
+                }}
+                maxLength={500}
+              />
+              <small style={{ color: "#666", fontSize: "0.75rem" }}>
+                {rejectionReason.length}/500 characters
+              </small>
+            </div>
+          </AdminReview>
         )}
 
         {modal.type === "report" && (
@@ -1255,6 +1504,20 @@ export default function Admin() {
             primaryAction={{
               label: "Freeze User",
               onClick: handleFreeze,
+            }}
+          />
+        )}
+
+        {modal.type === "view-listing" && (
+          <AdminReview
+            title="Listing Details"
+            image={modal.data.image}
+            sections={allListingReviewLayout(modal.data)}
+            onClose={handleCloseModal}
+            primaryAction={{
+              label: "Close",
+              onClick: handleCloseModal,
+              className: "confirm",
             }}
           />
         )}

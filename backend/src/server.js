@@ -3,6 +3,7 @@ import cors from 'cors';
 import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
 import dotenv from 'dotenv';
+import path from 'path';
 
 // Load environment variables
 dotenv.config();
@@ -13,6 +14,7 @@ import authRoutes from './routes/authRoutes.js';
 import adminRoutes from './routes/adminRoutes.js';
 import messageRoutes from './routes/messageRoutes.js';
 import userRoutes from './routes/userRoutes.js';
+import dashboardRoutes from './routes/dashboardRoutes.js';
 import { notFound, errorHandler } from './middleware/errorMiddleware.js';
 
 // Initialize Express app
@@ -62,8 +64,14 @@ app.use('/api/auth/', authLimiter);
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Serve static files from uploads folder
-app.use('/uploads', express.static('uploads'));
+// Serve static files from uploads folder with proper CORS headers
+const uploadsPath = path.join(process.cwd(), 'uploads');
+app.use('/uploads', express.static(uploadsPath, {
+  setHeaders: (res, path) => {
+    res.set('Access-Control-Allow-Origin', '*');
+    res.set('Cross-Origin-Resource-Policy', 'cross-origin');
+  }
+}));
 
 // Health check endpoint
 app.get('/api/health', (req, res) => {
@@ -79,6 +87,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/messages', messageRoutes);
 app.use('/api/users', userRoutes);
+app.use('/api/dashboard', dashboardRoutes);
 
 // Root endpoint
 app.get('/', (req, res) => {

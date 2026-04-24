@@ -23,6 +23,7 @@ export default function AdminReview({
   onClose,
   primaryAction,
   secondaryAction,
+  children,
 }) {
   if (!sections) return null;
 
@@ -60,6 +61,8 @@ export default function AdminReview({
             </div>
           ))}
         </div>
+
+        {children}
 
         <ul className="opts-ctr">
           {secondaryAction && (

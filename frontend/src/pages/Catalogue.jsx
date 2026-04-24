@@ -4,380 +4,13 @@ import GetPlatformIcon from "../components/GetPlatformIcon";
 import "../assets/css/games.css";
 import Pagination from "../components/Pagination";
 import { RiSearchEyeFill } from "react-icons/ri";
-import hogwarts from "../assets/images/hogwarts.webp";
-import indianaJones from "../assets/images/indiana-jones.webp";
-import zelda from "../assets/images/zelda.webp";
-import pokemon from "../assets/images/pokemon.webp";
 import { IoClose } from "react-icons/io5";
 import ItemSlider from "../components/ItemSlider";
 import NewReleases from "../components/NewReleases";
 
-const gamesData = [
-  {
-    id: 1,
-    name: "Forza Horizon 5",
-    createdAt: "2026-03-01",
-    listedBy: "PlayerOne",
-    platform: "Xbox",
-    consoleModel: "Xbox Series S",
-    price: 100,
-    genre: ["Racing", "Adventure"],
-    tag: ["Open World", "Coop"],
-    borrowDuration: 5,
-    image: hogwarts,
-  },
-  {
-    id: 2,
-    name: "Halo Infinite",
-    createdAt: "2026-03-02",
-    listedBy: "PlayerTwo",
-    platform: "Xbox",
-    consoleModel: "Xbox Series X",
-    price: 95,
-    genre: "Shooter",
-    tag: "Multiplayer",
-    borrowDuration: 4,
-    image: indianaJones,
-  },
-  {
-    id: 3,
-    name: "The Last of Us Part II",
-    createdAt: "2026-03-03",
-    listedBy: "PlayerThree",
-    platform: "PlayStation",
-    consoleModel: "PS5",
-    price: 110,
-    genre: "Adventure",
-    tag: "Story Rich",
-    borrowDuration: 6,
-    image: zelda,
-  },
-  {
-    id: 8,
-    name: "God of War Ragnarök",
-    createdAt: "2026-03-05",
-    listedBy: "PlayerFour",
-    platform: "PlayStation",
-    consoleModel: "PS5",
-    price: 130,
-    genre: "Action",
-    tag: "Single Player",
-    borrowDuration: 5,
-    image: pokemon,
-  },
-  {
-    id: 9,
-    name: "Spider-Man 2",
-    createdAt: "2026-03-06",
-    listedBy: "PlayerFive",
-    platform: "PlayStation",
-    consoleModel: "PS5",
-    price: 120,
-    genre: "Action",
-    tag: "Open World",
-    borrowDuration: 5,
-    image: zelda,
-  },
-  {
-    id: 10,
-    name: "Gran Turismo 7",
-    createdAt: "2026-03-07",
-    listedBy: "PlayerSix",
-    platform: "PlayStation",
-    consoleModel: "PS5",
-    price: 90,
-    genre: "Racing",
-    tag: "Simulation",
-    borrowDuration: 4,
-    image: hogwarts,
-  },
-  {
-    id: 11,
-    name: "Gears 5",
-    createdAt: "2026-03-08",
-    listedBy: "PlayerSeven",
-    platform: "Xbox",
-    consoleModel: "Xbox Series X",
-    price: 85,
-    genre: "Shooter",
-    tag: "Co-op",
-    borrowDuration: 3,
-    image: indianaJones,
-  },
-  {
-    id: 12,
-    name: "Flight Simulator",
-    createdAt: "2026-03-09",
-    listedBy: "PlayerEight",
-    platform: "Xbox",
-    consoleModel: "Xbox Series S",
-    price: 140,
-    genre: "Simulation",
-    tag: "Realistic",
-    borrowDuration: 6,
-    image: hogwarts,
-  },
-  {
-    id: 13,
-    name: "Zelda: Tears of the Kingdom",
-    createdAt: "2026-03-10",
-    listedBy: "PlayerNine",
-    platform: "Nintendo",
-    consoleModel: "Switch",
-    price: 110,
-    genre: "Adventure",
-    tag: "Open World",
-    borrowDuration: 5,
-    image: zelda,
-  },
-  {
-    id: 14,
-    name: "Mario Kart 8 Deluxe",
-    createdAt: "2026-03-11",
-    listedBy: "PlayerTen",
-    platform: "Nintendo",
-    consoleModel: "Switch",
-    price: 80,
-    genre: "Racing",
-    tag: "Multiplayer",
-    borrowDuration: 4,
-    image: pokemon,
-  },
-  {
-    id: 15,
-    name: "Animal Crossing",
-    createdAt: "2026-03-12",
-    listedBy: "PlayerEleven",
-    platform: "Nintendo",
-    consoleModel: "Switch",
-    price: 70,
-    genre: "Simulation",
-    tag: "Relaxing",
-    borrowDuration: 7,
-    image: pokemon,
-  },
-  {
-    id: 16,
-    name: "Call of Duty MW3",
-    createdAt: "2026-03-13",
-    listedBy: "PlayerTwelve",
-    platform: "Xbox",
-    consoleModel: "Xbox Series X",
-    price: 130,
-    genre: "Shooter",
-    tag: "Multiplayer",
-    borrowDuration: 5,
-    image: indianaJones,
-  },
-  {
-    id: 17,
-    name: "Elden Ring",
-    createdAt: "2026-03-14",
-    listedBy: "PlayerThirteen",
-    platform: "PlayStation",
-    consoleModel: "PS5",
-    price: 125,
-    genre: "RPG",
-    tag: "Open World",
-    borrowDuration: 6,
-    image: zelda,
-  },
-  {
-    id: 18,
-    name: "Dark Souls III",
-    createdAt: "2026-03-15",
-    listedBy: "PlayerFourteen",
-    platform: "Xbox",
-    consoleModel: "Xbox Series S",
-    price: 75,
-    genre: "RPG",
-    tag: "Challenging",
-    borrowDuration: 4,
-    image: indianaJones,
-  },
-  {
-    id: 19,
-    name: "Horizon Forbidden West",
-    createdAt: "2026-03-16",
-    listedBy: "PlayerFifteen",
-    platform: "PlayStation",
-    consoleModel: "PS5",
-    price: 115,
-    genre: "Adventure",
-    tag: "Open World",
-    borrowDuration: 5,
-    image: hogwarts,
-  },
-  {
-    id: 20,
-    name: "FIFA 24",
-    createdAt: "2026-03-17",
-    listedBy: "PlayerSixteen",
-    platform: "PlayStation",
-    consoleModel: "PS5",
-    price: 95,
-    genre: "Sports",
-    tag: "Multiplayer",
-    borrowDuration: 3,
-    image: pokemon,
-  },
-  {
-    id: 21,
-    name: "NBA 2K24",
-    createdAt: "2026-03-18",
-    listedBy: "PlayerSeventeen",
-    platform: "Xbox",
-    consoleModel: "Xbox Series X",
-    price: 100,
-    genre: "Sports",
-    tag: "Multiplayer",
-    borrowDuration: 3,
-    image: indianaJones,
-  },
-  {
-    id: 22,
-    name: "Minecraft",
-    createdAt: "2026-03-19",
-    listedBy: "PlayerEighteen",
-    platform: "Nintendo",
-    consoleModel: "Switch",
-    price: 60,
-    genre: "Sandbox",
-    tag: "Creative",
-    borrowDuration: 7,
-    image: pokemon,
-  },
-  {
-    id: 23,
-    name: "Fortnite",
-    createdAt: "2026-03-20",
-    listedBy: "PlayerNineteen",
-    platform: "PlayStation",
-    consoleModel: "PS5",
-    price: 0,
-    genre: "Battle Royale",
-    tag: "Multiplayer",
-    borrowDuration: 2,
-    image: zelda,
-  },
-  {
-    id: 24,
-    name: "Apex Legends",
-    createdAt: "2026-03-21",
-    listedBy: "PlayerTwenty",
-    platform: "Xbox",
-    consoleModel: "Xbox Series S",
-    price: 0,
-    genre: "Battle Royale",
-    tag: "Multiplayer",
-    borrowDuration: 2,
-    image: indianaJones,
-  },
-  {
-    id: 25,
-    name: "Resident Evil 4",
-    createdAt: "2026-03-22",
-    listedBy: "PlayerTwentyOne",
-    platform: "PlayStation",
-    consoleModel: "PS5",
-    price: 105,
-    genre: "Horror",
-    tag: "Story Rich",
-    borrowDuration: 5,
-    image: hogwarts,
-  },
-  {
-    id: 26,
-    name: "Dead Space",
-    createdAt: "2026-03-23",
-    listedBy: "PlayerTwentyTwo",
-    platform: "Xbox",
-    consoleModel: "Xbox Series X",
-    price: 110,
-    genre: "Horror",
-    tag: "Single Player",
-    borrowDuration: 5,
-    image: indianaJones,
-  },
-  {
-    id: 27,
-    name: "Cyberpunk 2077",
-    createdAt: "2026-03-24",
-    listedBy: "PlayerTwentyThree",
-    platform: "PlayStation",
-    consoleModel: "PS5",
-    price: 100,
-    genre: "RPG",
-    tag: "Open World",
-    borrowDuration: 6,
-    image: zelda,
-  },
-  {
-    id: 28,
-    name: "Assassin's Creed Mirage",
-    createdAt: "2026-03-25",
-    listedBy: "PlayerTwentyFour",
-    platform: "Xbox",
-    consoleModel: "Xbox Series S",
-    price: 95,
-    genre: "Adventure",
-    tag: "Stealth",
-    borrowDuration: 4,
-    image: hogwarts,
-  },
-  {
-    id: 29,
-    name: "Super Smash Bros Ultimate",
-    createdAt: "2026-03-26",
-    listedBy: "PlayerTwentyFive",
-    platform: "Nintendo",
-    consoleModel: "Switch",
-    price: 90,
-    genre: "Fighting",
-    tag: "Multiplayer",
-    borrowDuration: 4,
-    image: pokemon,
-  },
-  {
-    id: 30,
-    name: "Splatoon 3",
-    createdAt: "2026-03-27",
-    listedBy: "PlayerTwentySix",
-    platform: "Nintendo",
-    consoleModel: "Switch",
-    price: 85,
-    genre: "Shooter",
-    tag: "Multiplayer",
-    borrowDuration: 4,
-    image: pokemon,
-  },
-  {
-    id: 31,
-    name: "Starfield",
-    createdAt: "2026-03-28",
-    listedBy: "PlayerTwentySeven",
-    platform: "Xbox",
-    consoleModel: "Xbox Series X",
-    price: 135,
-    genre: "RPG",
-    tag: "Open World",
-    borrowDuration: 6,
-    image: indianaJones,
-  },
-  {
-    id: 32,
-    name: "Metroid Dread",
-    createdAt: "2026-03-29",
-    listedBy: "PlayerTwentyEight",
-    platform: "Nintendo",
-    consoleModel: "Switch",
-    price: 80,
-    genre: "Action",
-    tag: "Single Player",
-    borrowDuration: 4,
-    image: zelda,
-  },
-];
+// API Base URL
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+
 
 const GENRE_OPTIONS = [
   "All",
@@ -422,6 +55,39 @@ export default function Games() {
   const [modelFilter, setModelFilter] = useState([]);
   const [openFilter, setOpenFilter] = useState("");
   const checkBoxRef = useRef(null);
+
+  // Listings data from API
+  const [listings, setListings] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  // Fetch listings from backend
+  useEffect(() => {
+    const fetchListings = async () => {
+      try {
+        setLoading(true);
+        const response = await fetch(`${API_URL}/dashboard/listings/public`);
+
+        if (!response.ok) {
+          throw new Error("Failed to fetch listings");
+        }
+
+        const data = await response.json();
+        if (data.success) {
+          setListings(data.data.listings || []);
+        } else {
+          throw new Error(data.message || "Failed to fetch listings");
+        }
+      } catch (err) {
+        console.error("Fetch listings error:", err);
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchListings();
+  }, []);
 
   const toggleFilter = (key) => {
     setOpenFilter((prev) => (prev === key ? null : key));
@@ -474,7 +140,7 @@ export default function Games() {
     * Applies search + platform + genre + tag + model filters
   */
   const filteredGames = useMemo(() => {
-    return gamesData.filter((game) => {
+    return listings.filter((game) => {
       const matchesSearch = game.name
         .toLowerCase()
         .includes(search.toLowerCase());
@@ -482,9 +148,17 @@ export default function Games() {
       const matchesPlatform =
         platformFilter === "All" || game.platform === platformFilter;
 
+      // Handle genre as array or string
+      const gameGenres = Array.isArray(game.genre) ? game.genre : [game.genre].filter(Boolean);
       const matchesGenre =
-        genreFilter.length === 0 || genreFilter.includes(game.genre);
-      const matchesTag = tagFilter.length === 0 || tagFilter.includes(game.tag);
+        genreFilter.length === 0 ||
+        gameGenres.some((g) => genreFilter.includes(g));
+
+      // Handle tag as array or string
+      const gameTags = Array.isArray(game.tag) ? game.tag : [game.tag].filter(Boolean);
+      const matchesTag =
+        tagFilter.length === 0 ||
+        gameTags.some((t) => tagFilter.includes(t));
 
       const matchesModel =
         modelFilter.length === 0 || modelFilter.includes(game.consoleModel);
@@ -497,7 +171,7 @@ export default function Games() {
         matchesModel
       );
     });
-  }, [search, platformFilter, genreFilter, tagFilter, modelFilter]);
+  }, [listings, search, platformFilter, genreFilter, tagFilter, modelFilter]);
 
   /*
     ! Dynamic console model options
@@ -520,10 +194,10 @@ export default function Games() {
   const clearTag = () => setTagFilter([]);
 
   const latestGames = useMemo(() => {
-    return [...gamesData]
+    return [...listings]
       .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
       .slice(0, 4);
-  }, []);
+  }, [listings]);
 
   /*
     ! Pagination calculation
@@ -742,17 +416,62 @@ export default function Games() {
           }
           <h2>About {filteredGames.length} results</h2>
 
-          {filteredGames.length === 0 ? (
-            <></>
+          {loading ? (
+            <div style={{ textAlign: "center", padding: "3rem" }}>
+              <div
+                style={{
+                  width: "50px",
+                  height: "50px",
+                  border: "4px solid #f07c68",
+                  borderTopColor: "transparent",
+                  borderRadius: "50%",
+                  animation: "spin 1s linear infinite",
+                  margin: "0 auto",
+                }}
+              />
+              <p style={{ marginTop: "1rem", color: "#666" }}>Loading games...</p>
+            </div>
+          ) : error ? (
+            <div style={{ textAlign: "center", padding: "3rem", color: "#d32f2f" }}>
+              <p>Failed to load games. Please try again later.</p>
+              <button
+                onClick={() => window.location.reload()}
+                style={{
+                  padding: "0.75rem 1.5rem",
+                  background: "#f07c68",
+                  color: "#fff",
+                  border: "none",
+                  borderRadius: "8px",
+                  cursor: "pointer",
+                  marginTop: "1rem",
+                }}
+              >
+                Retry
+              </button>
+            </div>
+          ) : filteredGames.length === 0 ? (
+            <div style={{ textAlign: "center", padding: "3rem", color: "#666" }}>
+              <p>No games found matching your criteria.</p>
+            </div>
           ) : (
             <div className="games-ctr">
-              {paginatedGames.map((game) => (
-                <Link key={game.id} to={`/listing/${game.id}`} className="card">
-                  <img src={game.image} alt={game.name} />
+              {paginatedGames.map((game) => {
+                // Build full image URL - handle both uploaded files and external URLs
+                const imageUrl = game.image
+                  ? game.image.startsWith('http')
+                    ? game.image
+                    : `${API_URL.replace('/api', '')}${game.image}`
+                  : "/placeholder-game.jpg";
+
+                console.log("Game:", game.name, "Image URL:", imageUrl, "Raw image:", game.image);
+
+                return (
+                <Link key={game._id || game.id} to={`/listing/${game._id || game.id}`} className="card">
+                  <img src={imageUrl} alt={game.name} />
                   <p>AED {game.price}</p>
                   <div className="head">
                     <h3>{game.name}</h3>
-                    <h4>By {game.listedBy}</h4>
+                    <h4>By {game.lender?.firstName || game.listedBy || "Unknown"}</h4>
                   </div>
 
                   <ul className="details">
@@ -776,7 +495,8 @@ export default function Games() {
                     </li>
                   </ul>
                 </Link>
-              ))}
+                );
+              })}
             </div>
           )}
 

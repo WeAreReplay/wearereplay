@@ -99,6 +99,11 @@ export default function DashboardForm({
 
     if (!isFormValid) return;
 
+    // Debug: Check form data before submitting
+    console.log("DashboardForm handleSubmit - formData:", formData);
+    console.log("DashboardForm handleSubmit - image field:", formData.image);
+    console.log("DashboardForm handleSubmit - image is File?", formData.image instanceof File);
+
     onSubmit(formData);
     onClose();
   };
