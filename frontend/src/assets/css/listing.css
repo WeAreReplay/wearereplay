@@ -401,6 +401,7 @@
 }
 
 .btn-chat,
+.btn-contact,
 .btn-borrow {
   width: 100%;
   padding: 1rem;
@@ -419,6 +420,7 @@
 }
 
 .btn-chat:hover,
+.btn-contact:hover,
 .btn-borrow:hover:not(:disabled) {
   background-color: rgba(251, 234, 217, 0.1);
 }
@@ -810,6 +812,213 @@
   }
 
   .checkout-modal {
+    max-width: 100%;
+    max-height: 95vh;
+  }
+}
+
+/* Contact Modal */
+.contact-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 1rem;
+}
+
+.contact-modal {
+  background-color: #fbead9;
+  border-radius: 1.5rem;
+  width: 100%;
+  max-width: 400px;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+}
+
+.contact-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.5rem;
+  border-bottom: 1px solid #f07c68;
+}
+
+.contact-modal-header h2 {
+  font-family: "VCR", monospace;
+  color: #f07c68;
+  font-size: 1.25rem;
+  text-transform: uppercase;
+}
+
+.contact-modal-content {
+  padding: 1.5rem;
+}
+
+.contact-modal-content .lender-header {
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
+
+.contact-modal-content .lender-header h3 {
+  font-family: "Inter", sans-serif;
+  font-weight: 700;
+  color: #f07c68;
+  font-size: 1.125rem;
+  margin-bottom: 0.25rem;
+}
+
+.contact-modal-content .lender-header p {
+  color: #666;
+  font-size: 0.875rem;
+}
+
+.contact-item {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem;
+  background-color: rgba(240, 124, 104, 0.1);
+  border-radius: 0.75rem;
+  margin-bottom: 0.75rem;
+}
+
+.contact-item.email {
+  background-color: rgba(59, 130, 246, 0.1);
+  border: 1px solid rgba(59, 130, 246, 0.3);
+}
+
+.contact-icon {
+  font-size: 1.5rem;
+  flex-shrink: 0;
+}
+
+.contact-icon svg {
+  color: #f07c68;
+  font-size: 1.5rem;
+}
+
+.contact-item.email .contact-icon svg {
+  color: #3b82f6;
+}
+
+.contact-details {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  min-width: 0;
+  flex: 1;
+}
+
+.contact-type {
+  font-family: "VCR", monospace;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  color: #f07c68;
+  font-weight: 600;
+}
+
+.contact-item.email .contact-type {
+  color: #3b82f6;
+}
+
+.contact-value {
+  font-family: "Inter", sans-serif;
+  font-size: 0.875rem;
+  color: #333;
+  word-break: break-all;
+}
+
+.additional-contacts {
+  margin-top: 1rem;
+}
+
+.additional-contacts .section-label {
+  font-family: "VCR", monospace;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  color: #999;
+  margin-bottom: 0.75rem;
+}
+
+.no-contacts {
+  text-align: center;
+  color: #999;
+  font-size: 0.875rem;
+  padding: 1rem;
+  font-style: italic;
+}
+
+.privacy-note {
+  text-align: center;
+  color: #999;
+  font-size: 0.75rem;
+  margin-top: 1.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(240, 124, 104, 0.2);
+}
+
+.contact-modal-footer {
+  padding: 1rem 1.5rem;
+  border-top: 1px solid #f07c68;
+  display: flex;
+  justify-content: center;
+}
+
+.btn-close {
+  padding: 0.75rem 2rem;
+  background: #f07c68;
+  border: 2px solid #f07c68;
+  border-radius: 8px;
+  color: #fbead9;
+  font-family: "VCR", monospace;
+  font-size: 0.875rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-close:hover {
+  background: transparent;
+  color: #f07c68;
+}
+
+.loading-contacts {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  padding: 2rem;
+}
+
+.loading-contacts p {
+  color: #666;
+  font-size: 0.875rem;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .lender-stats {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .listing-image img {
+    max-height: 300px;
+  }
+
+  .form-row {
+    grid-template-columns: 1fr;
+  }
+
+  .checkout-modal,
+  .contact-modal {
     max-width: 100%;
     max-height: 95vh;
   }

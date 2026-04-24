@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import "../assets/css/listing.css";
 import GetPlatformIcon from "../components/GetPlatformIcon";
-import { MdChatBubble, MdEmail } from "react-icons/md";
+import { MdChatBubble, MdEmail, MdContactPhone } from "react-icons/md";
 import { FaMoneyBill, FaUser, FaStar, FaGamepad, FaHandHolding, FaCheck } from "react-icons/fa";
 import { useParams, Navigate } from "react-router-dom";
 import Toast from "../components/Toast";
@@ -51,8 +51,46 @@ export default function ViewItem() {
     status: "inactive",
   });
 
+  // Contact modal state
+  const [showContactModal, setShowContactModal] = useState(false);
+  const [lenderContacts, setLenderContacts] = useState({
+    email: "",
+    contacts: [],
+  });
+  const [loadingContacts, setLoadingContacts] = useState(false);
+
+  // Contact type icons mapping
+  const contactTypeIcons = {
+    phone: "📱",
+    whatsapp: "💬",
+    discord: "🎮",
+    telegram: "✈️",
+    instagram: "📷",
+    other: "🔗",
+  };
+
   // Get auth token
   const getToken = () => localStorage.getItem("token");
+
+  // Fetch lender contacts
+  const fetchLenderContacts = async (lenderId) => {
+    if (!lenderId) return;
+    setLoadingContacts(true);
+    try {
+      const response = await fetch(`${API_URL}/users/${lenderId}/contacts`);
+      const data = await response.json();
+      if (data.success) {
+        setLenderContacts({
+          email: data.data.email,
+          contacts: data.data.contacts || [],
+        });
+      }
+    } catch (error) {
+      console.error("Error fetching lender contacts:", error);
+    } finally {
+      setLoadingContacts(false);
+    }
+  };
 
   // Fetch user subscription info
   useEffect(() => {
@@ -465,9 +503,15 @@ export default function ViewItem() {
               </p>
               <ul className="action-buttons">
                 <li>
-                  <button className="btn-chat">
-                    <MdChatBubble className="icon" />
-                    <span>Chat</span>
+                  <button
+                    className="btn-contact"
+                    onClick={() => {
+                      fetchLenderContacts(listing.lender?._id);
+                      setShowContactModal(true);
+                    }}
+                  >
+                    <MdContactPhone className="icon" />
+                    <span>Contact</span>
                   </button>
                 </li>
                 <li>
@@ -679,6 +723,99 @@ export default function ViewItem() {
                     {paymentMethod === "cod" ? "Confirm Rental" : "Pay & Confirm Rental"}
                   </>
                 )}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Contact Modal */}
+      {showContactModal && (
+        <div
+          className="contact-modal-overlay"
+          onClick={() => setShowContactModal(false)}
+        >
+          <div
+            className="contact-modal"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="contact-modal-header">
+              <h2>Contact Lender</h2>
+              <button
+                className="close-btn"
+                onClick={() => setShowContactModal(false)}
+              >
+                ×
+              </button>
+            </div>
+
+            <div className="contact-modal-content">
+              {loadingContacts ? (
+                <div className="loading-contacts">
+                  <div className="spinner"></div>
+                  <p>Loading contact information...</p>
+                </div>
+              ) : (
+                <>
+                  {/* Lender Name */}
+                  <div className="lender-header">
+                    <h3>
+                      {listing?.lender?.firstName} {listing?.lender?.lastName?.charAt(0)}.
+                    </h3>
+                    <p>Available contact methods:</p>
+                  </div>
+
+                  {/* Email (Default - Always Shown) */}
+                  <div className="contact-item email">
+                    <div className="contact-icon">
+                      <MdEmail />
+                    </div>
+                    <div className="contact-details">
+                      <span className="contact-type">Email</span>
+                      <span className="contact-value">{lenderContacts.email || listing?.lender?.email || "Not available"}</span>
+                    </div>
+                  </div>
+
+                  {/* Additional Contacts */}
+                  {lenderContacts.contacts.length > 0 ? (
+                    <div className="additional-contacts">
+                      <p className="section-label">Additional Contacts:</p>
+                      {lenderContacts.contacts.map((contact) => (
+                        <div key={contact.id} className="contact-item">
+                          <div className="contact-icon">
+                            {contactTypeIcons[contact.type] || "🔗"}
+                          </div>
+                          <div className="contact-details">
+                            <span className="contact-type">
+                              {contact.type.charAt(0).toUpperCase() + contact.type.slice(1)}
+                              {contact.label && ` - ${contact.label}`}
+                            </span>
+                            <span className="contact-value">{contact.value}</span>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <p className="no-contacts">
+                      No additional contact methods provided.
+                    </p>
+                  )}
+
+                  {/* Privacy Note */}
+                  <p className="privacy-note">
+                    Please be respectful when contacting the lender.
+                    Only use these contacts for inquiries about this listing.
+                  </p>
+                </>
+              )}
+            </div>
+
+            <div className="contact-modal-footer">
+              <button
+                className="btn-close"
+                onClick={() => setShowContactModal(false)}
+              >
+                Close
               </button>
             </div>
           </div>

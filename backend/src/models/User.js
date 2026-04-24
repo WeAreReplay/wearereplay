@@ -78,6 +78,37 @@ const userSchema = new mongoose.Schema(
       type: String,
       default: null,
     },
+    // User contacts (additional contact methods)
+    contacts: [
+      {
+        id: {
+          type: String,
+          required: true,
+        },
+        type: {
+          type: String,
+          enum: ['phone', 'whatsapp', 'discord', 'telegram', 'instagram', 'other'],
+          required: true,
+        },
+        value: {
+          type: String,
+          required: true,
+          trim: true,
+        },
+        label: {
+          type: String,
+          trim: true,
+        },
+        isPublic: {
+          type: Boolean,
+          default: true,
+        },
+        createdAt: {
+          type: Date,
+          default: Date.now,
+        },
+      },
+    ],
   },
   {
     timestamps: {

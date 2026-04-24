@@ -127,6 +127,7 @@ export const getUserProfile = async (req, res) => {
           metrics: user.metrics,
           rating: user.rating,
           profilePicture: user.profilePicture,
+          contacts: user.contacts || [],
           createdAt: user.createdAt,
         },
       },
@@ -473,6 +474,174 @@ export const deleteProfilePicture = async (req, res) => {
     res.status(500).json({
       success: false,
       message: 'Server error while deleting profile picture',
+    });
+  }
+};
+
+/**
+ * Add a contact to user profile
+ * POST /api/users/contacts
+ * Protected route
+ */
+export const addContact = async (req, res) => {
+  try {
+    const userId = req.userId;
+    const { type, value, label, isPublic = true } = req.body;
+
+    // Validate required fields
+    if (!type || !value) {
+      return res.status(400).json({
+        success: false,
+        message: 'Contact type and value are required',
+      });
+    }
+
+    // Validate contact type
+    const validTypes = ['phone', 'whatsapp', 'discord', 'telegram', 'instagram', 'other'];
+    if (!validTypes.includes(type)) {
+      return res.status(400).json({
+        success: false,
+        message: `Invalid contact type. Must be one of: ${validTypes.join(', ')}`,
+      });
+    }
+
+    // Get user
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: 'User not found',
+      });
+    }
+
+    // Check for duplicate contact value
+    const existingContact = user.contacts.find(
+      (contact) => contact.value.toLowerCase() === value.toLowerCase()
+    );
+    if (existingContact) {
+      return res.status(400).json({
+        success: false,
+        message: 'A contact with this value already exists',
+      });
+    }
+
+    // Generate unique ID for contact
+    const contactId = `contact_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+
+    // Add new contact
+    const newContact = {
+      id: contactId,
+      type,
+      value,
+      label: label || '',
+      isPublic,
+      createdAt: new Date(),
+    };
+
+    user.contacts.push(newContact);
+    await user.save();
+
+    res.status(201).json({
+      success: true,
+      message: 'Contact added successfully',
+      data: {
+        contact: newContact,
+        contacts: user.contacts,
+      },
+    });
+  } catch (error) {
+    console.error('Add contact error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Server error while adding contact',
+    });
+  }
+};
+
+/**
+ * Remove a contact from user profile
+ * DELETE /api/users/contacts/:contactId
+ * Protected route
+ */
+export const removeContact = async (req, res) => {
+  try {
+    const userId = req.userId;
+    const { contactId } = req.params;
+
+    // Get user
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: 'User not found',
+      });
+    }
+
+    // Find and remove contact
+    const contactIndex = user.contacts.findIndex(
+      (contact) => contact.id === contactId
+    );
+
+    if (contactIndex === -1) {
+      return res.status(404).json({
+        success: false,
+        message: 'Contact not found',
+      });
+    }
+
+    // Remove contact
+    user.contacts.splice(contactIndex, 1);
+    await user.save();
+
+    res.status(200).json({
+      success: true,
+      message: 'Contact removed successfully',
+      data: {
+        contacts: user.contacts,
+      },
+    });
+  } catch (error) {
+    console.error('Remove contact error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Server error while removing contact',
+    });
+  }
+};
+
+/**
+ * Get public contacts for a user (for viewing on listings)
+ * GET /api/users/:userId/contacts
+ * Public route - no authentication required
+ */
+export const getPublicContacts = async (req, res) => {
+  try {
+    const { userId } = req.params;
+
+    const user = await User.findById(userId).select('-password');
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: 'User not found',
+      });
+    }
+
+    // Filter only public contacts
+    const publicContacts = user.contacts.filter((contact) => contact.isPublic);
+
+    res.status(200).json({
+      success: true,
+      data: {
+        email: user.email,
+        contacts: publicContacts,
+      },
+    });
+  } catch (error) {
+    console.error('Get public contacts error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Server error while fetching contacts',
     });
   }
 };

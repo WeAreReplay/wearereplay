@@ -9,6 +9,9 @@ import {
   getAllUsers,
   uploadProfilePicture,
   deleteProfilePicture,
+  addContact,
+  removeContact,
+  getPublicContacts,
 } from '../controllers/userController.js';
 import protect from '../middleware/authMiddleware.js';
 import adminOnly from '../middleware/adminMiddleware.js';
@@ -23,6 +26,13 @@ const router = Router();
 router.post('/subscribe', protect, subscribe);
 router.post('/unsubscribe', protect, unsubscribe);
 router.get('/profile', protect, getUserProfile);
+
+// Contact management routes (protected)
+router.post('/contacts', protect, addContact);
+router.delete('/contacts/:contactId', protect, removeContact);
+
+// Public route to get user contacts (no auth required)
+router.get('/:userId/contacts', getPublicContacts);
 
 // Profile picture routes
 router.post(

@@ -61,6 +61,27 @@ export default function Profile() {
   const canvasRef = useRef(null);
   const [stream, setStream] = useState(null);
 
+  // Contact management state
+  const [showContactModal, setShowContactModal] = useState(false);
+  const [addingContact, setAddingContact] = useState(false);
+  const [newContact, setNewContact] = useState({
+    type: "phone",
+    value: "",
+    label: "",
+    isPublic: true,
+  });
+  const [contactError, setContactError] = useState("");
+
+  // Contact type options with icons
+  const contactTypeOptions = [
+    { value: "phone", label: "Phone", icon: "📱" },
+    { value: "whatsapp", label: "WhatsApp", icon: "💬" },
+    { value: "discord", label: "Discord", icon: "🎮" },
+    { value: "telegram", label: "Telegram", icon: "✈️" },
+    { value: "instagram", label: "Instagram", icon: "📷" },
+    { value: "other", label: "Other", icon: "🔗" },
+  ];
+
   // Fetch user profile on mount
   useEffect(() => {
     fetchUserProfile();
@@ -239,6 +260,83 @@ export default function Profile() {
         message: error.message || "Failed to delete profile picture",
       });
     }
+  };
+
+  // Contact management functions
+  const handleAddContact = async (e) => {
+    e.preventDefault();
+    if (!newContact.value.trim()) {
+      setContactError("Contact value is required");
+      return;
+    }
+
+    setAddingContact(true);
+    setContactError("");
+
+    try {
+      const response = await fetch(`${API_URL}/users/contacts`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(newContact),
+      });
+
+      const data = await response.json();
+      if (data.success) {
+        setUserProfile({ ...userProfile, contacts: data.data.contacts });
+        setNewContact({ type: "phone", value: "", label: "", isPublic: true });
+        setShowContactModal(false);
+        setToast({
+          color: "green",
+          icon: "check",
+          message: "Contact added successfully!",
+        });
+      } else {
+        throw new Error(data.message);
+      }
+    } catch (error) {
+      console.error("Error adding contact:", error);
+      setContactError(error.message || "Failed to add contact");
+    } finally {
+      setAddingContact(false);
+    }
+  };
+
+  const handleRemoveContact = async (contactId) => {
+    try {
+      const response = await fetch(`${API_URL}/users/contacts/${contactId}`, {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      const data = await response.json();
+      if (data.success) {
+        setUserProfile({ ...userProfile, contacts: data.data.contacts });
+        setToast({
+          color: "green",
+          icon: "check",
+          message: "Contact removed successfully!",
+        });
+      } else {
+        throw new Error(data.message);
+      }
+    } catch (error) {
+      console.error("Error removing contact:", error);
+      setToast({
+        color: "red",
+        icon: "error",
+        message: error.message || "Failed to remove contact",
+      });
+    }
+  };
+
+  // Get contact type display info
+  const getContactTypeInfo = (type) => {
+    return contactTypeOptions.find((opt) => opt.value === type) || { label: type, icon: "🔗" };
   };
 
   // Cleanup camera on unmount
@@ -675,16 +773,38 @@ export default function Profile() {
 
                   {/* User Contacts */}
                   <div style={{ width: "100%", maxWidth: "280px" }}>
-                  <h4
-                    style={{
-                      color: "#f07c68",
-                      fontSize: "1rem",
-                      marginBottom: "1rem",
-                      textTransform: "uppercase",
-                    }}
-                  >
-                    User Contacts:
-                  </h4>
+                  <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "1rem" }}>
+                    <h4
+                      style={{
+                        color: "#f07c68",
+                        fontSize: "1rem",
+                        textTransform: "uppercase",
+                        margin: 0,
+                      }}
+                    >
+                      User Contacts:
+                    </h4>
+                    <button
+                      onClick={() => setShowContactModal(true)}
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "0.25rem",
+                        padding: "0.25rem 0.5rem",
+                        background: "#f07c68",
+                        border: "none",
+                        borderRadius: "4px",
+                        color: "#fff",
+                        fontSize: "0.75rem",
+                        fontWeight: "600",
+                        cursor: "pointer",
+                      }}
+                    >
+                      + Add
+                    </button>
+                  </div>
+
+                  {/* Email (Default - Always Visible) */}
                   <div
                     style={{
                       display: "flex",
@@ -692,21 +812,97 @@ export default function Profile() {
                       gap: "0.75rem",
                       color: "#f07c68",
                       fontSize: "0.875rem",
+                      marginBottom: "0.75rem",
                     }}
                   >
                     <MdEmail size={20} />
                     <span style={{ textTransform: "uppercase" }}>Email</span>
+                    <span style={{ fontSize: "0.7rem", color: "#2d8a2d", marginLeft: "auto" }}>Default</span>
                   </div>
                   <p
                     style={{
                       color: "#666",
                       fontSize: "0.8rem",
                       marginTop: "0.5rem",
+                      marginBottom: "1rem",
                       wordBreak: "break-all",
                     }}
                   >
                     {userProfile?.email || user?.email || "Not available"}
                   </p>
+
+                  {/* Additional Contacts */}
+                  {userProfile?.contacts && userProfile.contacts.length > 0 && (
+                    <div style={{ marginTop: "1rem" }}>
+                      <p
+                        style={{
+                          color: "#999",
+                          fontSize: "0.75rem",
+                          textTransform: "uppercase",
+                          marginBottom: "0.5rem",
+                        }}
+                      >
+                        Additional Contacts:
+                      </p>
+                      {userProfile.contacts.map((contact) => {
+                        const typeInfo = getContactTypeInfo(contact.type);
+                        return (
+                          <div
+                            key={contact.id}
+                            style={{
+                              display: "flex",
+                              alignItems: "center",
+                              gap: "0.5rem",
+                              padding: "0.5rem",
+                              background: "#fff",
+                              borderRadius: "6px",
+                              marginBottom: "0.5rem",
+                              border: "1px solid #f07c68",
+                            }}
+                          >
+                            <span style={{ fontSize: "1rem" }}>{typeInfo.icon}</span>
+                            <div style={{ flex: 1, minWidth: 0 }}>
+                              <p
+                                style={{
+                                  color: "#f07c68",
+                                  fontSize: "0.75rem",
+                                  textTransform: "uppercase",
+                                  margin: 0,
+                                }}
+                              >
+                                {typeInfo.label}
+                                {contact.label && ` - ${contact.label}`}
+                              </p>
+                              <p
+                                style={{
+                                  color: "#666",
+                                  fontSize: "0.8rem",
+                                  margin: 0,
+                                  wordBreak: "break-all",
+                                }}
+                              >
+                                {contact.value}
+                              </p>
+                            </div>
+                            <button
+                              onClick={() => handleRemoveContact(contact.id)}
+                              style={{
+                                background: "none",
+                                border: "none",
+                                color: "#dc2626",
+                                cursor: "pointer",
+                                padding: "0.25rem",
+                                fontSize: "0.875rem",
+                              }}
+                              title="Remove contact"
+                            >
+                              <FaTrash />
+                            </button>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
                 </div>
               </div>
 
@@ -1940,6 +2136,268 @@ export default function Profile() {
               >
                 Close
               </button>
+            </div>
+          </div>
+        </>
+      )}
+
+      {/* Add Contact Modal */}
+      {showContactModal && (
+        <>
+          <Overlay
+            isModalOpen={showContactModal}
+            onClick={() => !addingContact && setShowContactModal(false)}
+          />
+          <div
+            style={{
+              position: "fixed",
+              inset: 0,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              zIndex: 200,
+              pointerEvents: "none",
+              padding: "1rem",
+            }}
+          >
+            <div
+              style={{
+                background: "#fff8f0",
+                borderRadius: "16px",
+                padding: "1.5rem",
+                border: "3px solid #f07c68",
+                maxWidth: "400px",
+                width: "100%",
+                pointerEvents: "auto",
+                position: "relative",
+              }}
+            >
+              {/* Close Button */}
+              <button
+                onClick={() => !addingContact && setShowContactModal(false)}
+                disabled={addingContact}
+                style={{
+                  position: "absolute",
+                  top: "1rem",
+                  right: "1rem",
+                  background: "none",
+                  border: "none",
+                  fontSize: "1.5rem",
+                  color: "#f07c68",
+                  cursor: addingContact ? "not-allowed" : "pointer",
+                  padding: "0.25rem",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  opacity: addingContact ? 0.5 : 1,
+                }}
+              >
+                <IoClose />
+              </button>
+
+              <h2
+                style={{
+                  color: "#f07c68",
+                  fontSize: "1.25rem",
+                  textAlign: "center",
+                  marginBottom: "1.5rem",
+                  textTransform: "uppercase",
+                }}
+              >
+                Add Contact
+              </h2>
+
+              <form onSubmit={handleAddContact}>
+                {/* Contact Type */}
+                <div style={{ marginBottom: "1rem" }}>
+                  <label
+                    style={{
+                      display: "block",
+                      color: "#f07c68",
+                      fontSize: "0.875rem",
+                      marginBottom: "0.5rem",
+                      textTransform: "uppercase",
+                      fontWeight: "600",
+                    }}
+                  >
+                    Contact Type
+                  </label>
+                  <select
+                    value={newContact.type}
+                    onChange={(e) =>
+                      setNewContact({ ...newContact, type: e.target.value })
+                    }
+                    disabled={addingContact}
+                    style={{
+                      width: "100%",
+                      padding: "0.75rem",
+                      border: "2px solid #f07c68",
+                      borderRadius: "8px",
+                      background: "#fff",
+                      color: "#333",
+                      fontSize: "0.875rem",
+                      cursor: addingContact ? "not-allowed" : "pointer",
+                    }}
+                  >
+                    {contactTypeOptions.map((option) => (
+                      <option key={option.value} value={option.value}>
+                        {option.icon} {option.label}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                {/* Contact Value */}
+                <div style={{ marginBottom: "1rem" }}>
+                  <label
+                    style={{
+                      display: "block",
+                      color: "#f07c68",
+                      fontSize: "0.875rem",
+                      marginBottom: "0.5rem",
+                      textTransform: "uppercase",
+                      fontWeight: "600",
+                    }}
+                  >
+                    Contact Value *
+                  </label>
+                  <input
+                    type="text"
+                    value={newContact.value}
+                    onChange={(e) =>
+                      setNewContact({ ...newContact, value: e.target.value })
+                    }
+                    placeholder="e.g., +971 50 123 4567"
+                    disabled={addingContact}
+                    required
+                    style={{
+                      width: "100%",
+                      padding: "0.75rem",
+                      border: "2px solid #f07c68",
+                      borderRadius: "8px",
+                      background: "#fff",
+                      color: "#333",
+                      fontSize: "0.875rem",
+                    }}
+                  />
+                </div>
+
+                {/* Optional Label */}
+                <div style={{ marginBottom: "1rem" }}>
+                  <label
+                    style={{
+                      display: "block",
+                      color: "#f07c68",
+                      fontSize: "0.875rem",
+                      marginBottom: "0.5rem",
+                      textTransform: "uppercase",
+                      fontWeight: "600",
+                    }}
+                  >
+                    Label (Optional)
+                  </label>
+                  <input
+                    type="text"
+                    value={newContact.label}
+                    onChange={(e) =>
+                      setNewContact({ ...newContact, label: e.target.value })
+                    }
+                    placeholder="e.g., Work, Personal, Gaming"
+                    disabled={addingContact}
+                    style={{
+                      width: "100%",
+                      padding: "0.75rem",
+                      border: "2px solid #f07c68",
+                      borderRadius: "8px",
+                      background: "#fff",
+                      color: "#333",
+                      fontSize: "0.875rem",
+                    }}
+                  />
+                </div>
+
+                {/* Visibility Toggle */}
+                <div style={{ marginBottom: "1rem" }}>
+                  <label
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "0.5rem",
+                      color: "#f07c68",
+                      fontSize: "0.875rem",
+                      cursor: addingContact ? "not-allowed" : "pointer",
+                    }}
+                  >
+                    <input
+                      type="checkbox"
+                      checked={newContact.isPublic}
+                      onChange={(e) =>
+                        setNewContact({ ...newContact, isPublic: e.target.checked })
+                      }
+                      disabled={addingContact}
+                    />
+                    Make this contact visible to other users
+                  </label>
+                </div>
+
+                {/* Error Message */}
+                {contactError && (
+                  <div
+                    style={{
+                      background: "#ffe5e5",
+                      border: "1px solid #d32f2f",
+                      borderRadius: "6px",
+                      padding: "0.75rem",
+                      marginBottom: "1rem",
+                      color: "#d32f2f",
+                      fontSize: "0.875rem",
+                    }}
+                  >
+                    {contactError}
+                  </div>
+                )}
+
+                {/* Submit Buttons */}
+                <div style={{ display: "flex", gap: "1rem" }}>
+                  <button
+                    type="button"
+                    onClick={() => setShowContactModal(false)}
+                    disabled={addingContact}
+                    style={{
+                      flex: 1,
+                      padding: "0.75rem",
+                      background: "transparent",
+                      border: "2px solid #f07c68",
+                      borderRadius: "8px",
+                      color: "#f07c68",
+                      fontWeight: "600",
+                      cursor: addingContact ? "not-allowed" : "pointer",
+                      textTransform: "uppercase",
+                      opacity: addingContact ? 0.5 : 1,
+                    }}
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    disabled={addingContact}
+                    style={{
+                      flex: 1,
+                      padding: "0.75rem",
+                      background: "#f07c68",
+                      border: "2px solid #f07c68",
+                      borderRadius: "8px",
+                      color: "#fbead9",
+                      fontWeight: "600",
+                      cursor: addingContact ? "not-allowed" : "pointer",
+                      textTransform: "uppercase",
+                      opacity: addingContact ? 0.7 : 1,
+                    }}
+                  >
+                    {addingContact ? "Adding..." : "Add Contact"}
+                  </button>
+                </div>
+              </form>
             </div>
           </div>
         </>
