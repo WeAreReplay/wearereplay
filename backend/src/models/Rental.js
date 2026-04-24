@@ -52,6 +52,39 @@ const rentalSchema = new mongoose.Schema(
       type: Number,
       required: true,
     },
+    // Fees and charges
+    protectionFee: {
+      type: Number,
+      default: 6,
+    },
+    depositAmount: {
+      type: Number,
+      default: 0,
+    },
+    totalAmount: {
+      type: Number,
+      required: true,
+    },
+    // Payment and delivery details
+    paymentMethod: {
+      type: String,
+      enum: ['cod', 'card'],
+      default: 'cod',
+    },
+    paymentStatus: {
+      type: String,
+      enum: ['pending', 'paid', 'refunded'],
+      default: 'pending',
+    },
+    deliveryAddress: {
+      type: String,
+      default: '',
+    },
+    // Premium user benefits
+    gracePeriodDays: {
+      type: Number,
+      default: 0,
+    },
     // Tracking dates
     deliveredAt: {
       type: Date,

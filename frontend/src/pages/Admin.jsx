@@ -4,7 +4,7 @@ import "../assets/css/contact-attachments.css";
 import DashboardHeader from "../layouts/DashboardHeader";
 import { useAuth } from "../contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
-import { FaCheck, FaTimes, FaEye, FaList, FaStar, FaRegStar, FaUsers, FaSave } from "react-icons/fa";
+import { FaCheck, FaTimes, FaEye, FaList, FaStar, FaRegStar, FaUsers, FaSave, FaTrash } from "react-icons/fa";
 import { MdReport, MdMessage } from "react-icons/md";
 import { RiSendPlaneFill } from "react-icons/ri";
 import AdminReview from "../components/AdminReview";
@@ -568,6 +568,13 @@ export default function Admin() {
   const [allListings, setAllListings] = useState([]);
   const [listingsFilter, setListingsFilter] = useState("all"); // all, pending, approved, rejected, rented
 
+  // Delete confirmation state
+  const [deleteConfirm, setDeleteConfirm] = useState({
+    isOpen: false,
+    listing: null,
+    isDeleting: false,
+  });
+
   // Fetch all listings when all-listings tab is active
   useEffect(() => {
     if (activeTab === "all-listings" && token) {
@@ -629,6 +636,52 @@ export default function Admin() {
         title: "Error",
         message: "Failed to load listings",
       });
+    }
+  };
+
+  // Handle delete listing
+  const handleDeleteListing = async () => {
+    if (!deleteConfirm.listing) return;
+
+    setDeleteConfirm((prev) => ({ ...prev, isDeleting: true }));
+
+    try {
+      const response = await fetch(
+        `${API_URL}/dashboard/listings/${deleteConfirm.listing._id}`,
+        {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || "Failed to delete listing");
+      }
+
+      // Remove listing from state
+      setAllListings((prev) =>
+        prev.filter((l) => l._id !== deleteConfirm.listing._id)
+      );
+
+      setToast({
+        color: "green",
+        title: "Success",
+        message: `"${deleteConfirm.listing.name}" has been permanently deleted.`,
+      });
+
+      setDeleteConfirm({ isOpen: false, listing: null, isDeleting: false });
+    } catch (err) {
+      console.error("Delete listing error:", err);
+      setToast({
+        color: "red",
+        title: "Error",
+        message: err.message || "Failed to delete listing",
+      });
+      setDeleteConfirm((prev) => ({ ...prev, isDeleting: false }));
     }
   };
 
@@ -964,6 +1017,13 @@ export default function Admin() {
                                   onClick={() => handleViewAllListing(row)}
                                 >
                                   <FaEye /> {row.status === "pending" ? "Review" : "View"}
+                                </button>
+                                <button
+                                  className="icon-btn delete"
+                                  onClick={() => setDeleteConfirm({ isOpen: true, listing: row, isDeleting: false })}
+                                  title="Delete Listing"
+                                >
+                                  <FaTrash /> Delete
                                 </button>
                               </span>
                             );
@@ -1450,7 +1510,16 @@ export default function Admin() {
           </section>
         )}
 
-        <Overlay isModalOpen={isAnyModalOpen} onClick={handleCloseModal} />
+        <Overlay
+          isModalOpen={isAnyModalOpen || deleteConfirm.isOpen}
+          onClick={() => {
+            if (deleteConfirm.isOpen) {
+              setDeleteConfirm({ isOpen: false, listing: null, isDeleting: false });
+            } else {
+              handleCloseModal();
+            }
+          }}
+        />
 
         {modal.type === "approval" && (
           <AdminReview
@@ -1520,6 +1589,67 @@ export default function Admin() {
               className: "confirm",
             }}
           />
+        )}
+
+        {/* Delete Confirmation Modal */}
+        {deleteConfirm.isOpen && (
+          <div className="delete-confirm-modal">
+            <div className="delete-modal-backdrop" onClick={() => !deleteConfirm.isDeleting && setDeleteConfirm({ isOpen: false, listing: null, isDeleting: false })} />
+            <div className="delete-modal-content">
+              <div className="delete-modal-header">
+                <div className="warning-icon">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"></path>
+                    <line x1="12" y1="9" x2="12" y2="13"></line>
+                    <line x1="12" y1="17" x2="12.01" y2="17"></line>
+                  </svg>
+                </div>
+                <h2>Delete Listing</h2>
+              </div>
+              <div className="delete-modal-body">
+                <p className="listing-name">{deleteConfirm.listing?.name}</p>
+                <p className="confirm-message">
+                  Are you sure you want to permanently delete this listing?
+                </p>
+                <div className="delete-consequences">
+                  <p>This will:</p>
+                  <ul>
+                    <li>Remove the listing from the public catalog</li>
+                    <li>Remove it from the lender&apos;s dashboard</li>
+                    <li>Cancel any pending rental requests</li>
+                  </ul>
+                </div>
+                <p className="confirm-warning">
+                  <strong>This action cannot be undone.</strong>
+                </p>
+              </div>
+              <div className="delete-modal-footer">
+                <button
+                  className="btn-cancel"
+                  onClick={() => setDeleteConfirm({ isOpen: false, listing: null, isDeleting: false })}
+                  disabled={deleteConfirm.isDeleting}
+                >
+                  Cancel
+                </button>
+                <button
+                  className="btn-delete"
+                  onClick={handleDeleteListing}
+                  disabled={deleteConfirm.isDeleting}
+                >
+                  {deleteConfirm.isDeleting ? (
+                    <>
+                      <span className="spinner"></span>
+                      Deleting...
+                    </>
+                  ) : (
+                    <>
+                      <FaTrash /> Yes, Delete
+                    </>
+                  )}
+                </button>
+              </div>
+            </div>
+          </div>
         )}
       </main>
       <Toast

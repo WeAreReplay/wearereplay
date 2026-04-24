@@ -1,6 +1,6 @@
 import Listing from "../models/Listing.js";
 import Rental from "../models/Rental.js";
-import User from "../models/Rental.js";
+import User from "../models/User.js";
 
 /**
  * Get all listings for the current user (as lender)
@@ -139,6 +139,28 @@ export const createListing = async (req, res) => {
     }
 
     console.log("Final imageUrl:", imageUrl);
+
+    // Check user's listing limits based on subscription
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: 'User not found',
+      });
+    }
+
+    const isPremium = user.subscriptionType === 'premium' && user.subscriptionStatus === 'active';
+    const maxListings = isPremium ? Infinity : 6;
+
+    // Count user's existing listings (any status)
+    const currentListingsCount = await Listing.countDocuments({ lender: userId });
+
+    if (!isPremium && currentListingsCount >= maxListings) {
+      return res.status(400).json({
+        success: false,
+        message: 'You have reached your listing limit of 6 games. Upgrade to Premium for unlimited listings.',
+      });
+    }
 
     // Create new listing
     const newListing = await Listing.create({

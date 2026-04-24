@@ -45,8 +45,52 @@ export default function ViewItem() {
   const [checkoutError, setCheckoutError] = useState(null);
   const [showSuccessToast, setShowSuccessToast] = useState(false);
 
+  // User subscription state
+  const [userSubscription, setUserSubscription] = useState({
+    type: "regular",
+    status: "inactive",
+  });
+
   // Get auth token
   const getToken = () => localStorage.getItem("token");
+
+  // Fetch user subscription info
+  useEffect(() => {
+    const fetchUserInfo = async () => {
+      const token = getToken();
+      if (!token) return;
+
+      try {
+        const response = await fetch(`${API_URL}/users/profile`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          if (data.success) {
+            setUserSubscription({
+              type: data.data.user.subscriptionType || "regular",
+              status: data.data.user.subscriptionStatus || "inactive",
+            });
+          }
+        }
+      } catch (err) {
+        console.error("Error fetching user info:", err);
+      }
+    };
+
+    fetchUserInfo();
+  }, []);
+
+  // Calculate protection fee based on subscription
+  const isPremium = userSubscription.type === "premium" && userSubscription.status === "active";
+  const protectionFee = isPremium
+    ? 6
+    : Math.min(10, Math.max(6, Math.round(listing?.price * 0.05 || 0)));
+  const depositAmount = Math.min(Math.round((listing?.price || 0) * 0.4), 80);
+  const totalAmount = (listing?.price || 0) + protectionFee + depositAmount;
 
   // Fetch listing data from backend
   useEffect(() => {
@@ -217,7 +261,7 @@ export default function ViewItem() {
   const lenderName = `${lender.firstName || ""} ${lender.lastName || ""}`.trim() || "Unknown User";
   const lenderMetrics = lender.metrics || {};
   const lenderRating = lender.rating || 0;
-  const isPremium = lender.subscriptionType === "premium";
+  const isLenderPremium = lender.subscriptionType === "premium";
 
   // Format array fields
   const genres = Array.isArray(listing.genre) ? listing.genre : [listing.genre].filter(Boolean);
@@ -331,9 +375,12 @@ export default function ViewItem() {
                 </li>
                 <li>
                   <p>
-                    A small protection fee of 6 AED is also included with each
-                    transaction. This fee is non-refundable and helps cover
-                    platform security and handling.
+                    A protection fee ranging from 6 AED (minimum) to 10 AED (maximum) is applied to each transaction. This fee is determined based on the security deposit and is calculated as 10% of the 50% deposit amount. It is charged separately and does not deduct or take any portion from the deposit itself.
+                  </p>
+                </li>
+                <li>
+                  <p>
+                    The protection fee is non-refundable and helps cover platform security and handling.
                   </p>
                 </li>
                 <li>
@@ -377,7 +424,7 @@ export default function ViewItem() {
                 <div className="lender-info">
                   <h3>
                     {lenderName}
-                    {isPremium && (
+                    {isLenderPremium && (
                       <span className="premium-badge" title="Premium Member">
                         <RiVipCrownFill />
                       </span>
@@ -484,15 +531,15 @@ export default function ViewItem() {
                   </div>
                   <div className="total-row">
                     <span>Protection Fee:</span>
-                    <span>6 AED</span>
+                    <span>{protectionFee} AED {isPremium ? "(Premium Rate)" : ""}</span>
                   </div>
                   <div className="total-row">
                     <span>Refundable Deposit:</span>
-                    <span>{Math.min(Math.round(listing.price * 0.4), 80)} AED</span>
+                    <span>{depositAmount} AED</span>
                   </div>
                   <div className="total-row grand-total">
                     <span>Total:</span>
-                    <span>{listing.price + 6 + Math.min(Math.round(listing.price * 0.4), 80)} AED</span>
+                    <span>{totalAmount} AED</span>
                   </div>
                 </div>
               </div>

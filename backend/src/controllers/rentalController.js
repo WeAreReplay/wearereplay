@@ -97,7 +97,7 @@ export const getMyRentalsAsLender = async (req, res) => {
 export const createRental = async (req, res) => {
   try {
     const userId = req.userId;
-    const { listingId } = req.body;
+    const { listingId, paymentMethod, deliveryAddress } = req.body;
 
     // Find the listing
     const listing = await Listing.findById(listingId);
@@ -139,9 +139,47 @@ export const createRental = async (req, res) => {
       });
     }
 
-    // Calculate due date
+    // Get user and check borrowing limits
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: 'User not found',
+      });
+    }
+
+    // Count user's active rentals
+    const activeRentalsCount = await Rental.countDocuments({
+      borrower: userId,
+      status: { $in: ['pending', 'delivering', 'active', 'returning'] },
+    });
+
+    // Check borrowing limits based on subscription type
+    const isPremium = user.subscriptionType === 'premium' && user.subscriptionStatus === 'active';
+    const maxBorrows = isPremium ? 10 : 3;
+
+    if (activeRentalsCount >= maxBorrows) {
+      return res.status(400).json({
+        success: false,
+        message: isPremium
+          ? 'You have reached your premium borrowing limit of 10 active rentals. Please return some games before borrowing more.'
+          : 'You have reached your borrowing limit of 3 active rentals. Upgrade to Premium for up to 10 active borrows or return some games.',
+      });
+    }
+
+    // Calculate protection fee based on subscription
+    const protectionFee = isPremium ? 6 : Math.min(10, Math.max(6, Math.round(listing.price * 0.05)));
+
+    // Calculate due date with grace period for premium users
+    const gracePeriod = isPremium ? 2 : 0;
     const dueDate = new Date();
-    dueDate.setDate(dueDate.getDate() + listing.borrowDuration);
+    dueDate.setDate(dueDate.getDate() + listing.borrowDuration + gracePeriod);
+
+    // Calculate deposit (40% of price, max 80 AED)
+    const depositAmount = Math.min(Math.round(listing.price * 0.4), 80);
+
+    // Calculate total
+    const totalAmount = listing.price + protectionFee + depositAmount;
 
     // Create rental
     const rental = await Rental.create({
@@ -152,6 +190,13 @@ export const createRental = async (req, res) => {
       dueDate,
       price: listing.price,
       borrowDuration: listing.borrowDuration,
+      protectionFee,
+      depositAmount,
+      totalAmount,
+      paymentMethod: paymentMethod || 'cod',
+      paymentStatus: paymentMethod === 'card' ? 'paid' : 'pending',
+      deliveryAddress: deliveryAddress || '',
+      gracePeriodDays: gracePeriod,
     });
 
     // Update listing status
@@ -161,7 +206,18 @@ export const createRental = async (req, res) => {
     res.status(201).json({
       success: true,
       message: 'Rental request created successfully',
-      data: { rental },
+      data: {
+        rental,
+        fees: {
+          price: listing.price,
+          protectionFee,
+          depositAmount,
+          totalAmount,
+        },
+        gracePeriodDays: gracePeriod,
+        maxBorrows,
+        currentBorrows: activeRentalsCount + 1,
+      },
     });
   } catch (error) {
     console.error('Create rental error:', error);
