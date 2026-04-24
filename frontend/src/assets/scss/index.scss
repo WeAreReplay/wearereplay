@@ -194,9 +194,14 @@
     gap: $spacing-24;
 
     @include desktop() {
+      min-height: 100vh;
+      gap: $spacing-48;
+    }
+
+    @include desktop-large() {
+      min-height: auto;
       height: 100vh;
       max-height: 1024px;
-      gap: $spacing-48;
     }
 
     .benefits-ctr {
@@ -570,5 +575,11 @@
         }
       }
     }
+  }
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
   }
 }

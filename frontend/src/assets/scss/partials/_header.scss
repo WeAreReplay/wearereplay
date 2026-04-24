@@ -37,10 +37,7 @@
       z-index: $z-index-mid;
       display: grid;
       grid-template-columns: 1fr auto;
-
-      @include tablet() {
-        border-inline: $orange solid $border-small;
-      }
+      border-inline: $orange solid $border-small;
 
       // ! Navigation Links
       .nav-items {

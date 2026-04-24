@@ -313,6 +313,7 @@
   position: absolute;
   inset: 0;
   height: 100%;
+  width: 100%;
 }
 .games-main .content .width-wrap .games-ctr .card .head {
   margin-bottom: 1rem;

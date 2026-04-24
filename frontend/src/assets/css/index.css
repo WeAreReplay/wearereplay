@@ -122,7 +122,7 @@ textarea::placeholder {
 
 label,
 legend {
-  font-family: "Primetime", sans-serif;
+  font-family: "Inter", sans-serif;
 }
 
 input,
@@ -164,6 +164,7 @@ form .fields-ctr {
 form .fields-ctr li label,
 form .fields-ctr li legend {
   text-transform: uppercase;
+  font-weight: 900;
 }
 form .fields-ctr li .input-ctr {
   position: relative;
@@ -646,11 +647,7 @@ form .fields-ctr li .file-ctr .file-hint {
   z-index: 1;
   display: grid;
   grid-template-columns: 1fr auto;
-}
-@media (min-width: 768px) {
-  .public-header .width-wrap nav {
-    border-inline: #f07c68 solid 0.25rem;
-  }
+  border-inline: #f07c68 solid 0.25rem;
 }
 .public-header .width-wrap nav .nav-items {
   display: flex;
@@ -1066,9 +1063,15 @@ footer .width-wrap .bottom .copyright {
 }
 @media (min-width: 1024px) {
   .home-main .benefits .width-wrap {
+    min-height: 100vh;
+    gap: 3rem;
+  }
+}
+@media (min-width: 1440px) {
+  .home-main .benefits .width-wrap {
+    min-height: auto;
     height: 100vh;
     max-height: 1024px;
-    gap: 3rem;
   }
 }
 .home-main .benefits .width-wrap .benefits-ctr {
@@ -1414,5 +1417,4 @@ footer .width-wrap .bottom .copyright {
   to {
     transform: rotate(360deg);
   }
-}
-/*# sourceMappingURL=index.css.map */
+}/*# sourceMappingURL=index.css.map */

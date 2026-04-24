@@ -852,3 +852,205 @@
     padding-left: 1rem;
   }
 }
+
+/* Delete button styles for admin table */
+.dashboard-main
+  .dashboard-content
+  .dashboard-table
+  .table-content
+  li
+  > span.actions
+  .icon-btn.delete {
+  background-color: #dc2626;
+}
+
+.dashboard-main
+  .dashboard-content
+  .dashboard-table
+  .table-content
+  li
+  > span.actions
+  .icon-btn.delete:hover {
+  background-color: #b91c1c;
+}
+
+/* ========================================
+   DELETE CONFIRMATION MODAL
+   ======================================== */
+.delete-confirm-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.delete-modal-backdrop {
+  position: absolute;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.6);
+  z-index: 1;
+}
+
+.delete-modal-content {
+  position: relative;
+  z-index: 2;
+  background-color: #fff;
+  border-radius: 12px;
+  max-width: 400px;
+  width: 90%;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  overflow: hidden;
+}
+
+.delete-modal-header {
+  padding: 1.5rem 1.5rem 1rem;
+  text-align: center;
+}
+
+.delete-modal-header .warning-icon {
+  width: 32px;
+  height: 32px;
+  margin: 0 auto 0.5rem;
+  color: #dc2626;
+}
+
+.delete-modal-header .warning-icon svg {
+  width: 100%;
+  height: 100%;
+}
+
+.delete-modal-header h2 {
+  font-family: "VCR", monospace;
+  font-size: 1.25rem;
+  text-transform: uppercase;
+  color: #333;
+  margin: 0;
+}
+
+.delete-modal-body {
+  padding: 0 1.5rem 1.5rem;
+  text-align: center;
+}
+
+.delete-modal-body .listing-name {
+  font-family: "Inter", sans-serif;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 1rem;
+  padding: 0.75rem;
+  background-color: #f5f5f5;
+  border-radius: 8px;
+  border-left: 4px solid #f07c68;
+}
+
+.delete-modal-body .confirm-message {
+  font-family: "Inter", sans-serif;
+  color: #666;
+  font-size: 0.9rem;
+  margin-bottom: 1rem;
+}
+
+.delete-modal-body .delete-consequences {
+  text-align: left;
+  background-color: #fef3f3;
+  border: 1px solid #fecaca;
+  border-radius: 8px;
+  padding: 1rem;
+  margin: 1rem 0;
+}
+
+.delete-modal-body .delete-consequences p {
+  font-family: "Inter", sans-serif;
+  font-weight: 600;
+  color: #dc2626;
+  font-size: 0.8rem;
+  margin-bottom: 0.5rem;
+}
+
+.delete-modal-body .delete-consequences ul {
+  list-style: disc;
+  padding-left: 1.25rem;
+  margin: 0;
+}
+
+.delete-modal-body .delete-consequences li {
+  font-family: "Inter", sans-serif;
+  color: #666;
+  font-size: 0.8rem;
+  margin-bottom: 0.25rem;
+}
+
+.delete-modal-body .confirm-warning {
+  font-family: "Inter", sans-serif;
+  color: #dc2626;
+  font-size: 0.8rem;
+  margin-top: 1rem;
+  font-style: italic;
+}
+
+.delete-modal-footer {
+  display: flex;
+  gap: 0.75rem;
+  padding: 1rem 1.5rem;
+  border-top: 1px solid #eee;
+  background-color: #fafafa;
+}
+
+.delete-modal-footer button {
+  flex: 1;
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  font-family: "Inter", sans-serif;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border: none;
+}
+
+.delete-modal-footer .btn-cancel {
+  background-color: #fff;
+  color: #666;
+  border: 1px solid #ddd;
+}
+
+.delete-modal-footer .btn-cancel:hover:not(:disabled) {
+  background-color: #f5f5f5;
+  border-color: #ccc;
+}
+
+.delete-modal-footer .btn-delete {
+  background-color: #dc2626;
+  color: white;
+}
+
+.delete-modal-footer .btn-delete:hover:not(:disabled) {
+  background-color: #b91c1c;
+}
+
+.delete-modal-footer button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.delete-modal-footer .spinner {
+  width: 1rem;
+  height: 1rem;
+  border: 2px solid white;
+  border-top-color: transparent;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}

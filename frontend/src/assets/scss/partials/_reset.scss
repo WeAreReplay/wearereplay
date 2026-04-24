@@ -114,7 +114,7 @@ textarea {
 
 label,
 legend {
-  font-family: $font-pt;
+  font-family: $font-inter;
 }
 
 input,
@@ -160,6 +160,7 @@ form {
       label,
       legend {
         text-transform: uppercase;
+        font-weight: 900;
       }
 
       .input-ctr {

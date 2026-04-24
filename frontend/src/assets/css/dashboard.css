@@ -886,7 +886,6 @@
     padding-left: 1rem;
   }
 }
-
 /* Delete button styles for admin table */
 .dashboard-main .dashboard-content .dashboard-table .table-content li > span.actions .icon-btn.delete {
   background-color: #dc2626;
@@ -1075,6 +1074,4 @@
   to {
     transform: rotate(360deg);
   }
-}
-
-/*# sourceMappingURL=dashboard.css.map */
+}/*# sourceMappingURL=dashboard.css.map */
