@@ -481,7 +481,10 @@ export default function Dashboard() {
       }
 
       if (newListing.commercialBulking) {
-        submitFormData.append("commercialBulking", newListing.commercialBulking);
+        submitFormData.append(
+          "commercialBulking",
+          newListing.commercialBulking,
+        );
       }
 
       // Handle image - append file if it's a File object
@@ -1067,6 +1070,7 @@ export default function Dashboard() {
             COLS.text("Genre", "genre"),
             COLS.text("Tag", "tag"),
             COLS.text("Expansions", "hasExpansions"),
+            COLS.text("Commercial Bulking", "commercialBulking"),
             COLS.text("Delivery Method", "deliveryMethod"),
             COLS.status,
             COLS.date("Start Date", "startDate"),
@@ -1089,6 +1093,7 @@ export default function Dashboard() {
             COLS.text("Genre", "genre"),
             COLS.text("Tag", "tag"),
             COLS.text("Expansions", "hasExpansions"),
+            COLS.text("Commercial Bulking", "commercialBulking"),
             COLS.text("Delivery Method", "deliveryMethod"),
             COLS.date("Start Date", "startDate"),
             COLS.date("Due Date", "dueDate"),
@@ -1117,6 +1122,7 @@ export default function Dashboard() {
             COLS.text("Genre", "genre"),
             COLS.text("Tag", "tag"),
             COLS.text("Expansions", "hasExpansions"),
+            COLS.text("Commercial Bulking", "commercialBulking"),
             COLS.text("Delivery Method", "deliveryMethod"),
             COLS.text("Borrow Duration (Days)", "borrowDuration"),
             COLS.status,
@@ -1138,6 +1144,7 @@ export default function Dashboard() {
             COLS.text("Genre", "genre"),
             COLS.text("Tag", "tag"),
             COLS.text("Expansions", "hasExpansions"),
+            COLS.text("Commercial Bulking", "commercialBulking"),
             COLS.text("Delivery Method", "deliveryMethod"),
             COLS.status,
             COLS.date("Start Date", "startDate"),
@@ -1160,6 +1167,7 @@ export default function Dashboard() {
             COLS.text("Genre", "genre"),
             COLS.text("Tag", "tag"),
             COLS.text("Expansions", "hasExpansions"),
+            COLS.text("Commercial Bulking", "commercialBulking"),
             COLS.text("Delivery Method", "deliveryMethod"),
             COLS.date("Start Date", "startDate"),
             COLS.date("Due Date", "dueDate"),
