@@ -20,7 +20,7 @@ export default function Footer() {
   ];
 
   const navList = [
-    { txt: "Games", path: "/games" },
+    { txt: "Catalogue", path: "/catalogue" },
     { txt: "Support", path: "/support" },
     { txt: "About", path: "/about" },
     { txt: "Contact", path: "/contact" },

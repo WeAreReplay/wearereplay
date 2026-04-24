@@ -316,9 +316,12 @@ export default function Dashboard() {
       }
 
       // Fetch borrowed games
-      const rentalsRes = await fetch(`${API_URL}/dashboard/rentals/my-borrowed`, {
-        headers: getAuthHeaders(),
-      });
+      const rentalsRes = await fetch(
+        `${API_URL}/dashboard/rentals/my-borrowed`,
+        {
+          headers: getAuthHeaders(),
+        },
+      );
 
       if (!rentalsRes.ok) {
         throw new Error("Failed to fetch borrowed games");
@@ -455,6 +458,7 @@ export default function Dashboard() {
       if (newListing.genre) {
         submitFormData.append("genre", JSON.stringify(newListing.genre));
       }
+
       if (newListing.tag) {
         submitFormData.append("tag", JSON.stringify(newListing.tag));
       }
@@ -471,11 +475,14 @@ export default function Dashboard() {
 
       if (formMode === "edit") {
         // Update existing listing
-        const response = await fetch(`${API_URL}/dashboard/listings/${formData._id || formData.id}`, {
-          method: "PUT",
-          headers: { Authorization: `Bearer ${token}` },
-          body: submitFormData,
-        });
+        const response = await fetch(
+          `${API_URL}/dashboard/listings/${formData._id || formData.id}`,
+          {
+            method: "PUT",
+            headers: { Authorization: `Bearer ${token}` },
+            body: submitFormData,
+          },
+        );
 
         if (!response.ok) {
           const error = await response.json();
@@ -485,7 +492,9 @@ export default function Dashboard() {
         const data = await response.json();
 
         // Update local state
-        setListedGames((prev) => prev.filter((l) => (l._id || l.id) !== (formData._id || formData.id)));
+        setListedGames((prev) =>
+          prev.filter((l) => (l._id || l.id) !== (formData._id || formData.id)),
+        );
         setPendingListings((prev) => [data.data.listing, ...prev]);
 
         setToast({
@@ -533,7 +542,12 @@ export default function Dashboard() {
       setFormMode(null);
       setFormData(null);
     } catch (err) {
-      handleApiError(err, formMode === "edit" ? "Failed to update listing" : "Failed to create listing");
+      handleApiError(
+        err,
+        formMode === "edit"
+          ? "Failed to update listing"
+          : "Failed to create listing",
+      );
     }
   };
 
@@ -557,12 +571,15 @@ export default function Dashboard() {
 
     try {
       const rentalId = game._id || game.id;
-      
-      const response = await fetch(`${API_URL}/dashboard/rentals/${rentalId}/status`, {
-        method: "PATCH",
-        headers: getAuthHeaders(),
-        body: JSON.stringify({ status: "returned" }),
-      });
+
+      const response = await fetch(
+        `${API_URL}/dashboard/rentals/${rentalId}/status`,
+        {
+          method: "PATCH",
+          headers: getAuthHeaders(),
+          body: JSON.stringify({ status: "returned" }),
+        },
+      );
 
       if (!response.ok) {
         const error = await response.json();
@@ -602,11 +619,14 @@ export default function Dashboard() {
 
     try {
       const listingId = game._id || game.id;
-      
-      const response = await fetch(`${API_URL}/dashboard/listings/${listingId}`, {
-        method: "DELETE",
-        headers: getAuthHeaders(),
-      });
+
+      const response = await fetch(
+        `${API_URL}/dashboard/listings/${listingId}`,
+        {
+          method: "DELETE",
+          headers: getAuthHeaders(),
+        },
+      );
 
       if (!response.ok) {
         const error = await response.json();
@@ -614,8 +634,12 @@ export default function Dashboard() {
       }
 
       // Update local state
-      setListedGames((prev) => prev.filter((l) => (l._id || l.id) !== (game._id || game.id)));
-      setPendingListings((prev) => prev.filter((l) => (l._id || l.id) !== (game._id || game.id)));
+      setListedGames((prev) =>
+        prev.filter((l) => (l._id || l.id) !== (game._id || game.id)),
+      );
+      setPendingListings((prev) =>
+        prev.filter((l) => (l._id || l.id) !== (game._id || game.id)),
+      );
 
       setToast({
         color: "red",
@@ -687,12 +711,15 @@ export default function Dashboard() {
 
     try {
       const rentalId = game._id || game.id;
-      
-      const response = await fetch(`${API_URL}/dashboard/rentals/${rentalId}/status`, {
-        method: "PATCH",
-        headers: getAuthHeaders(),
-        body: JSON.stringify({ status: "returning" }),
-      });
+
+      const response = await fetch(
+        `${API_URL}/dashboard/rentals/${rentalId}/status`,
+        {
+          method: "PATCH",
+          headers: getAuthHeaders(),
+          body: JSON.stringify({ status: "returning" }),
+        },
+      );
 
       if (!response.ok) {
         const error = await response.json();
@@ -732,12 +759,15 @@ export default function Dashboard() {
 
     try {
       const rentalId = game._id || game.id;
-      
-      const response = await fetch(`${API_URL}/dashboard/rentals/${rentalId}/status`, {
-        method: "PATCH",
-        headers: getAuthHeaders(),
-        body: JSON.stringify({ status: "active" }),
-      });
+
+      const response = await fetch(
+        `${API_URL}/dashboard/rentals/${rentalId}/status`,
+        {
+          method: "PATCH",
+          headers: getAuthHeaders(),
+          body: JSON.stringify({ status: "active" }),
+        },
+      );
 
       if (!response.ok) {
         const error = await response.json();
@@ -1102,8 +1132,24 @@ export default function Dashboard() {
         {/* Loading State */}
         {loading && (
           <section className="dashboard-content">
-            <div style={{ display: "flex", justifyContent: "center", alignItems: "center", padding: "3rem" }}>
-              <div style={{ width: "50px", height: "50px", border: "4px solid #f07c68", borderTopColor: "transparent", borderRadius: "50%", animation: "spin 1s linear infinite" }} />
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                padding: "3rem",
+              }}
+            >
+              <div
+                style={{
+                  width: "50px",
+                  height: "50px",
+                  border: "4px solid #f07c68",
+                  borderTopColor: "transparent",
+                  borderRadius: "50%",
+                  animation: "spin 1s linear infinite",
+                }}
+              />
             </div>
           </section>
         )}
@@ -1111,8 +1157,12 @@ export default function Dashboard() {
         {/* Error State */}
         {error && !loading && (
           <section className="dashboard-content">
-            <div style={{ textAlign: "center", padding: "2rem", color: "#d32f2f" }}>
-              <p style={{ marginBottom: "1rem" }}>Failed to load dashboard data</p>
+            <div
+              style={{ textAlign: "center", padding: "2rem", color: "#d32f2f" }}
+            >
+              <p style={{ marginBottom: "1rem" }}>
+                Failed to load dashboard data
+              </p>
               <button
                 onClick={fetchDashboardData}
                 style={{
@@ -1130,273 +1180,291 @@ export default function Dashboard() {
           </section>
         )}
 
-        {!loading && !error && visibleSections.map((section, i) => (
-          <section className="dashboard-content" key={i}>
-            <div className="title">
-              <h2>{section.sectionTitle}</h2>
-            </div>
+        {!loading &&
+          !error &&
+          visibleSections.map((section, i) => (
+            <section className="dashboard-content" key={i}>
+              <div className="title">
+                <h2>{section.sectionTitle}</h2>
+              </div>
 
-            {section.tables.map((table, j) => (
-              <div key={j}>
-                <div className="table-header">
-                  <h4>{table.title}</h4>
+              {section.tables.map((table, j) => (
+                <div key={j}>
+                  <div className="table-header">
+                    <h4>{table.title}</h4>
 
-                  {table.title === "Active Borrowed Games" && (
-                    <Link to="/games" className="table-action-link">
-                      <FaShoppingBasket className="icon" />
-                      <span>
-                        {currentRole.maxBorrows === Infinity
-                          ? "Browse More Games"
-                          : `Browse More Games (${activeBorrowedGames}/${currentRole.maxBorrows})`}
-                      </span>
-                    </Link>
-                  )}
+                    {table.title === "Active Borrowed Games" && (
+                      <Link to="/games" className="table-action-link">
+                        <FaShoppingBasket className="icon" />
+                        <span>
+                          {currentRole.maxBorrows === Infinity
+                            ? "Browse More Games"
+                            : `Browse More Games (${activeBorrowedGames}/${currentRole.maxBorrows})`}
+                        </span>
+                      </Link>
+                    )}
 
-                  {table.title === "Active Listings" && (
-                    <button
-                      className="table-action-link"
-                      onClick={() => {
-                        if (totalListings >= currentRole.maxListings) {
-                          setToast({
-                            color: "red",
-                            title: "Limit reached",
-                            message: `You can only list ${currentRole.maxListings} games. Upgrade to Premium for unlimited listings.`,
-                          });
-                          return;
-                        }
+                    {table.title === "Active Listings" && (
+                      <button
+                        className="table-action-link"
+                        onClick={() => {
+                          if (totalListings >= currentRole.maxListings) {
+                            setToast({
+                              color: "red",
+                              title: "Limit reached",
+                              message: `You can only list ${currentRole.maxListings} games. Upgrade to Premium for unlimited listings.`,
+                            });
+                            return;
+                          }
 
-                        setFormMode("create");
-                        setFormData(null);
-                      }}
-                    >
-                      <FaPlus className="icon" />
+                          setFormMode("create");
+                          setFormData(null);
+                        }}
+                      >
+                        <FaPlus className="icon" />
 
-                      <span>
-                        {currentRole.maxListings === Infinity
-                          ? "Create Listing"
-                          : `Create Listing (${totalListings}/${currentRole.maxListings})`}
-                      </span>
-                    </button>
-                  )}
-                </div>
+                        <span>
+                          {currentRole.maxListings === Infinity
+                            ? "Create Listing"
+                            : `Create Listing (${totalListings}/${currentRole.maxListings})`}
+                        </span>
+                      </button>
+                    )}
+                  </div>
 
-                <div className="table-wrapper">
-                  <div className="dashboard-table" key={j}>
-                    <ul className="table-head">
-                      <li>
-                        {table.columns.map((col, k) => (
-                          <span key={k}>{col.label}</span>
-                        ))}
-                      </li>
-                    </ul>
-                    <ul className="table-content">
-                      {table.data.map((row, rowIndex) => {
-                        const statusClass = table.statusFn
-                          ? table.statusFn(row, role)
-                          : null;
+                  <div className="table-wrapper">
+                    <div className="dashboard-table" key={j}>
+                      <ul className="table-head">
+                        <li>
+                          {table.columns.map((col, k) => (
+                            <span key={k}>{col.label}</span>
+                          ))}
+                        </li>
+                      </ul>
+                      <ul className="table-content">
+                        {table.data.map((row, rowIndex) => {
+                          const statusClass = table.statusFn
+                            ? table.statusFn(row, role)
+                            : null;
 
-                        return (
-                          <li key={rowIndex}>
-                            {table.columns.map((col, colIndex) => {
-                              {
-                                // ! ICONS
-                              }
-                              if (col.isIcon)
-                                return (
-                                  <GetPlatformIcon
-                                    platform={row[col.key]}
-                                    key={colIndex}
-                                  />
-                                );
-                              {
-                                // ! IMAGES
-                              }
-                              if (col.isImage)
-                                return (
-                                  <span key={colIndex}>
-                                    <img
-                                      src={row[col.key]}
-                                      alt={row.name}
-                                      className="table-image"
-                                    />
-                                  </span>
-                                );
-
-                              {
-                                // ! STATUS
-                              }
-                              if (col.isStatus) {
-                                const statusLabels = {
-                                  available: "Available",
-                                  pending: "Pending",
-                                  delivering: "Delivering",
-                                  rented: "Rented",
-                                  returning: "Returning",
-                                  returned: "Returned",
-                                  overdue: "Overdue",
-                                  rejected: "Rejected",
-                                };
-
-                                const status = statusLabels[statusClass] || "—";
-                                const rejectionReason = row.rejectionReason;
-
-                                return (
-                                  <span
-                                    key={colIndex}
-                                    className={`status ${statusClass}`}
-                                    title={rejectionReason || undefined}
-                                  >
-                                    {status}
-                                    {statusClass === 'rejected' && rejectionReason && (
-                                      <span style={{ display: 'block', fontSize: '0.75rem', fontStyle: 'italic', opacity: 0.8, marginTop: '2px' }}>
-                                        Reason: {rejectionReason}
-                                      </span>
-                                    )}
-                                  </span>
-                                );
-                              }
-
-                              {
-                                // ! DATES
-                              }
-                              if (col.isDate) {
-                                return (
-                                  <span key={colIndex}>
-                                    {FormatDate(row[col.key])}
-                                  </span>
-                                );
-                              }
-
-                              {
-                                // ! ACTIONS
-                              }
-                              if (col.isActions) {
-                                let actions = [];
-
-                                if (table.title === "Active Listings") {
-                                  actions = getLenderActions(row);
-                                } else if (table.title === "Pending Listings") {
-                                  actions = ["edit", "delete"];
-                                } else {
-                                  actions = getBorrowerActions(row);
+                          return (
+                            <li key={rowIndex}>
+                              {table.columns.map((col, colIndex) => {
+                                {
+                                  // ! ICONS
                                 }
+                                if (col.isIcon)
+                                  return (
+                                    <GetPlatformIcon
+                                      platform={row[col.key]}
+                                      key={colIndex}
+                                    />
+                                  );
+                                {
+                                  // ! IMAGES
+                                }
+                                if (col.isImage)
+                                  return (
+                                    <span key={colIndex}>
+                                      <img
+                                        src={
+                                          row[col.key]?.startsWith("http")
+                                            ? row[col.key]
+                                            : `${API_URL.replace("/api", "")}${row[col.key]}`
+                                        }
+                                        alt={row.name}
+                                        className="table-image"
+                                      />
+                                    </span>
+                                  );
 
-                                if (!actions.length) {
+                                {
+                                  // ! STATUS
+                                }
+                                if (col.isStatus) {
+                                  const statusLabels = {
+                                    available: "Available",
+                                    pending: "Pending",
+                                    delivering: "Delivering",
+                                    rented: "Rented",
+                                    returning: "Returning",
+                                    returned: "Returned",
+                                    overdue: "Overdue",
+                                    rejected: "Rejected",
+                                  };
+
+                                  const status =
+                                    statusLabels[statusClass] || "—";
+                                  const rejectionReason = row.rejectionReason;
+
                                   return (
                                     <span
                                       key={colIndex}
-                                      className="actions none"
+                                      className={`status ${statusClass}`}
+                                      title={rejectionReason || undefined}
                                     >
-                                      —
+                                      {status}
+                                      {statusClass === "rejected" &&
+                                        rejectionReason && (
+                                          <span
+                                            style={{
+                                              display: "block",
+                                              fontSize: "0.75rem",
+                                              fontStyle: "italic",
+                                              opacity: 0.8,
+                                              marginTop: "2px",
+                                            }}
+                                          >
+                                            Reason: {rejectionReason}
+                                          </span>
+                                        )}
                                     </span>
                                   );
                                 }
+
+                                {
+                                  // ! DATES
+                                }
+                                if (col.isDate) {
+                                  return (
+                                    <span key={colIndex}>
+                                      {FormatDate(row[col.key])}
+                                    </span>
+                                  );
+                                }
+
+                                {
+                                  // ! ACTIONS
+                                }
+                                if (col.isActions) {
+                                  let actions = [];
+
+                                  if (table.title === "Active Listings") {
+                                    actions = getLenderActions(row);
+                                  } else if (
+                                    table.title === "Pending Listings"
+                                  ) {
+                                    actions = ["edit", "delete"];
+                                  } else {
+                                    actions = getBorrowerActions(row);
+                                  }
+
+                                  if (!actions.length) {
+                                    return (
+                                      <span
+                                        key={colIndex}
+                                        className="actions none"
+                                      >
+                                        —
+                                      </span>
+                                    );
+                                  }
+                                  return (
+                                    <span key={colIndex} className="actions">
+                                      {actions.includes("chat") && (
+                                        <button className="icon-btn chat">
+                                          <MdChatBubble /> Chat
+                                        </button>
+                                      )}
+
+                                      {actions.includes("report") && (
+                                        <button
+                                          className="icon-btn report"
+                                          onClick={() => {
+                                            setFormMode("report");
+                                            setFormData(row);
+                                          }}
+                                        >
+                                          <MdReport /> Report
+                                        </button>
+                                      )}
+
+                                      {actions.includes("edit") && (
+                                        <button
+                                          className="icon-btn edit"
+                                          onClick={() => handleEditListing(row)}
+                                        >
+                                          <FaEdit /> Edit
+                                        </button>
+                                      )}
+
+                                      {actions.includes("delete") && (
+                                        <button
+                                          className="icon-btn delete"
+                                          onClick={() =>
+                                            setConfirmAction({
+                                              type: ACTIONS.DELETE,
+                                              game: row,
+                                            })
+                                          }
+                                        >
+                                          <FaTrash /> Delete
+                                        </button>
+                                      )}
+
+                                      {actions.includes("return") && (
+                                        <button
+                                          className="icon-btn return"
+                                          onClick={() =>
+                                            setConfirmAction({
+                                              type: ACTIONS.RETURN_START,
+                                              game: row,
+                                            })
+                                          }
+                                        >
+                                          <FaTruck /> Return
+                                        </button>
+                                      )}
+
+                                      {actions.includes("confirm_delivery") && (
+                                        <button
+                                          className="icon-btn confirm"
+                                          onClick={() =>
+                                            setConfirmAction({
+                                              type: ACTIONS.DELIVERY_CONFIRM,
+                                              game: row,
+                                            })
+                                          }
+                                        >
+                                          <FaCheck /> Confirm
+                                        </button>
+                                      )}
+
+                                      {actions.includes("confirm_return") && (
+                                        <button
+                                          className="icon-btn confirm"
+                                          onClick={() =>
+                                            setConfirmAction({
+                                              type: ACTIONS.RETURN_CONFIRM,
+                                              game: row,
+                                            })
+                                          }
+                                        >
+                                          <FaCheck /> Confirm
+                                        </button>
+                                      )}
+                                    </span>
+                                  );
+                                }
+
                                 return (
-                                  <span key={colIndex} className="actions">
-                                    {actions.includes("chat") && (
-                                      <button className="icon-btn chat">
-                                        <MdChatBubble /> Chat
-                                      </button>
-                                    )}
-
-                                    {actions.includes("report") && (
-                                      <button
-                                        className="icon-btn report"
-                                        onClick={() => {
-                                          setFormMode("report");
-                                          setFormData(row);
-                                        }}
-                                      >
-                                        <MdReport /> Report
-                                      </button>
-                                    )}
-
-                                    {actions.includes("edit") && (
-                                      <button
-                                        className="icon-btn edit"
-                                        onClick={() => handleEditListing(row)}
-                                      >
-                                        <FaEdit /> Edit
-                                      </button>
-                                    )}
-
-                                    {actions.includes("delete") && (
-                                      <button
-                                        className="icon-btn delete"
-                                        onClick={() =>
-                                          setConfirmAction({
-                                            type: ACTIONS.DELETE,
-                                            game: row,
-                                          })
-                                        }
-                                      >
-                                        <FaTrash /> Delete
-                                      </button>
-                                    )}
-
-                                    {actions.includes("return") && (
-                                      <button
-                                        className="icon-btn return"
-                                        onClick={() =>
-                                          setConfirmAction({
-                                            type: ACTIONS.RETURN_START,
-                                            game: row,
-                                          })
-                                        }
-                                      >
-                                        <FaTruck /> Return
-                                      </button>
-                                    )}
-
-                                    {actions.includes("confirm_delivery") && (
-                                      <button
-                                        className="icon-btn confirm"
-                                        onClick={() =>
-                                          setConfirmAction({
-                                            type: ACTIONS.DELIVERY_CONFIRM,
-                                            game: row,
-                                          })
-                                        }
-                                      >
-                                        <FaCheck /> Confirm
-                                      </button>
-                                    )}
-
-                                    {actions.includes("confirm_return") && (
-                                      <button
-                                        className="icon-btn confirm"
-                                        onClick={() =>
-                                          setConfirmAction({
-                                            type: ACTIONS.RETURN_CONFIRM,
-                                            game: row,
-                                          })
-                                        }
-                                      >
-                                        <FaCheck /> Confirm
-                                      </button>
-                                    )}
+                                  <span key={colIndex}>
+                                    {Array.isArray(row[col.key])
+                                      ? row[col.key].join(", ")
+                                      : row[col.key] || "—"}
                                   </span>
                                 );
-                              }
-
-                              return (
-                                <span key={colIndex}>
-                                  {Array.isArray(row[col.key])
-                                    ? row[col.key].join(", ")
-                                    : row[col.key] || "—"}
-                                </span>
-                              );
-                            })}
-                          </li>
-                        );
-                      })}
-                    </ul>
+                              })}
+                            </li>
+                          );
+                        })}
+                      </ul>
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
-          </section>
-        ))}
+              ))}
+            </section>
+          ))}
 
         <Overlay
           isModalOpen={isAnyModalOpen}

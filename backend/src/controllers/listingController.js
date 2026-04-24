@@ -1,5 +1,6 @@
-import Listing from '../models/Listing.js';
-import Rental from '../models/Rental.js';
+import Listing from "../models/Listing.js";
+import Rental from "../models/Rental.js";
+import User from "../models/Rental.js";
 
 /**
  * Get all listings for the current user (as lender)
@@ -11,22 +12,22 @@ export const getMyListings = async (req, res) => {
 
     // Get all listings where user is the lender
     const listings = await Listing.find({ lender: userId })
-      .populate('rentedBy', 'firstName lastName email')
+      .populate("rentedBy", "firstName lastName email")
       .sort({ createdAt: -1 });
 
     // Separate into categories
     const pendingListings = listings.filter(
-      (l) => l.status === 'pending' && !l.isApproved
+      (l) => l.status === "pending" && !l.isApproved,
     );
     const activeListings = listings.filter(
       (l) =>
-        l.status === 'available' ||
-        l.status === 'delivering' ||
-        l.status === 'rented' ||
-        l.status === 'returning'
+        l.status === "available" ||
+        l.status === "delivering" ||
+        l.status === "rented" ||
+        l.status === "returning",
     );
     const listingHistory = listings.filter(
-      (l) => l.status === 'returned' || l.status === 'rejected'
+      (l) => l.status === "returned" || l.status === "rejected",
     );
 
     res.status(200).json({
@@ -39,10 +40,10 @@ export const getMyListings = async (req, res) => {
       },
     });
   } catch (error) {
-    console.error('Get my listings error:', error);
+    console.error("Get my listings error:", error);
     res.status(500).json({
       success: false,
-      message: 'Server error while fetching listings',
+      message: "Server error while fetching listings",
     });
   }
 };
@@ -55,13 +56,19 @@ export const getListingById = async (req, res) => {
     const { id } = req.params;
 
     const listing = await Listing.findById(id)
-      .populate('lender', 'firstName lastName email metrics rating profilePicture')
-      .populate('rentedBy', 'firstName lastName email metrics rating profilePicture');
+      .populate(
+        "lender",
+        "firstName lastName email metrics rating profilePicture",
+      )
+      .populate(
+        "rentedBy",
+        "firstName lastName email metrics rating profilePicture",
+      );
 
     if (!listing) {
       return res.status(404).json({
         success: false,
-        message: 'Listing not found',
+        message: "Listing not found",
       });
     }
 
@@ -70,10 +77,10 @@ export const getListingById = async (req, res) => {
       data: { listing },
     });
   } catch (error) {
-    console.error('Get listing error:', error);
+    console.error("Get listing error:", error);
     res.status(500).json({
       success: false,
-      message: 'Server error while fetching listing',
+      message: "Server error while fetching listing",
     });
   }
 };
@@ -104,10 +111,18 @@ export const createListing = async (req, res) => {
     console.log("createListing - image from body:", image);
 
     // Validate required fields
-    if (!name || !platform || !consoleModel || !price || !about || !borrowDuration || !deliveryMethod) {
+    if (
+      !name ||
+      !platform ||
+      !consoleModel ||
+      !price ||
+      !about ||
+      !borrowDuration ||
+      !deliveryMethod
+    ) {
       return res.status(400).json({
         success: false,
-        message: 'Please provide all required fields',
+        message: "Please provide all required fields",
       });
     }
 
@@ -117,9 +132,9 @@ export const createListing = async (req, res) => {
       // File was uploaded via multer
       console.log("File uploaded via multer:", req.file.filename);
       imageUrl = `/uploads/listings/${req.file.filename}`;
-    } else if (image && typeof image === 'string' && image.trim() !== '') {
+    } else if (image && typeof image === "string" && image.trim() !== "") {
       imageUrl = image;
-    } else if (image && typeof image === 'object' && image.url) {
+    } else if (image && typeof image === "object" && image.url) {
       imageUrl = image.url;
     }
 
@@ -135,29 +150,29 @@ export const createListing = async (req, res) => {
       tag: tag || [],
       about,
       borrowDuration: Number(borrowDuration),
-      hasExpansions: hasExpansions || 'no',
+      hasExpansions: hasExpansions || "no",
       deliveryMethod,
       image: imageUrl,
-      status: 'pending',
+      status: "pending",
       isApproved: false,
       lender: userId,
     });
 
     // Update user's total listings count
     await User.findByIdAndUpdate(userId, {
-      $inc: { 'metrics.totalListings': 1 },
+      $inc: { "metrics.totalListings": 1 },
     });
 
     res.status(201).json({
       success: true,
-      message: 'Listing created and pending admin approval',
+      message: "Listing created and pending admin approval",
       data: { listing: newListing },
     });
   } catch (error) {
-    console.error('Create listing error:', error);
+    console.error("Create listing error:", error);
     res.status(500).json({
       success: false,
-      message: 'Server error while creating listing',
+      message: "Server error while creating listing",
     });
   }
 };
@@ -177,7 +192,7 @@ export const updateListing = async (req, res) => {
     if (!listing) {
       return res.status(404).json({
         success: false,
-        message: 'Listing not found',
+        message: "Listing not found",
       });
     }
 
@@ -185,50 +200,59 @@ export const updateListing = async (req, res) => {
     if (listing.lender.toString() !== userId) {
       return res.status(403).json({
         success: false,
-        message: 'Not authorized to update this listing',
+        message: "Not authorized to update this listing",
       });
     }
 
     // Check if listing can be updated (only available/pending listings)
-    if (!['pending', 'available'].includes(listing.status)) {
+    if (!["pending", "available"].includes(listing.status)) {
       return res.status(400).json({
         success: false,
-        message: 'Cannot update a listing that is currently rented or in transaction',
+        message:
+          "Cannot update a listing that is currently rented or in transaction",
       });
     }
 
     // Fields that can be updated
     const allowedUpdates = [
-      'name',
-      'platform',
-      'consoleModel',
-      'price',
-      'genre',
-      'tag',
-      'about',
-      'borrowDuration',
-      'hasExpansions',
-      'deliveryMethod',
-      'image',
+      "name",
+      "platform",
+      "consoleModel",
+      "price",
+      "genre",
+      "tag",
+      "about",
+      "borrowDuration",
+      "hasExpansions",
+      "deliveryMethod",
+      "image",
     ];
 
     // Apply updates
     allowedUpdates.forEach((field) => {
       if (updates[field] !== undefined) {
-        if (field === 'price' || field === 'borrowDuration') {
+        if (field === "price" || field === "borrowDuration") {
           listing[field] = Number(updates[field]);
-        } else if (field === 'image') {
+        } else if (field === "image") {
           // Handle image - use uploaded file if present, otherwise use image from body
           if (req.file) {
             // File was uploaded via multer
             listing[field] = `/uploads/listings/${req.file.filename}`;
           } else {
             const imageVal = updates[field];
-            if (imageVal && typeof imageVal === 'string' && imageVal.trim() !== '') {
+            if (
+              imageVal &&
+              typeof imageVal === "string" &&
+              imageVal.trim() !== ""
+            ) {
               listing[field] = imageVal;
-            } else if (imageVal && typeof imageVal === 'object' && imageVal.url) {
+            } else if (
+              imageVal &&
+              typeof imageVal === "object" &&
+              imageVal.url
+            ) {
               listing[field] = imageVal.url;
-            } else if (imageVal === null || imageVal === '') {
+            } else if (imageVal === null || imageVal === "") {
               listing[field] = null;
             }
             // If none of these, keep existing image
@@ -241,7 +265,7 @@ export const updateListing = async (req, res) => {
 
     // If listing was already approved, reset to pending for re-approval
     if (listing.isApproved) {
-      listing.status = 'pending';
+      listing.status = "pending";
       listing.isApproved = false;
     }
 
@@ -249,14 +273,16 @@ export const updateListing = async (req, res) => {
 
     res.status(200).json({
       success: true,
-      message: listing.isApproved ? 'Listing updated and pending re-approval' : 'Listing updated',
+      message: listing.isApproved
+        ? "Listing updated and pending re-approval"
+        : "Listing updated",
       data: { listing },
     });
   } catch (error) {
-    console.error('Update listing error:', error);
+    console.error("Update listing error:", error);
     res.status(500).json({
       success: false,
-      message: 'Server error while updating listing',
+      message: "Server error while updating listing",
     });
   }
 };
@@ -275,7 +301,7 @@ export const deleteListing = async (req, res) => {
     if (!listing) {
       return res.status(404).json({
         success: false,
-        message: 'Listing not found',
+        message: "Listing not found",
       });
     }
 
@@ -283,15 +309,16 @@ export const deleteListing = async (req, res) => {
     if (listing.lender.toString() !== userId) {
       return res.status(403).json({
         success: false,
-        message: 'Not authorized to delete this listing',
+        message: "Not authorized to delete this listing",
       });
     }
 
     // Check if listing can be deleted (only available/pending listings)
-    if (!['pending', 'available'].includes(listing.status)) {
+    if (!["pending", "available"].includes(listing.status)) {
       return res.status(400).json({
         success: false,
-        message: 'Cannot delete a listing that is currently rented or in transaction',
+        message:
+          "Cannot delete a listing that is currently rented or in transaction",
       });
     }
 
@@ -299,13 +326,13 @@ export const deleteListing = async (req, res) => {
 
     res.status(200).json({
       success: true,
-      message: 'Listing deleted successfully',
+      message: "Listing deleted successfully",
     });
   } catch (error) {
-    console.error('Delete listing error:', error);
+    console.error("Delete listing error:", error);
     res.status(500).json({
       success: false,
-      message: 'Server error while deleting listing',
+      message: "Server error while deleting listing",
     });
   }
 };
@@ -322,11 +349,11 @@ export const approveListing = async (req, res) => {
     if (!listing) {
       return res.status(404).json({
         success: false,
-        message: 'Listing not found',
+        message: "Listing not found",
       });
     }
 
-    listing.status = 'available';
+    listing.status = "available";
     listing.isApproved = true;
     listing.approvedAt = new Date();
 
@@ -334,14 +361,14 @@ export const approveListing = async (req, res) => {
 
     res.status(200).json({
       success: true,
-      message: 'Listing approved successfully',
+      message: "Listing approved successfully",
       data: { listing },
     });
   } catch (error) {
-    console.error('Approve listing error:', error);
+    console.error("Approve listing error:", error);
     res.status(500).json({
       success: false,
-      message: 'Server error while approving listing',
+      message: "Server error while approving listing",
     });
   }
 };
@@ -359,11 +386,11 @@ export const rejectListing = async (req, res) => {
     if (!listing) {
       return res.status(404).json({
         success: false,
-        message: 'Listing not found',
+        message: "Listing not found",
       });
     }
 
-    listing.status = 'rejected';
+    listing.status = "rejected";
     listing.rejectionReason = reason || null;
     listing.rejectedAt = new Date();
 
@@ -371,14 +398,14 @@ export const rejectListing = async (req, res) => {
 
     res.status(200).json({
       success: true,
-      message: 'Listing rejected',
+      message: "Listing rejected",
       data: { listing },
     });
   } catch (error) {
-    console.error('Reject listing error:', error);
+    console.error("Reject listing error:", error);
     res.status(500).json({
       success: false,
-      message: 'Server error while rejecting listing',
+      message: "Server error while rejecting listing",
     });
   }
 };
@@ -392,21 +419,27 @@ export const getPublicListingById = async (req, res) => {
     const { id } = req.params;
 
     const listing = await Listing.findById(id)
-      .populate('lender', 'firstName lastName email metrics rating profilePicture role subscriptionType')
-      .populate('rentedBy', 'firstName lastName email metrics rating profilePicture');
+      .populate(
+        "lender",
+        "firstName lastName email metrics rating profilePicture role subscriptionType",
+      )
+      .populate(
+        "rentedBy",
+        "firstName lastName email metrics rating profilePicture",
+      );
 
     if (!listing) {
       return res.status(404).json({
         success: false,
-        message: 'Listing not found',
+        message: "Listing not found",
       });
     }
 
     // Only return approved and available listings
-    if (!listing.isApproved || listing.status !== 'available') {
+    if (!listing.isApproved || listing.status !== "available") {
       return res.status(404).json({
         success: false,
-        message: 'Listing not found',
+        message: "Listing not found",
       });
     }
 
@@ -415,10 +448,10 @@ export const getPublicListingById = async (req, res) => {
       data: { listing },
     });
   } catch (error) {
-    console.error('Get public listing error:', error);
+    console.error("Get public listing error:", error);
     res.status(500).json({
       success: false,
-      message: 'Server error while fetching listing',
+      message: "Server error while fetching listing",
     });
   }
 };
@@ -428,7 +461,7 @@ export const getPublicListingById = async (req, res) => {
  */
 export const getAllListings = async (req, res) => {
   try {
-    const { platform, genre, status = 'available' } = req.query;
+    const { platform, genre, status = "available" } = req.query;
 
     // Build query
     const query = { status, isApproved: true };
@@ -436,7 +469,10 @@ export const getAllListings = async (req, res) => {
     if (genre) query.genre = { $in: [genre] };
 
     const listings = await Listing.find(query)
-      .populate('lender', 'firstName lastName email metrics rating profilePicture')
+      .populate(
+        "lender",
+        "firstName lastName email metrics rating profilePicture",
+      )
       .sort({ createdAt: -1 });
 
     // Format for frontend
@@ -458,7 +494,7 @@ export const getAllListings = async (req, res) => {
       lender: listing.lender,
       listedBy: listing.lender
         ? `${listing.lender.firstName} ${listing.lender.lastName?.charAt(0)}`
-        : 'Unknown',
+        : "Unknown",
     }));
 
     res.status(200).json({
@@ -467,10 +503,10 @@ export const getAllListings = async (req, res) => {
       data: { listings: formattedListings },
     });
   } catch (error) {
-    console.error('Get all listings error:', error);
+    console.error("Get all listings error:", error);
     res.status(500).json({
       success: false,
-      message: 'Server error while fetching listings',
+      message: "Server error while fetching listings",
     });
   }
 };
@@ -480,8 +516,11 @@ export const getAllListings = async (req, res) => {
  */
 export const getPendingListings = async (req, res) => {
   try {
-    const listings = await Listing.find({ status: 'pending', isApproved: false })
-      .populate('lender', 'firstName lastName email _id')
+    const listings = await Listing.find({
+      status: "pending",
+      isApproved: false,
+    })
+      .populate("lender", "firstName lastName email _id")
       .sort({ createdAt: -1 });
 
     // Format for frontend
@@ -503,7 +542,9 @@ export const getPendingListings = async (req, res) => {
       submittedOn: listing.createdAt,
       submittedBy: {
         id: listing.lender?._id,
-        name: listing.lender ? `${listing.lender.firstName} ${listing.lender.lastName?.charAt(0)}` : 'Unknown',
+        name: listing.lender
+          ? `${listing.lender.firstName} ${listing.lender.lastName?.charAt(0)}`
+          : "Unknown",
         email: listing.lender?.email,
       },
     }));
@@ -514,10 +555,10 @@ export const getPendingListings = async (req, res) => {
       data: { listings: formattedListings },
     });
   } catch (error) {
-    console.error('Get pending listings error:', error);
+    console.error("Get pending listings error:", error);
     res.status(500).json({
       success: false,
-      message: 'Server error while fetching pending listings',
+      message: "Server error while fetching pending listings",
     });
   }
 };
@@ -534,8 +575,8 @@ export const getAdminAllListings = async (req, res) => {
     if (status) query.status = status;
 
     const listings = await Listing.find(query)
-      .populate('lender', 'firstName lastName email _id')
-      .populate('rentedBy', 'firstName lastName email _id')
+      .populate("lender", "firstName lastName email _id")
+      .populate("rentedBy", "firstName lastName email _id")
       .sort({ createdAt: -1 });
 
     // Format for frontend
@@ -562,14 +603,18 @@ export const getAdminAllListings = async (req, res) => {
       createdAt: listing.createdAt,
       owner: {
         id: listing.lender?._id,
-        name: listing.lender ? `${listing.lender.firstName} ${listing.lender.lastName?.charAt(0)}` : 'Unknown',
+        name: listing.lender
+          ? `${listing.lender.firstName} ${listing.lender.lastName?.charAt(0)}`
+          : "Unknown",
         email: listing.lender?.email,
       },
-      rentedBy: listing.rentedBy ? {
-        id: listing.rentedBy._id,
-        name: `${listing.rentedBy.firstName} ${listing.rentedBy.lastName?.charAt(0)}`,
-        email: listing.rentedBy.email,
-      } : null,
+      rentedBy: listing.rentedBy
+        ? {
+            id: listing.rentedBy._id,
+            name: `${listing.rentedBy.firstName} ${listing.rentedBy.lastName?.charAt(0)}`,
+            email: listing.rentedBy.email,
+          }
+        : null,
     }));
 
     res.status(200).json({
@@ -578,10 +623,10 @@ export const getAdminAllListings = async (req, res) => {
       data: { listings: formattedListings },
     });
   } catch (error) {
-    console.error('Get admin all listings error:', error);
+    console.error("Get admin all listings error:", error);
     res.status(500).json({
       success: false,
-      message: 'Server error while fetching listings',
+      message: "Server error while fetching listings",
     });
   }
 };
