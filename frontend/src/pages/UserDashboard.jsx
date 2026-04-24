@@ -938,7 +938,7 @@ export default function Dashboard() {
 
     {
       name: "price",
-      label: "Original Price (AED)",
+      label: "Price (AED)",
       type: "number",
       placeholder: "Enter price",
       isValid: (data) => Number(data.price) > 0,

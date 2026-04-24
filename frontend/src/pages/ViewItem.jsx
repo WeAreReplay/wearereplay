@@ -369,7 +369,7 @@ export default function ViewItem() {
                   </span>
                 </li>
                 <li>
-                  <h3>Original Price:</h3>
+                  <h3>Price:</h3>
                   <span>{listing.price} AED</span>
                 </li>
               </ul>
