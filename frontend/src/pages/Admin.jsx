@@ -4,7 +4,17 @@ import "../assets/css/contact-attachments.css";
 import DashboardHeader from "../layouts/DashboardHeader";
 import { useAuth } from "../contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
-import { FaCheck, FaTimes, FaEye, FaList, FaStar, FaRegStar, FaUsers, FaSave, FaTrash } from "react-icons/fa";
+import {
+  FaCheck,
+  FaTimes,
+  FaEye,
+  FaList,
+  FaStar,
+  FaRegStar,
+  FaUsers,
+  FaSave,
+  FaTrash,
+} from "react-icons/fa";
 import { MdReport, MdMessage } from "react-icons/md";
 import { RiSendPlaneFill } from "react-icons/ri";
 import AdminReview from "../components/AdminReview";
@@ -167,14 +177,17 @@ export default function Admin() {
 
   const handleUpdateMetrics = async () => {
     try {
-      const response = await fetch(`${API_URL}/users/${selectedUser.id}/metrics`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
+      const response = await fetch(
+        `${API_URL}/users/${selectedUser.id}/metrics`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify(userMetricsForm),
         },
-        body: JSON.stringify(userMetricsForm),
-      });
+      );
 
       const data = await response.json();
       if (data.success) {
@@ -200,14 +213,17 @@ export default function Admin() {
   const handleUpdateRating = async (newRating) => {
     setUserRating(newRating);
     try {
-      const response = await fetch(`${API_URL}/users/${selectedUser.id}/rating`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
+      const response = await fetch(
+        `${API_URL}/users/${selectedUser.id}/rating`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({ rating: newRating }),
         },
-        body: JSON.stringify({ rating: newRating }),
-      });
+      );
 
       const data = await response.json();
       if (data.success) {
@@ -248,9 +264,11 @@ export default function Admin() {
           {i <= rating ? (
             <FaStar style={{ color: "#f07c68", fontSize: "1.5rem" }} />
           ) : (
-            <FaRegStar style={{ color: "#f07c68", fontSize: "1.5rem", opacity: 0.3 }} />
+            <FaRegStar
+              style={{ color: "#f07c68", fontSize: "1.5rem", opacity: 0.3 }}
+            />
           )}
-        </button>
+        </button>,
       );
     }
     return <div style={{ display: "flex", gap: "0.25rem" }}>{stars}</div>;
@@ -304,11 +322,14 @@ export default function Admin() {
   const fetchConversationMessages = async (userId) => {
     try {
       setMessagesLoading(true);
-      const response = await fetch(`${API_URL}/messages/conversation/${userId}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
+      const response = await fetch(
+        `${API_URL}/messages/conversation/${userId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
         },
-      });
+      );
 
       const data = await response.json();
 
@@ -416,13 +437,16 @@ export default function Admin() {
   const handleApprove = async () => {
     try {
       const listingId = modal.data.id;
-      
-      const response = await fetch(`${API_URL}/dashboard/listings/${listingId}/approve`, {
-        method: "PATCH",
-        headers: {
-          Authorization: `Bearer ${token}`,
+
+      const response = await fetch(
+        `${API_URL}/dashboard/listings/${listingId}/approve`,
+        {
+          method: "PATCH",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
         },
-      });
+      );
 
       if (!response.ok) {
         throw new Error("Failed to approve listing");
@@ -444,7 +468,8 @@ export default function Admin() {
       setToast({
         color: "green",
         icon: "check",
-        title: modal.data.submittedBy?.name || modal.data.owner?.name || "Listing",
+        title:
+          modal.data.submittedBy?.name || modal.data.owner?.name || "Listing",
         message: "approved successfully!",
       });
     } catch (err) {
@@ -462,15 +487,18 @@ export default function Admin() {
   const handleReject = async () => {
     try {
       const listingId = modal.data.id;
-      
-      const response = await fetch(`${API_URL}/dashboard/listings/${listingId}/reject`, {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
+
+      const response = await fetch(
+        `${API_URL}/dashboard/listings/${listingId}/reject`,
+        {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({ reason: rejectionReason }),
         },
-        body: JSON.stringify({ reason: rejectionReason }),
-      });
+      );
 
       if (!response.ok) {
         throw new Error("Failed to reject listing");
@@ -492,7 +520,8 @@ export default function Admin() {
       setToast({
         color: "red",
         icon: "trash",
-        title: modal.data.submittedBy?.name || modal.data.owner?.name || "Listing",
+        title:
+          modal.data.submittedBy?.name || modal.data.owner?.name || "Listing",
         message: "was rejected!",
       });
     } catch (err) {
@@ -653,7 +682,7 @@ export default function Admin() {
           headers: {
             Authorization: `Bearer ${token}`,
           },
-        }
+        },
       );
 
       const data = await response.json();
@@ -664,7 +693,7 @@ export default function Admin() {
 
       // Remove listing from state
       setAllListings((prev) =>
-        prev.filter((l) => l._id !== deleteConfirm.listing._id)
+        prev.filter((l) => l._id !== deleteConfirm.listing._id),
       );
 
       setToast({
@@ -903,7 +932,11 @@ export default function Admin() {
             title: "Rejection Info",
             items: [
               { label: "Rejected At", value: listing.rejectedAt, isDate: true },
-              { label: "Reason", value: listing.rejectionReason, isDescription: true },
+              {
+                label: "Reason",
+                value: listing.rejectionReason,
+                isDescription: true,
+              },
             ],
           },
         ]
@@ -925,13 +958,30 @@ export default function Admin() {
       <main className="dashboard-main">
         {ADMIN_TABLES.filter((t) => t.section === activeTab).map((table, i) => (
           <section className="dashboard-content" key={i}>
-            <div className="title" style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "1rem" }}>
+            <div
+              className="title"
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                flexWrap: "wrap",
+                gap: "1rem",
+              }}
+            >
               <h2>{table.title}</h2>
-              
+
               {/* Status Filter for All Listings */}
               {table.section === "all-listings" && (
-                <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
-                  <label style={{ fontWeight: 500, fontSize: "0.9rem" }}>Filter:</label>
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "0.5rem",
+                  }}
+                >
+                  <label style={{ fontWeight: 500, fontSize: "0.9rem" }}>
+                    Filter:
+                  </label>
                   <select
                     value={listingsFilter}
                     onChange={(e) => {
@@ -978,7 +1028,11 @@ export default function Admin() {
                           return (
                             <span key={colIndex}>
                               <img
-                                src={row[col.key]}
+                                src={
+                                  row[col.key]?.startsWith("http")
+                                    ? row[col.key]
+                                    : `${API_URL.replace("/api", "")}${row[col.key]}`
+                                }
                                 alt={row.name}
                                 className="table-image"
                               />
@@ -1016,11 +1070,18 @@ export default function Admin() {
                                   className="icon-btn view"
                                   onClick={() => handleViewAllListing(row)}
                                 >
-                                  <FaEye /> {row.status === "pending" ? "Review" : "View"}
+                                  <FaEye />{" "}
+                                  {row.status === "pending" ? "Review" : "View"}
                                 </button>
                                 <button
                                   className="icon-btn delete"
-                                  onClick={() => setDeleteConfirm({ isOpen: true, listing: row, isDeleting: false })}
+                                  onClick={() =>
+                                    setDeleteConfirm({
+                                      isOpen: true,
+                                      listing: row,
+                                      isDeleting: false,
+                                    })
+                                  }
                                   title="Delete Listing"
                                 >
                                   <FaTrash /> Delete
@@ -1080,35 +1141,42 @@ export default function Admin() {
                 ) : conversations.length === 0 ? (
                   <p className="empty-text">No messages yet</p>
                 ) : (
-                  conversations.map((conv) => (
-                    conv.user && (
-                    <div
-                      key={conv.conversationId}
-                      className={`conversation-item ${
-                        selectedConversation?._id === conv.user._id
-                          ? "active"
-                          : ""
-                      } ${conv.unreadCount > 0 ? "unread" : ""}`}
-                      onClick={() => fetchConversationMessages(conv.user._id)}
-                    >
-                      <div className="conversation-info">
-                        <h4>
-                          {conv.user.firstName} {conv.user.lastName}
-                        </h4>
-                        <p className="preview">
-                          {conv.lastMessage.content.substring(0, 50)}
-                          {conv.lastMessage.content.length > 50 ? "..." : ""}
-                        </p>
-                        <span className="timestamp">
-                          {formatDate(conv.lastMessage.createdAt)}
-                        </span>
-                      </div>
-                      {conv.unreadCount > 0 && (
-                        <span className="unread-dot">{conv.unreadCount}</span>
-                      )}
-                    </div>
+                  conversations.map(
+                    (conv) =>
+                      conv.user && (
+                        <div
+                          key={conv.conversationId}
+                          className={`conversation-item ${
+                            selectedConversation?._id === conv.user._id
+                              ? "active"
+                              : ""
+                          } ${conv.unreadCount > 0 ? "unread" : ""}`}
+                          onClick={() =>
+                            fetchConversationMessages(conv.user._id)
+                          }
+                        >
+                          <div className="conversation-info">
+                            <h4>
+                              {conv.user.firstName} {conv.user.lastName}
+                            </h4>
+                            <p className="preview">
+                              {conv.lastMessage.content.substring(0, 50)}
+                              {conv.lastMessage.content.length > 50
+                                ? "..."
+                                : ""}
+                            </p>
+                            <span className="timestamp">
+                              {formatDate(conv.lastMessage.createdAt)}
+                            </span>
+                          </div>
+                          {conv.unreadCount > 0 && (
+                            <span className="unread-dot">
+                              {conv.unreadCount}
+                            </span>
+                          )}
+                        </div>
+                      ),
                   )
-                  ))
                 )}
               </div>
 
@@ -1132,7 +1200,9 @@ export default function Admin() {
                     {messagesLoading ? (
                       <p className="loading-text">Loading messages...</p>
                     ) : selectedMessages.length === 0 ? (
-                      <p className="empty-text">No messages in this conversation</p>
+                      <p className="empty-text">
+                        No messages in this conversation
+                      </p>
                     ) : (
                       selectedMessages.map((msg) => (
                         <div
@@ -1169,7 +1239,9 @@ export default function Admin() {
                                         className="attachment-file"
                                       >
                                         <span className="file-icon">📄</span>
-                                        <span className="file-name">{att.filename}</span>
+                                        <span className="file-name">
+                                          {att.filename}
+                                        </span>
                                         <span className="file-size">
                                           {(att.size / 1024).toFixed(1)} KB
                                         </span>
@@ -1180,7 +1252,8 @@ export default function Admin() {
                               </div>
                             )}
                             <span className="message-meta">
-                              {msg.sender.firstName} • {formatDate(msg.createdAt)}
+                              {msg.sender.firstName} •{" "}
+                              {formatDate(msg.createdAt)}
                             </span>
                           </div>
                         </div>
@@ -1253,14 +1326,21 @@ export default function Admin() {
                 ) : users.length === 0 ? (
                   <p style={{ color: "#666" }}>No users found</p>
                 ) : (
-                  <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
+                  <div
+                    style={{
+                      display: "flex",
+                      flexDirection: "column",
+                      gap: "0.75rem",
+                    }}
+                  >
                     {users.map((u) => (
                       <div
                         key={u.id}
                         onClick={() => handleSelectUser(u)}
                         style={{
                           padding: "1rem",
-                          background: selectedUser?.id === u.id ? "#fbead9" : "#fff",
+                          background:
+                            selectedUser?.id === u.id ? "#fbead9" : "#fff",
                           border: "2px solid #f07c68",
                           borderRadius: "8px",
                           cursor: "pointer",
@@ -1288,11 +1368,13 @@ export default function Admin() {
                             style={{
                               padding: "0.25rem 0.5rem",
                               background:
-                                u.subscriptionStatus === "active" && u.subscriptionType === "premium"
+                                u.subscriptionStatus === "active" &&
+                                u.subscriptionType === "premium"
                                   ? "#e5ffe5"
                                   : "#f5f5f5",
                               color:
-                                u.subscriptionStatus === "active" && u.subscriptionType === "premium"
+                                u.subscriptionStatus === "active" &&
+                                u.subscriptionType === "premium"
                                   ? "#2d8a2d"
                                   : "#666",
                               borderRadius: "4px",
@@ -1300,7 +1382,8 @@ export default function Admin() {
                               textTransform: "uppercase",
                             }}
                           >
-                            {u.subscriptionStatus === "active" && u.subscriptionType === "premium"
+                            {u.subscriptionStatus === "active" &&
+                            u.subscriptionType === "premium"
                               ? "Premium"
                               : "Regular"}
                           </span>
@@ -1319,14 +1402,21 @@ export default function Admin() {
                             star <= (u.rating || 0) ? (
                               <FaStar
                                 key={star}
-                                style={{ color: "#f07c68", fontSize: "0.875rem" }}
+                                style={{
+                                  color: "#f07c68",
+                                  fontSize: "0.875rem",
+                                }}
                               />
                             ) : (
                               <FaRegStar
                                 key={star}
-                                style={{ color: "#f07c68", fontSize: "0.875rem", opacity: 0.3 }}
+                                style={{
+                                  color: "#f07c68",
+                                  fontSize: "0.875rem",
+                                  opacity: 0.3,
+                                }}
                               />
-                            )
+                            ),
                           )}
                         </div>
                       </div>
@@ -1355,7 +1445,13 @@ export default function Admin() {
                   Edit User
                 </h3>
                 {selectedUser ? (
-                  <div style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}>
+                  <div
+                    style={{
+                      display: "flex",
+                      flexDirection: "column",
+                      gap: "1.5rem",
+                    }}
+                  >
                     {/* User Info */}
                     <div
                       style={{
@@ -1386,11 +1482,20 @@ export default function Admin() {
                       >
                         User Rating
                       </label>
-                      <StarRatingAdmin rating={userRating} onRate={handleUpdateRating} />
+                      <StarRatingAdmin
+                        rating={userRating}
+                        onRate={handleUpdateRating}
+                      />
                     </div>
 
                     {/* Metrics Form */}
-                    <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
+                    <div
+                      style={{
+                        display: "flex",
+                        flexDirection: "column",
+                        gap: "1rem",
+                      }}
+                    >
                       <h4
                         style={{
                           color: "#f07c68",
@@ -1403,7 +1508,10 @@ export default function Admin() {
 
                       {[
                         { key: "damageReports", label: "Damage Reports" },
-                        { key: "successfulReturns", label: "Successful Returns" },
+                        {
+                          key: "successfulReturns",
+                          label: "Successful Returns",
+                        },
                         { key: "lateReturns", label: "Late Returns" },
                         { key: "lends", label: "Lends" },
                         { key: "borrows", label: "Borrows" },
@@ -1501,8 +1609,15 @@ export default function Admin() {
                     </button>
                   </div>
                 ) : (
-                  <p style={{ color: "#666", textAlign: "center", padding: "2rem" }}>
-                    Select a user from the list to edit their metrics and rating.
+                  <p
+                    style={{
+                      color: "#666",
+                      textAlign: "center",
+                      padding: "2rem",
+                    }}
+                  >
+                    Select a user from the list to edit their metrics and
+                    rating.
                   </p>
                 )}
               </div>
@@ -1514,7 +1629,11 @@ export default function Admin() {
           isModalOpen={isAnyModalOpen || deleteConfirm.isOpen}
           onClick={() => {
             if (deleteConfirm.isOpen) {
-              setDeleteConfirm({ isOpen: false, listing: null, isDeleting: false });
+              setDeleteConfirm({
+                isOpen: false,
+                listing: null,
+                isDeleting: false,
+              });
             } else {
               handleCloseModal();
             }
@@ -1537,7 +1656,13 @@ export default function Admin() {
             }}
           >
             <div style={{ margin: "1rem 0" }}>
-              <label style={{ display: "block", marginBottom: "0.5rem", fontWeight: 500 }}>
+              <label
+                style={{
+                  display: "block",
+                  marginBottom: "0.5rem",
+                  fontWeight: 500,
+                }}
+              >
                 Rejection Reason (Optional):
               </label>
               <textarea
@@ -1594,11 +1719,26 @@ export default function Admin() {
         {/* Delete Confirmation Modal */}
         {deleteConfirm.isOpen && (
           <div className="delete-confirm-modal">
-            <div className="delete-modal-backdrop" onClick={() => !deleteConfirm.isDeleting && setDeleteConfirm({ isOpen: false, listing: null, isDeleting: false })} />
+            <div
+              className="delete-modal-backdrop"
+              onClick={() =>
+                !deleteConfirm.isDeleting &&
+                setDeleteConfirm({
+                  isOpen: false,
+                  listing: null,
+                  isDeleting: false,
+                })
+              }
+            />
             <div className="delete-modal-content">
               <div className="delete-modal-header">
                 <div className="warning-icon">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                  >
                     <path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"></path>
                     <line x1="12" y1="9" x2="12" y2="13"></line>
                     <line x1="12" y1="17" x2="12.01" y2="17"></line>
@@ -1626,7 +1766,13 @@ export default function Admin() {
               <div className="delete-modal-footer">
                 <button
                   className="btn-cancel"
-                  onClick={() => setDeleteConfirm({ isOpen: false, listing: null, isDeleting: false })}
+                  onClick={() =>
+                    setDeleteConfirm({
+                      isOpen: false,
+                      listing: null,
+                      isDeleting: false,
+                    })
+                  }
                   disabled={deleteConfirm.isDeleting}
                 >
                   Cancel
@@ -1662,4 +1808,3 @@ export default function Admin() {
     </>
   );
 }
-

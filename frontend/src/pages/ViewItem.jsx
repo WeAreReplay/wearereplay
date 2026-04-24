@@ -2,7 +2,14 @@ import { useState, useEffect } from "react";
 import "../assets/css/listing.css";
 import GetPlatformIcon from "../components/GetPlatformIcon";
 import { MdChatBubble, MdEmail, MdContactPhone } from "react-icons/md";
-import { FaMoneyBill, FaUser, FaStar, FaGamepad, FaHandHolding, FaCheck } from "react-icons/fa";
+import {
+  FaMoneyBill,
+  FaUser,
+  FaStar,
+  FaGamepad,
+  FaHandHolding,
+  FaCheck,
+} from "react-icons/fa";
 import { useParams, Navigate } from "react-router-dom";
 import Toast from "../components/Toast";
 import { RiVipCrownFill } from "react-icons/ri";
@@ -123,11 +130,15 @@ export default function ViewItem() {
   }, []);
 
   // Calculate fees based on subscription and listing details
-  const isPremium = userSubscription.type === "premium" && userSubscription.status === "active";
+  const isPremium =
+    userSubscription.type === "premium" && userSubscription.status === "active";
 
   // Calculate deposit (40% normally, 50% if has expansions, max 80 AED)
   const depositRate = listing?.hasExpansions === "yes" ? 0.5 : 0.4;
-  const depositAmount = Math.min(Math.round((listing?.price || 0) * depositRate), 80);
+  const depositAmount = Math.min(
+    Math.round((listing?.price || 0) * depositRate),
+    80,
+  );
 
   // Calculate protection fee (10% of 50% deposit value)
   const protectionBase = Math.round(depositAmount * 0.5 * 0.1);
@@ -142,7 +153,9 @@ export default function ViewItem() {
     const fetchListing = async () => {
       try {
         setLoading(true);
-        const response = await fetch(`${API_URL}/dashboard/listings/${id}/public`);
+        const response = await fetch(
+          `${API_URL}/dashboard/listings/${id}/public`,
+        );
 
         if (!response.ok) {
           if (response.status === 404) {
@@ -303,14 +316,20 @@ export default function ViewItem() {
 
   // Extract lender data
   const lender = listing.lender || {};
-  const lenderName = `${lender.firstName || ""} ${lender.lastName || ""}`.trim() || "Unknown User";
+  const lenderName =
+    `${lender.firstName || ""} ${lender.lastName || ""}`.trim() ||
+    "Unknown User";
   const lenderMetrics = lender.metrics || {};
   const lenderRating = lender.rating || 0;
   const isLenderPremium = lender.subscriptionType === "premium";
 
   // Format array fields
-  const genres = Array.isArray(listing.genre) ? listing.genre : [listing.genre].filter(Boolean);
-  const tags = Array.isArray(listing.tag) ? listing.tag : [listing.tag].filter(Boolean);
+  const genres = Array.isArray(listing.genre)
+    ? listing.genre
+    : [listing.genre].filter(Boolean);
+  const tags = Array.isArray(listing.tag)
+    ? listing.tag
+    : [listing.tag].filter(Boolean);
 
   return (
     <main className="listing-main">
@@ -380,7 +399,7 @@ export default function ViewItem() {
                 </li>
                 <li>
                   <h3>Borrow Duration:</h3>
-                  <span>{listing.borrowDuration} days</span>
+                  <span>{listing.borrowDuration} Day/s from Today</span>
                 </li>
               </ul>
             </div>
@@ -430,12 +449,18 @@ export default function ViewItem() {
                 </li>
                 <li>
                   <p>
-                    A protection fee ranging from 6 AED (minimum) to 10 AED (maximum) is applied to each transaction. This fee is determined based on the security deposit and is calculated as 10% of the 50% deposit amount. It is charged separately and does not deduct or take any portion from the deposit itself.
+                    A protection fee ranging from 6 AED (minimum) to 10 AED
+                    (maximum) is applied to each transaction. This fee is
+                    determined based on the security deposit and is calculated
+                    as 10% of the 50% deposit amount. It is charged separately
+                    and does not deduct or take any portion from the deposit
+                    itself.
                   </p>
                 </li>
                 <li>
                   <p>
-                    The protection fee is non-refundable and helps cover platform security and handling.
+                    The protection fee is non-refundable and helps cover
+                    platform security and handling.
                   </p>
                 </li>
                 <li>
@@ -472,7 +497,14 @@ export default function ViewItem() {
                       }}
                     />
                   ) : null}
-                  <div className="avatar-placeholder" style={{ display: getProfilePictureUrl(lender.profilePicture) ? "none" : "flex" }}>
+                  <div
+                    className="avatar-placeholder"
+                    style={{
+                      display: getProfilePictureUrl(lender.profilePicture)
+                        ? "none"
+                        : "flex",
+                    }}
+                  >
                     <FaUser />
                   </div>
                 </div>
@@ -493,7 +525,9 @@ export default function ViewItem() {
               <div className="lender-stats">
                 <div className="stat">
                   <FaHandHolding className="stat-icon" />
-                  <span className="stat-value">{lenderMetrics.borrows || 0}</span>
+                  <span className="stat-value">
+                    {lenderMetrics.borrows || 0}
+                  </span>
                   <span className="stat-label">Borrows</span>
                 </div>
                 <div className="stat">
@@ -516,7 +550,8 @@ export default function ViewItem() {
             {/* Action Buttons */}
             <div className="action-card">
               <p className="action-hint">
-                Reach out to the lender for further inquiries regarding the item:
+                Reach out to the lender for further inquiries regarding the
+                item:
               </p>
               <ul className="action-buttons">
                 <li>
@@ -544,7 +579,8 @@ export default function ViewItem() {
               </ul>
               {listing.status !== "available" && (
                 <p className="unavailable-message">
-                  This item is currently {listing.status} and not available for borrowing.
+                  This item is currently {listing.status} and not available for
+                  borrowing.
                 </p>
               )}
             </div>
@@ -564,11 +600,17 @@ export default function ViewItem() {
 
       {/* Checkout Modal */}
       {showCheckout && (
-        <div className="checkout-modal-overlay" onClick={() => !processingPayment && setShowCheckout(false)}>
+        <div
+          className="checkout-modal-overlay"
+          onClick={() => !processingPayment && setShowCheckout(false)}
+        >
           <div className="checkout-modal" onClick={(e) => e.stopPropagation()}>
             <div className="checkout-header">
               <h2>Complete Your Rental</h2>
-              <button className="close-btn" onClick={() => !processingPayment && setShowCheckout(false)}>
+              <button
+                className="close-btn"
+                onClick={() => !processingPayment && setShowCheckout(false)}
+              >
                 ×
               </button>
             </div>
@@ -581,7 +623,9 @@ export default function ViewItem() {
                   <img src={getImageUrl(listing.image)} alt={listing.name} />
                   <div className="summary-details">
                     <h4>{listing.name}</h4>
-                    <p>{listing.platform} | {listing.consoleModel}</p>
+                    <p>
+                      {listing.platform} | {listing.consoleModel}
+                    </p>
                     <p className="price">{listing.price} AED</p>
                   </div>
                 </div>
@@ -592,16 +636,22 @@ export default function ViewItem() {
                   </div>
                   <div className="total-row">
                     <span>Protection Fee:</span>
-                    <span>{protectionFee} AED {isPremium ? "(Premium Rate)" : ""}</span>
+                    <span>
+                      {protectionFee} AED {isPremium ? "(Premium Rate)" : ""}
+                    </span>
                   </div>
-                  <p className="fee-note">Non-refundable • Covers damage protection</p>
+                  <p className="fee-note">
+                    Non-refundable • Covers damage protection
+                  </p>
                   <div className="total-row">
                     <span>Refundable Deposit:</span>
                     <span>{depositAmount} AED</span>
                   </div>
                   <p className="fee-note">Fully refundable upon safe return</p>
                   {listing.hasExpansions === "yes" && (
-                    <p className="fee-note highlight">Higher deposit (50%) due to game expansions included</p>
+                    <p className="fee-note highlight">
+                      Higher deposit (50%) due to game expansions included
+                    </p>
                   )}
                   <div className="total-row grand-total">
                     <span>Total:</span>
@@ -614,7 +664,9 @@ export default function ViewItem() {
               <div className="payment-section">
                 <h3>Payment Method</h3>
                 <div className="payment-options">
-                  <label className={`payment-option ${paymentMethod === "cod" ? "selected" : ""}`}>
+                  <label
+                    className={`payment-option ${paymentMethod === "cod" ? "selected" : ""}`}
+                  >
                     <input
                       type="radio"
                       name="paymentMethod"
@@ -627,12 +679,16 @@ export default function ViewItem() {
                       <div className="payment-icon">💵</div>
                       <div className="payment-info">
                         <span className="payment-title">Cash on Delivery</span>
-                        <span className="payment-desc">Pay when you receive the game</span>
+                        <span className="payment-desc">
+                          Pay when you receive the game
+                        </span>
                       </div>
                     </div>
                   </label>
 
-                  <label className={`payment-option ${paymentMethod === "card" ? "selected" : ""}`}>
+                  <label
+                    className={`payment-option ${paymentMethod === "card" ? "selected" : ""}`}
+                  >
                     <input
                       type="radio"
                       name="paymentMethod"
@@ -645,7 +701,9 @@ export default function ViewItem() {
                       <div className="payment-icon">💳</div>
                       <div className="payment-info">
                         <span className="payment-title">Card Payment</span>
-                        <span className="payment-desc">Pay securely with your card</span>
+                        <span className="payment-desc">
+                          Pay securely with your card
+                        </span>
                       </div>
                       <div className="payment-brands">
                         <span className="brand visa">VISA</span>
@@ -666,7 +724,12 @@ export default function ViewItem() {
                       type="text"
                       placeholder="Name on card"
                       value={cardDetails.cardholderName}
-                      onChange={(e) => setCardDetails({ ...cardDetails, cardholderName: e.target.value })}
+                      onChange={(e) =>
+                        setCardDetails({
+                          ...cardDetails,
+                          cardholderName: e.target.value,
+                        })
+                      }
                       disabled={processingPayment}
                     />
                   </div>
@@ -676,7 +739,12 @@ export default function ViewItem() {
                       type="text"
                       placeholder="0000 0000 0000 0000"
                       value={cardDetails.cardNumber}
-                      onChange={(e) => setCardDetails({ ...cardDetails, cardNumber: formatCardNumber(e.target.value) })}
+                      onChange={(e) =>
+                        setCardDetails({
+                          ...cardDetails,
+                          cardNumber: formatCardNumber(e.target.value),
+                        })
+                      }
                       maxLength={19}
                       disabled={processingPayment}
                     />
@@ -688,7 +756,12 @@ export default function ViewItem() {
                         type="text"
                         placeholder="MM/YY"
                         value={cardDetails.expiryDate}
-                        onChange={(e) => setCardDetails({ ...cardDetails, expiryDate: formatExpiryDate(e.target.value) })}
+                        onChange={(e) =>
+                          setCardDetails({
+                            ...cardDetails,
+                            expiryDate: formatExpiryDate(e.target.value),
+                          })
+                        }
                         maxLength={5}
                         disabled={processingPayment}
                       />
@@ -699,7 +772,12 @@ export default function ViewItem() {
                         type="text"
                         placeholder="123"
                         value={cardDetails.cvv}
-                        onChange={(e) => setCardDetails({ ...cardDetails, cvv: e.target.value.replace(/\D/g, "").slice(0, 3) })}
+                        onChange={(e) =>
+                          setCardDetails({
+                            ...cardDetails,
+                            cvv: e.target.value.replace(/\D/g, "").slice(0, 3),
+                          })
+                        }
                         maxLength={3}
                         disabled={processingPayment}
                       />
@@ -742,7 +820,9 @@ export default function ViewItem() {
                   </>
                 ) : (
                   <>
-                    {paymentMethod === "cod" ? "Confirm Rental" : "Pay & Confirm Rental"}
+                    {paymentMethod === "cod"
+                      ? "Confirm Rental"
+                      : "Pay & Confirm Rental"}
                   </>
                 )}
               </button>
@@ -757,10 +837,7 @@ export default function ViewItem() {
           className="contact-modal-overlay"
           onClick={() => setShowContactModal(false)}
         >
-          <div
-            className="contact-modal"
-            onClick={(e) => e.stopPropagation()}
-          >
+          <div className="contact-modal" onClick={(e) => e.stopPropagation()}>
             <div className="contact-modal-header">
               <h2>Contact Lender</h2>
               <button
@@ -782,7 +859,8 @@ export default function ViewItem() {
                   {/* Lender Name */}
                   <div className="lender-header">
                     <h3>
-                      {listing?.lender?.firstName} {listing?.lender?.lastName?.charAt(0)}.
+                      {listing?.lender?.firstName}{" "}
+                      {listing?.lender?.lastName?.charAt(0)}.
                     </h3>
                     <p>Available contact methods:</p>
                   </div>
@@ -794,7 +872,11 @@ export default function ViewItem() {
                     </div>
                     <div className="contact-details">
                       <span className="contact-type">Email</span>
-                      <span className="contact-value">{lenderContacts.email || listing?.lender?.email || "Not available"}</span>
+                      <span className="contact-value">
+                        {lenderContacts.email ||
+                          listing?.lender?.email ||
+                          "Not available"}
+                      </span>
                     </div>
                   </div>
 
@@ -809,10 +891,13 @@ export default function ViewItem() {
                           </div>
                           <div className="contact-details">
                             <span className="contact-type">
-                              {contact.type.charAt(0).toUpperCase() + contact.type.slice(1)}
+                              {contact.type.charAt(0).toUpperCase() +
+                                contact.type.slice(1)}
                               {contact.label && ` - ${contact.label}`}
                             </span>
-                            <span className="contact-value">{contact.value}</span>
+                            <span className="contact-value">
+                              {contact.value}
+                            </span>
                           </div>
                         </div>
                       ))}
@@ -825,8 +910,8 @@ export default function ViewItem() {
 
                   {/* Privacy Note */}
                   <p className="privacy-note">
-                    Please be respectful when contacting the lender.
-                    Only use these contacts for inquiries about this listing.
+                    Please be respectful when contacting the lender. Only use
+                    these contacts for inquiries about this listing.
                   </p>
                 </>
               )}
@@ -855,4 +940,3 @@ export default function ViewItem() {
     </main>
   );
 }
-
