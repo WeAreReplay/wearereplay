@@ -1705,7 +1705,11 @@ export default function Admin() {
         {modal.type === "view-listing" && (
           <AdminReview
             title="Listing Details"
-            image={modal.data.image}
+            image={
+              modal.data.image?.startsWith("http")
+                ? modal.data.image
+                : `${API_URL.replace("/api", "")}${modal.data.image}`
+            }
             sections={allListingReviewLayout(modal.data)}
             onClose={handleCloseModal}
             primaryAction={{
