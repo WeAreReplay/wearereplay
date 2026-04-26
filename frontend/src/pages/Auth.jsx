@@ -11,7 +11,7 @@ import Toast from "../components/Toast";
 
 // API Base URL (adjust for production)
 const API_URL =
-  import.meta.env.VITE_API_URL || "http://localhost:5000/api/auth";
+  `${import.meta.env.VITE_API_URL}/auth` || "http://localhost:5000/api/auth";
 
 export default function Auth({ mode }) {
   const { login } = useAuth();
@@ -224,21 +224,21 @@ export default function Auth({ mode }) {
 
       // Get user info from Google credential
       const credential = response.credential;
-      const base64Url = credential.split('.')[1];
-      const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+      const base64Url = credential.split(".")[1];
+      const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
       const jsonPayload = decodeURIComponent(
         atob(base64)
-          .split('')
-          .map((c) => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
-          .join('')
+          .split("")
+          .map((c) => "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2))
+          .join(""),
       );
       const googleUser = JSON.parse(jsonPayload);
 
       // Send to backend
       const res = await fetch(`${API_URL}/google/callback`, {
-        method: 'POST',
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
           googleId: googleUser.sub,
@@ -252,32 +252,33 @@ export default function Auth({ mode }) {
       const data = await res.json();
 
       if (!res.ok) {
-        throw new Error(data.message || 'Google authentication failed');
+        throw new Error(data.message || "Google authentication failed");
       }
 
       // Success - store token and user data
       login(data.data.user, data.data.token, data.data.role);
 
       setToast({
-        color: 'green',
-        icon: 'check',
-        message: 'Google login successful!',
+        color: "green",
+        icon: "check",
+        message: "Google login successful!",
       });
 
       // Redirect based on role
       setTimeout(() => {
-        if (data.data.role === 'admin') {
-          navigate('/admin', { replace: true });
+        if (data.data.role === "admin") {
+          navigate("/admin", { replace: true });
         } else {
-          navigate('/', { replace: true });
+          navigate("/", { replace: true });
         }
       }, 1000);
     } catch (err) {
-      console.error('Google auth error:', err);
+      console.error("Google auth error:", err);
       setToast({
-        color: 'red',
-        icon: 'error',
-        message: err.message || 'Google authentication failed. Please try again.',
+        color: "red",
+        icon: "error",
+        message:
+          err.message || "Google authentication failed. Please try again.",
       });
     } finally {
       setGoogleLoading(false);
@@ -362,16 +363,19 @@ export default function Auth({ mode }) {
                   window.google.accounts.id.prompt();
                 } else {
                   setToast({
-                    color: 'red',
-                    icon: 'error',
-                    message: 'Google Sign-In is not available. Please try again later.',
+                    color: "red",
+                    icon: "error",
+                    message:
+                      "Google Sign-In is not available. Please try again later.",
                   });
                 }
               }}
               disabled={googleLoading}
             >
               <FcGoogle className="icon" />
-              <span>{googleLoading ? 'Signing in...' : 'Sign in with Google'}</span>
+              <span>
+                {googleLoading ? "Signing in..." : "Sign in with Google"}
+              </span>
             </button>
           </div>
         )}
