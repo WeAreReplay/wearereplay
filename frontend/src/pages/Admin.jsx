@@ -752,6 +752,13 @@ export default function Admin() {
     }
   };
 
+  const getImageUrl = (path) => {
+    if (!path) return "";
+    return path.startsWith("http")
+      ? path
+      : `${API_URL.replace("/api", "")}${path}`;
+  };
+
   /*
     ! Dashboard Table Configuration
     * Controls how tables are rendered dynamically
@@ -1643,7 +1650,7 @@ export default function Admin() {
         {modal.type === "approval" && (
           <AdminReview
             title="Review Listing"
-            image={modal.data.image}
+            image={getImageUrl(modal.data.image)}
             sections={approvalReviewLayout(modal.data)}
             onClose={handleCloseModal}
             secondaryAction={{
@@ -1705,11 +1712,7 @@ export default function Admin() {
         {modal.type === "view-listing" && (
           <AdminReview
             title="Listing Details"
-            image={
-              modal.data.image?.startsWith("http")
-                ? modal.data.image
-                : `${API_URL.replace("/api", "")}${modal.data.image}`
-            }
+            image={getImageUrl(modal.data.image)}
             sections={allListingReviewLayout(modal.data)}
             onClose={handleCloseModal}
             primaryAction={{
