@@ -52,7 +52,7 @@ export default function InputField({
   // * File preview state
   const [preview, setPreview] = useState(null);
 
-  const BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
+  const BASE_URL = import.meta.env.VITE_UPLOADS_URL || "http://localhost:5000";
 
   useEffect(() => {
     if (type === "file" && value) {
@@ -178,8 +178,10 @@ export default function InputField({
             }
             {options.map((option) => {
               // Handle both string options and object options {value, label}
-              const optionValue = typeof option === "object" ? option.value : option;
-              const optionLabel = typeof option === "object" ? option.label : option;
+              const optionValue =
+                typeof option === "object" ? option.value : option;
+              const optionLabel =
+                typeof option === "object" ? option.label : option;
               return (
                 <label
                   key={optionValue}
