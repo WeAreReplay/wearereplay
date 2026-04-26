@@ -399,7 +399,7 @@ export default function ViewItem() {
                 </li>
                 <li>
                   <h3>Borrow Duration:</h3>
-                  <span>{listing.borrowDuration} Day/s from Today</span>
+                  <span>{listing.borrowDuration} Days from Today</span>
                 </li>
               </ul>
             </div>
