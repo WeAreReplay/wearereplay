@@ -1,8 +1,9 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import "../assets/css/auth.css";
 import InputField from "../components/InputField";
 import { RiHome7Fill } from "react-icons/ri";
+import { FcGoogle } from "react-icons/fc";
 import LoginImg from "../assets/images/login.webp";
 import RegisterImg from "../assets/images/register.webp";
 import { useAuth } from "../contexts/AuthContext";
@@ -44,6 +45,7 @@ export default function Auth({ mode }) {
   // * Loading and error state
   const [loading, setLoading] = useState(false);
   const [toast, setToast] = useState(null);
+  const [googleLoading, setGoogleLoading] = useState(false);
 
   // * Navigation
   const navigate = useNavigate();
@@ -215,17 +217,84 @@ export default function Auth({ mode }) {
     }
   };
 
+  // * Handle Google login response
+  const handleGoogleLogin = async (response) => {
+    try {
+      setGoogleLoading(true);
+
+      // Get user info from Google credential
+      const credential = response.credential;
+      const base64Url = credential.split('.')[1];
+      const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+      const jsonPayload = decodeURIComponent(
+        atob(base64)
+          .split('')
+          .map((c) => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
+          .join('')
+      );
+      const googleUser = JSON.parse(jsonPayload);
+
+      // Send to backend
+      const res = await fetch(`${API_URL}/google/callback`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          googleId: googleUser.sub,
+          email: googleUser.email,
+          firstName: googleUser.given_name,
+          lastName: googleUser.family_name,
+          profilePicture: googleUser.picture,
+        }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data.message || 'Google authentication failed');
+      }
+
+      // Success - store token and user data
+      login(data.data.user, data.data.token, data.data.role);
+
+      setToast({
+        color: 'green',
+        icon: 'check',
+        message: 'Google login successful!',
+      });
+
+      // Redirect based on role
+      setTimeout(() => {
+        if (data.data.role === 'admin') {
+          navigate('/admin', { replace: true });
+        } else {
+          navigate('/', { replace: true });
+        }
+      }, 1000);
+    } catch (err) {
+      console.error('Google auth error:', err);
+      setToast({
+        color: 'red',
+        icon: 'error',
+        message: err.message || 'Google authentication failed. Please try again.',
+      });
+    } finally {
+      setGoogleLoading(false);
+    }
+  };
+
   return (
-    <main className="auth-main">
+    <main className="auth-page">
       <div className="auth-ctr">
+        <Link to="/" className="auth-logo">
+          RePlay
+        </Link>
+        <div className="auth-head">
+          <h1>{headTitle}</h1>
+          <p>{headSubtitle}</p>
+        </div>
         <form onSubmit={handleSubmit}>
-          {
-            // * Header section
-          }
-          <div className="head">
-            <h1>{headTitle}</h1>
-            <p>{headSubtitle}</p>
-          </div>
           {
             // * Input fields
           }
@@ -271,6 +340,41 @@ export default function Auth({ mode }) {
             </li>
           </ul>
         </form>
+
+        {
+          // * Google Login Button (Login mode only)
+        }
+        {isLogin && (
+          <div className="google-login">
+            <div className="divider">
+              <span>OR</span>
+            </div>
+            <button
+              type="button"
+              className="google-btn"
+              onClick={() => {
+                // Initialize Google Sign-In
+                if (window.google && window.google.accounts) {
+                  window.google.accounts.id.initialize({
+                    client_id: import.meta.env.VITE_GOOGLE_CLIENT_ID,
+                    callback: handleGoogleLogin,
+                  });
+                  window.google.accounts.id.prompt();
+                } else {
+                  setToast({
+                    color: 'red',
+                    icon: 'error',
+                    message: 'Google Sign-In is not available. Please try again later.',
+                  });
+                }
+              }}
+              disabled={googleLoading}
+            >
+              <FcGoogle className="icon" />
+              <span>{googleLoading ? 'Signing in...' : 'Sign in with Google'}</span>
+            </button>
+          </div>
+        )}
 
         {
           // * Switch between login/register

@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import { body } from 'express-validator';
 import { register, login, getMe } from '../controllers/authController.js';
+import { googleCallback } from '../controllers/googleAuthController.js';
 import protect from '../middleware/authMiddleware.js';
 
 const router = Router();
@@ -71,5 +72,12 @@ router.post('/login', loginValidation, login);
  * @access  Private (requires JWT token)
  */
 router.get('/me', protect, getMe);
+
+/**
+ * @route   POST /api/auth/google/callback
+ * @desc    Google OAuth callback
+ * @access  Public
+ */
+router.post('/google/callback', googleCallback);
 
 export default router;

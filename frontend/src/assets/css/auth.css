@@ -1,54 +1,207 @@
 @import url("https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap");
-.auth-main {
+.auth-page {
   background-color: #fbead9;
   min-height: 100vh;
   max-height: 100vh;
   display: flex;
 }
-.auth-main .auth-ctr {
+.auth-page .auth-ctr {
   width: 100%;
   padding: 1.5rem 2rem;
 }
 @media (min-width: 768px) {
-  .auth-main .auth-ctr {
+  .auth-page .auth-ctr {
     flex: 1;
     max-width: 480px;
   }
 }
 @media (min-width: 1024px) {
-  .auth-main .auth-ctr {
+  .auth-page .auth-ctr {
     flex: 0.5;
   }
 }
-.auth-main .auth-ctr .toast {
+.auth-page .auth-ctr .toast {
   bottom: auto;
   width: 100%;
   position: relative;
   display: flex;
   justify-content: flex-start;
 }
-.auth-main .auth-ctr .switch-auth {
+.auth-page .auth-ctr .switch-auth {
   margin-top: 1rem;
   font-weight: 400;
   text-align: center;
 }
-.auth-main .auth-ctr .switch-auth a {
+.auth-page .auth-ctr .switch-auth a {
   font-family: "Inter", sans-serif;
   font-weight: 800;
   color: #f07c68;
 }
-.auth-main .auth-img {
+.auth-page .auth-img {
   display: none;
 }
 @media (min-width: 768px) {
-  .auth-main .auth-img {
+  .auth-page .auth-img {
     overflow: hidden;
     flex: 1;
     background-color: #f07c68;
     display: block;
   }
 }
-.auth-main .auth-img img {
+.auth-page .auth-img img {
   height: 100%;
   width: 100%;
-}/*# sourceMappingURL=auth.css.map */
+}
+
+/* Google Login Styles */
+.google-login {
+  margin-top: 1.5rem;
+}
+
+.google-login .divider {
+  display: flex;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.google-login .divider::before,
+.google-login .divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background-color: #ddd;
+}
+
+.google-login .divider span {
+  padding: 0 1rem;
+  color: #666;
+  font-size: 0.875rem;
+}
+
+.google-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background-color: #fff;
+  color: #333;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.google-btn:hover:not(:disabled) {
+  background-color: #f8f8f8;
+  border-color: #ccc;
+}
+
+.google-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.google-btn .icon {
+  font-size: 1.25rem;
+}
+
+/* Auth Logo */
+.auth-logo {
+  font-size: 2rem;
+  font-weight: 800;
+  color: #f07c68;
+  text-decoration: none;
+  display: block;
+  margin-bottom: 2rem;
+}
+
+/* Auth Head */
+.auth-head {
+  margin-bottom: 2rem;
+}
+
+.auth-head h1 {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: #333;
+  margin-bottom: 0.5rem;
+}
+
+.auth-head p {
+  font-size: 1rem;
+  color: #666;
+}
+
+/* Fields Container */
+.fields-ctr {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 1.5rem 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+/* Options Container (buttons) */
+.opts-ctr {
+  list-style: none;
+  padding: 0;
+  margin: 1.5rem 0 0 0;
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+.opts-ctr li:first-child {
+  flex: 0 0 auto;
+}
+
+.opts-ctr li:last-child {
+  flex: 1;
+}
+
+.opts-ctr a {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #666;
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.2s ease;
+}
+
+.opts-ctr a:hover {
+  color: #f07c68;
+}
+
+.opts-ctr a .icon {
+  font-size: 1.25rem;
+}
+
+.opts-ctr button {
+  width: 100%;
+  padding: 0.875rem 1.5rem;
+  background-color: #f07c68;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.opts-ctr button:hover:not(:disabled) {
+  background-color: #e86a55;
+}
+
+.opts-ctr button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+/*# sourceMappingURL=auth.css.map */
