@@ -65,6 +65,19 @@ const rentalSchema = new mongoose.Schema(
       type: Number,
       required: true,
     },
+    // Protection fee breakdown
+    borrowWeeks: {
+      type: Number,
+      default: 1,
+    },
+    baseProtectionFee: {
+      type: Number,
+      default: 0,
+    },
+    weeklyIncrement: {
+      type: Number,
+      default: 0,
+    },
     // Payment and delivery details
     paymentMethod: {
       type: String,

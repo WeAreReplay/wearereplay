@@ -133,18 +133,19 @@ export default function ViewItem() {
   const isPremium =
     userSubscription.type === "premium" && userSubscription.status === "active";
 
-  // Calculate deposit (40% normally, 50% if has expansions, max 80 AED)
-  const depositRate = listing?.hasExpansions === "yes" ? 0.5 : 0.4;
+  // Calculate deposit (50% of original price, max 80 AED)
   const depositAmount = Math.min(
-    Math.round((listing?.price || 0) * depositRate),
+    Math.round((listing?.price || 0) * 0.5),
     80,
   );
 
-  // Calculate protection fee (10% of 50% deposit value)
-  const protectionBase = Math.round(depositAmount * 0.5 * 0.1);
-  const protectionFee = isPremium
-    ? Math.min(6, Math.max(6, protectionBase)) // Premium: max 6 AED
-    : Math.min(10, Math.max(6, protectionBase)); // Standard: min 6, max 10 AED
+  // Calculate protection fee with weekly increments
+  // Base: 10% of deposit for Week 1
+  // Additional: 2 AED per extra week
+  const borrowWeeks = Math.ceil((listing?.borrowDuration || 7) / 7);
+  const baseProtectionFee = Math.round(depositAmount * 0.1);
+  const weeklyIncrement = 2 * Math.max(0, borrowWeeks - 1);
+  const protectionFee = baseProtectionFee + weeklyIncrement;
 
   const totalAmount = (listing?.price || 0) + protectionFee + depositAmount;
 
@@ -440,21 +441,20 @@ export default function ViewItem() {
                 </li>
                 <li>
                   <p>
-                    A refundable deposit of 40% of the original game price (50%
-                    if it includes expansions) is required before borrowing.
-                    This deposit is capped at a maximum of 80 AED and is only
-                    for security purposes. It will be fully returned once the
-                    game is safely returned in good condition.
+                    A refundable deposit of 50% of the original game price is
+                    required before borrowing. This deposit is capped at a
+                    maximum of 80 AED and is only for security purposes. It will
+                    be fully returned once the game is safely returned in good
+                    condition.
                   </p>
                 </li>
                 <li>
                   <p>
-                    A protection fee ranging from 6 AED (minimum) to 10 AED
-                    (maximum) is applied to each transaction. This fee is
-                    determined based on the security deposit and is calculated
-                    as 10% of the 50% deposit amount. It is charged separately
-                    and does not deduct or take any portion from the deposit
-                    itself.
+                    A protection fee is applied to each transaction. The base
+                    fee is 10% of the security deposit for the first week, plus
+                    an additional 2 AED for each extra week of borrowing. This
+                    fee is charged separately and does not deduct from the
+                    deposit itself.
                   </p>
                 </li>
                 <li>
@@ -636,23 +636,16 @@ export default function ViewItem() {
                   </div>
                   <div className="total-row">
                     <span>Protection Fee:</span>
-                    <span>
-                      {protectionFee} AED {isPremium ? "(Premium Rate)" : ""}
-                    </span>
+                    <span>{protectionFee} AED</span>
                   </div>
                   <p className="fee-note">
-                    Non-refundable • Covers damage protection
+                    Base (10% of deposit): {baseProtectionFee} AED • Weekly increment: {weeklyIncrement} AED ({borrowWeeks} {borrowWeeks === 1 ? 'week' : 'weeks'})
                   </p>
                   <div className="total-row">
                     <span>Refundable Deposit:</span>
                     <span>{depositAmount} AED</span>
                   </div>
-                  <p className="fee-note">Fully refundable upon safe return</p>
-                  {listing.hasExpansions === "yes" && (
-                    <p className="fee-note highlight">
-                      Higher deposit (50%) due to game expansions included
-                    </p>
-                  )}
+                  <p className="fee-note">50% of price, capped at 80 AED • Fully refundable upon safe return</p>
                   <div className="total-row grand-total">
                     <span>Total:</span>
                     <span>{totalAmount} AED</span>

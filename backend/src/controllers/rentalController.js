@@ -167,16 +167,16 @@ export const createRental = async (req, res) => {
       });
     }
 
-    // Calculate deposit (40% normally, 50% if has expansions, max 80 AED)
-    const depositRate = listing.hasExpansions === 'yes' ? 0.5 : 0.4;
-    const depositAmount = Math.min(Math.round(listing.price * depositRate), 80);
+    // Calculate deposit (50% of original price, max 80 AED)
+    const depositAmount = Math.min(Math.round(listing.price * 0.5), 80);
 
-    // Calculate protection fee (10% of 50% deposit value)
-    // 50% of deposit = half the deposit amount, then 10% of that
-    const protectionBase = Math.round(depositAmount * 0.5 * 0.1);
-    const protectionFee = isPremium
-      ? Math.min(6, Math.max(6, protectionBase))  // Premium: max 6 AED
-      : Math.min(10, Math.max(6, protectionBase)); // Standard: min 6, max 10 AED
+    // Calculate protection fee with weekly increments
+    // Base: 10% of deposit for Week 1
+    // Additional: 2 AED per extra week
+    const borrowWeeks = Math.ceil(listing.borrowDuration / 7);
+    const baseProtectionFee = Math.round(depositAmount * 0.1);
+    const weeklyIncrement = 2 * Math.max(0, borrowWeeks - 1);
+    const protectionFee = baseProtectionFee + weeklyIncrement;
 
     // Calculate due date with grace period for premium users
     const gracePeriod = isPremium ? 2 : 0;
@@ -198,6 +198,9 @@ export const createRental = async (req, res) => {
       protectionFee,
       depositAmount,
       totalAmount,
+      borrowWeeks,
+      baseProtectionFee,
+      weeklyIncrement,
       paymentMethod: paymentMethod || 'cod',
       paymentStatus: paymentMethod === 'card' ? 'paid' : 'pending',
       deliveryAddress: deliveryAddress || '',
@@ -219,6 +222,9 @@ export const createRental = async (req, res) => {
           protectionFee,
           depositAmount,
           totalAmount,
+          borrowWeeks,
+          baseProtectionFee,
+          weeklyIncrement,
         },
         gracePeriodDays: gracePeriod,
         maxBorrows,
