@@ -401,6 +401,7 @@
   display: flex;
   justify-content: space-between;
   flex-wrap: wrap;
+  gap: 0.5rem;
 }
 .dashboard-main .review-wrap .review-ctr .review-content .info-ctr .info-list .info:not(:last-of-type) {
   border-bottom: #f07c68 solid 0.125rem;
