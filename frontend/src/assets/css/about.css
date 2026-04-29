@@ -1,0 +1,487 @@
+/* ================= ROOT ================= */
+
+.about-main {
+  background: #FBEAD9;
+}
+
+/* ================= HERO ================= */
+
+.about-main .about-hero {
+  position: relative;
+  background: linear-gradient(135deg, #f0967c, #f07c68);
+  color: #fff;
+
+  padding: 200px 0 80px; /* ✅ bottom = 80px */
+  overflow: hidden;
+}
+
+/* 🔥 KEY FIX: align with other sections */
+.about-main .about-hero .width-wrap {
+  max-width: none;           
+  padding: 0 80px;          
+}
+
+/* Optional (recommended for readability) */
+.about-main .hero-content {
+  max-width: 700px;
+}
+
+.about-main .hero-title {
+  font-size: 77px;
+  line-height: 1;
+  font-weight: 800;
+}
+
+.about-main .hero-title span:first-child {
+  display: block;
+}
+
+.about-main .hero-subtitle {
+  font-size: 24px;
+  margin-top: 20px;
+  font-weight: 600;
+}
+
+.about-main .hero-desc {
+  margin-top: 20px;
+  font-size: 16px;
+  max-width: 520px;
+  line-height: 1.6;
+  color: #FFEDE7;
+}
+
+.about-main .hero-bg-shape {
+  position: absolute;
+
+  bottom: 0;      
+  right: 0;
+
+  width: clamp(250px, 30vw, 500px); 
+  height: 100%;
+
+  background: url("c:\Users\ASUS\Documents\GitHub\wearereplay\frontend\src\components\SVGs\subtract-controlah.svg") no-repeat right bottom;
+  background-size: contain; 
+
+  pointer-events: none;
+}
+
+/* ================= SECTIONS ================= */
+
+.about-main .how-about,
+.about-main .why-about {
+  padding: 40px 0;
+}
+
+.about-main .trust-about {
+  padding: 40px 0 20px;
+}
+
+.about-main .cta-about {
+  padding: 20px 0 60px;
+}
+
+.about-main .how-wrap {
+  padding: 0 80px;
+}
+
+/* ================= TITLES ================= */
+
+.about-main .section-title {
+  text-align: center;
+  font-size: 57px; /* ✅ changed from 67px */
+  margin-bottom: 30px;
+  transition: transform 0.2s ease;
+}
+
+.about-main .section-title:hover {
+  transform: translateY(-2px);
+}
+
+.about-main .section-title.outlined {
+  color: transparent;
+  -webkit-text-stroke: 0.5px #F07C68;
+}
+
+/* ================= GRID ================= */
+
+.about-main .how-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+}
+
+/* ================= CARD ================= */
+
+.about-main .card {
+  background: #FBEAD9;
+  border-radius: 16px;
+  padding: 28px 18px;
+  text-align: center;
+  border: 1px solid rgba(240, 124, 104, 0.2);
+  box-shadow: 0 4px 0 rgba(0, 0, 0, 0.04);
+
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.about-main .card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 0 rgba(240, 124, 104, 0.2);
+}
+
+/* ================= ICON ================= */
+
+.about-main .card .icon {
+  font-size: 30px;
+  color: #F07C68;
+  margin: 50px 0;
+
+  transition: transform 0.2s ease, color 0.2s ease;
+}
+
+.about-main .card:hover .icon {
+  transform: scale(1.25);
+  color: #E56753;
+}
+
+/* ================= TEXT ================= */
+
+.about-main .card-title {
+  font-size: 24px;
+  margin-bottom: 10px;
+  color: #F07C68;
+}
+
+.about-main .card-desc {
+  font-size: 16px;
+  line-height: 1.5;
+  color: #F0967C;
+}
+
+/* ================= TRUST ================= */
+
+.about-main .trust-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  background: #FBEAD9;
+  border-radius: 20px;
+  padding: 40px 50px;
+
+  border: 1px solid rgba(240, 124, 104, 0.25);
+
+  transition: all 0.2s ease;
+}
+
+.about-main .trust-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 0 rgba(240, 124, 104, 0.15);
+}
+
+.about-main .trust-left {
+  display: flex;
+  align-items: center;
+  gap: 30px;
+  flex: 2;
+}
+
+.about-main .trust-icon {
+  width: 90px;
+  height: 90px;
+  background: url("C:\Users\ASUS\Documents\GitHub\wearereplay\frontend\src\components\SVGs\shield.svg") no-repeat center;
+  background-size: contain;
+}
+
+.about-main .trust-title {
+  font-size: 28px;
+  color: #F07C68;
+  margin-bottom: 10px;
+}
+
+.about-main .trust-desc {
+  font-size: 16px;
+  color: #F0967C;
+  line-height: 1.6;
+}
+
+.about-main .trust-divider {
+  width: 1px;
+  height: 100px;
+  background: rgba(240, 124, 104, 0.3);
+  margin: 0 40px;
+}
+
+.about-main .trust-right {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.about-main .trust-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 16px;
+  color: #F07C68;
+  transition: transform 0.2s ease;
+}
+
+.about-main .trust-item:hover {
+  transform: translateX(4px);
+}
+
+.about-main .trust-item svg {
+  font-size: 20px;
+  transition: transform 0.2s ease;
+}
+
+.about-main .trust-item:hover svg {
+  transform: scale(1.2);
+}
+
+/* ================= CTA ================= */
+
+.about-main .cta-card {
+  position: relative;
+  background: #F07C68;
+  border-radius: 20px;
+  padding: 45px 60px;
+  color: white;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 40px;
+}
+
+.about-main .cta-left h3 {
+  font-size: 28px;
+  margin-bottom: 10px;
+}
+
+.about-main .cta-left p {
+  font-size: 16px;
+  color: #FFEDE7;
+}
+
+.about-main .cta-actions {
+  display: flex;
+  gap: 16px;
+}
+
+.about-main .btn {
+  padding: 12px 18px;
+  border-radius: 6px;
+  font-size: 14px;
+  cursor: pointer;
+  border: none;
+  transition: all 0.15s ease;
+}
+
+.about-main .btn:active {
+  transform: scale(0.96);
+}
+
+.about-main .btn.primary {
+  background: white;
+  color: #F07C68;
+}
+
+.about-main .btn.secondary {
+  background: transparent;
+  border: 1px solid white;
+  color: white;
+}
+
+.about-main .btn:hover {
+  transform: translateY(-2px);
+  opacity: 0.9;
+}
+
+.about-main .cta-heart {
+  position: absolute;
+  right: 40px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 110px;
+  height: 110px;
+  background: url("../images/heart-pixel.png") no-repeat center;
+  background-size: contain;
+  opacity: 0.25;
+}
+
+/* ================= RESPONSIVE ================= */
+
+@media (max-width: 1024px) {
+  .about-main .how-grid {
+    grid-template-columns: repeat(2, 1fr); /* 2x2 layout */
+  }
+
+  .about-main .hero-title {
+    font-size: 50px;
+  }
+
+  .about-main .hero-bg-shape {
+    width: 300px;
+  }
+}
+
+@media (max-width: 768px) {
+  .about-main .how-wrap {
+    padding: 0 30px;
+  }
+
+  .about-main .hero-title {
+    font-size: 37px;
+  }
+
+  .about-main .section-title {
+    font-size: 37px;
+  }
+
+  .about-main .how-grid {
+    grid-template-columns: repeat(2, 1fr); /* ✅ keep 2 columns */
+  }
+}
+
+/* ================= TABLET (≤425px) ================= */
+
+@media (max-width: 768px) {
+  .about-main .hero-bg-shape {
+    display: none;
+  }
+
+  .about-main .trust-icon {
+    display: none;
+  }
+}
+
+/* ================= MOBILE (≤425px) ================= */
+
+@media (max-width: 425px) {
+
+  /* global horizontal spacing */
+  .about-main .width-wrap {
+    max-width: 100%;
+    padding: 0 20px;
+  }
+
+  .about-main .how-wrap {
+    padding: 0 20px;
+  }
+
+  .about-main .about-hero {
+    padding: 100px 0 40px;
+  }
+
+  .about-main .hero-content {
+    max-width: 100%;
+  }
+
+  .about-main .hero-title {
+    font-size: 32px;
+    line-height: 1.1;
+  }
+
+  .about-main .hero-subtitle {
+    font-size: 18px;
+  }
+
+  .about-main .hero-desc {
+    font-size: 14px;
+    max-width: 100%;
+  }
+
+  .about-main .hero-bg-shape {
+    display: none; 
+  }
+
+  /* Sections spacing */
+  .about-main .how-about,
+  .about-main .why-about {
+    padding: 30px 0;
+  }
+
+  .about-main .trust-about {
+    padding: 30px 0 10px;
+  }
+
+  .about-main .cta-about {
+    padding: 10px 0 40px;
+  }
+
+  /* Titles */
+  .about-main .section-title {
+    font-size: 28px;
+    margin-bottom: 20px;
+  }
+
+  /* GRID → single column */
+  .about-main .how-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  /* Cards */
+  .about-main .card {
+    padding: 24px 16px;
+  }
+
+  .about-main .card .icon {
+    margin: 40px 0;
+    font-size: 26px;
+  }
+
+  .about-main .card-title {
+    font-size: 20px;
+  }
+
+  .about-main .card-desc {
+    font-size: 14px;
+  }
+
+  /* TRUST */
+  .about-main .trust-card {
+    padding: 24px;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .about-main .trust-icon {
+    display: none;
+  }
+
+  .about-main .trust-left {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .about-main .trust-divider {
+    display: none;
+  }
+
+  /* CTA */
+  .about-main .cta-card {
+    padding: 30px 20px;
+    gap: 20px;
+  }
+
+  .about-main .cta-left h3 {
+    font-size: 22px;
+  }
+
+  .about-main .cta-actions {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .about-main .btn {
+    width: 100%;
+    text-align: center;
+  }
+
+  .about-main .cta-heart {
+    display: none;
+  }
+}
