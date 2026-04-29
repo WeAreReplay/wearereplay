@@ -90,6 +90,8 @@
       z-index: $z-index-mid;
 
       .hero-title {
+        font-family: $font-inter;
+        font-weight: 900;
         text-align: center;
         color: $white;
         @include fontSize(h5);
