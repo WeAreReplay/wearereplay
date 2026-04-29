@@ -445,7 +445,7 @@ export default function Dashboard() {
         const end = new Date(newListing.endDate);
         const diffDays = Math.ceil((end - start) / (1000 * 60 * 60 * 24));
 
-        if (diffDays < 1 || diffDays > 30) {
+        if (diffDays < 1 || diffDays > 10) {
           setToast({
             color: "red",
             title: "Invalid Dates",
