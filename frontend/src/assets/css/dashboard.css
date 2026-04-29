@@ -377,6 +377,7 @@
 .dashboard-main .review-wrap .review-ctr .preview-img {
   padding-inline: 1.5rem;
   max-width: 420px;
+  margin-inline: auto;
 }
 .dashboard-main .review-wrap .review-ctr .review-content {
   display: grid;
