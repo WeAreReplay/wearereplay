@@ -376,6 +376,7 @@
 }
 .dashboard-main .review-wrap .review-ctr .preview-img {
   padding-inline: 1.5rem;
+  max-width: 420px;
 }
 .dashboard-main .review-wrap .review-ctr .review-content {
   display: grid;
@@ -399,6 +400,7 @@
   padding: 0.5rem 1.5rem;
   display: flex;
   justify-content: space-between;
+  flex-wrap: wrap;
 }
 .dashboard-main .review-wrap .review-ctr .review-content .info-ctr .info-list .info:not(:last-of-type) {
   border-bottom: #f07c68 solid 0.125rem;
@@ -414,6 +416,7 @@
 }
 .dashboard-main .review-wrap .review-ctr .review-content .info-ctr .info-list .data {
   font-style: italic;
+  word-break: break-word;
 }
 .dashboard-main .review-wrap .review-ctr .review-content .info-ctr .info-list .data > .platform-badge {
   display: flex;
