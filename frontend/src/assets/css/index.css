@@ -960,6 +960,8 @@ footer .width-wrap .bottom .copyright {
   z-index: 1;
 }
 .home-main .hero .width-wrap .hero-title {
+  font-family: "Inter", sans-serif;
+  font-weight: 900;
   text-align: center;
   color: #fbead9;
   font-size: 2rem;
