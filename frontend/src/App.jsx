@@ -13,6 +13,9 @@ import NotFound from "./pages/NotFound";
 import Auth from "./pages/Auth";
 import ViewItem from "./pages/ViewItem";
 import Contact from "./pages/Contact";
+import About from "./pages/About";
+import BulkRentals from "./pages/BulkRentals";
+import Support from "./pages/Support";
 
 function App() {
   return (
@@ -25,6 +28,9 @@ function App() {
             <Route path="/" element={<Index />} />
             <Route path="/catalogue" element={<Catalogue />} />
             <Route path="/listing/:id" element={<ViewItem />} />
+            <Route path="/about" element={<About />} />
+            <Route path="/BulkRentals" element={<BulkRentals />} />
+            <Route path="/support" element={<Support />} />
             <Route path="/contact" element={<Contact />} />
             <Route path="/privacy-policy" element={<Legal type="privacy" />} />
             <Route
