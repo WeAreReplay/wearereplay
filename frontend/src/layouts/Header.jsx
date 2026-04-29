@@ -27,6 +27,7 @@ export default function Header() {
     { txt: "Catalogue", path: "/catalogue", icon: RiStoreFill },
     { txt: "Support", path: "/support", icon: RiQuestionFill },
     { txt: "About", path: "/about", icon: RiInformationFill },
+    { txt: "BulkRentals", path: "/BulkRentals", icon: RiInformationFill },
     { txt: "Contact", path: "/contact", icon: RiMailFill },
   ];
 
