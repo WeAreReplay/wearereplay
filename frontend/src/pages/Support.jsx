@@ -11,7 +11,7 @@ const faqData = [
       },
       {
         q: "Who owns the games in RE:PLAY?",
-        a: "All games listed on RE:PLAY are owned by individual users. The platform simply connects borrowers and lenders while providing protection and transaction support."
+        a: "All games listed on RE:PLAY are owned by individual users or the platform itself. The platform simply connects borrowers and lenders while providing protection and transaction support."
       }
     ]
   },
@@ -45,11 +45,11 @@ const faqData = [
       },
       {
         q: "Can I set my own borrowing duration?",
-        a: "Yes. As a lender, you have full control over how long your games can be borrowed, along with pricing and conditions."
+        a: "Yes. As a lender, you have full control over how long your games can be borrowed (30 Days Maximum), along with pricing and conditions."
       },
       {
         q: "Do I earn money from lending?",
-        a: "Yes. Every successful borrow transaction earns you money based on the price you set. The more active your listings, the more you can earn."
+        a: "Yes, for our B2B Model (Bulk Rentals) for now, for future expansions, we will also be implementing this to our P2P model. The more active your listings, the more you can earn."
       }
     ]
   },
@@ -61,7 +61,7 @@ const faqData = [
         a: "The deposit acts as protection for lenders. It ensures that if a game is lost, damaged, or not returned, the lender is compensated."
       },
       {
-        q: "What is the 6 AED Protection fee for?",
+        q: "What is the Protection fee for?",
         a: "The protection fee helps cover platform services such as secure transactions, dispute handling, and maintaining a safe borrowing environment."
       },
       {
@@ -96,7 +96,7 @@ const faqData = [
       },
       {
         q: "Is RE:PLAY available everywhere?",
-        a: "Currently, RE:PLAY is available in select regions. Availability may expand as the platform grows."
+        a: "Currently, RE:PLAY is available in the UAE. Availability may expand as the platform grows."
       }
     ]
   }
