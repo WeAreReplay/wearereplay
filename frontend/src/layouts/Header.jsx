@@ -37,10 +37,6 @@ export default function Header() {
       path: "https://www.instagram.com/weare.replay",
       icon: BiLogoInstagramAlt,
     },
-    {
-      path: "https://www.facebook.com/people/We-Are-Replay/61586375025531",
-      icon: BiLogoFacebookSquare,
-    },
   ];
 
   const getLinkClass = ({ isActive }) =>
@@ -203,6 +199,7 @@ export default function Header() {
                         className="social-link"
                       >
                         <social.icon className="icon" />
+                        IG
                       </a>
                     </li>
                   ))}

@@ -81,10 +81,15 @@
 
           a {
             height: 100%;
-            display: grid;
-            place-items: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: $spacing-8;
+            flex-direction: column;
             padding-inline: $spacing-24;
             color: $orange;
+            font-weight: 900;
+            @include fontSize(p);
           }
         }
       }
