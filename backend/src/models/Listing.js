@@ -1,4 +1,4 @@
-import mongoose from 'mongoose';
+import mongoose from "mongoose";
 
 /**
  * Listing Schema
@@ -8,58 +8,62 @@ const listingSchema = new mongoose.Schema(
   {
     name: {
       type: String,
-      required: [true, 'Game name is required'],
+      required: [true, "Game name is required"],
       trim: true,
-      maxlength: [100, 'Game name cannot exceed 100 characters'],
+      maxlength: [100, "Game name cannot exceed 100 characters"],
     },
     platform: {
       type: String,
-      required: [true, 'Platform is required'],
-      enum: ['Xbox', 'PlayStation', 'Nintendo'],
+      required: [true, "Platform is required"],
+      enum: ["Xbox", "PlayStation", "Nintendo"],
     },
     consoleModel: {
       type: String,
-      required: [true, 'Console model is required'],
+      required: [true, "Console model is required"],
     },
     price: {
       type: Number,
-      required: [true, 'Price is required'],
-      min: [1, 'Price must be at least 1 AED'],
+      required: [true, "Price is required"],
+      min: [1, "Price must be at least 1 AED"],
     },
-    genre: [{
-      type: String,
-      required: true,
-    }],
-    tag: [{
-      type: String,
-      required: true,
-    }],
+    genre: [
+      {
+        type: String,
+        required: true,
+      },
+    ],
+    tag: [
+      {
+        type: String,
+        required: true,
+      },
+    ],
     about: {
       type: String,
-      required: [true, 'Description is required'],
-      maxlength: [1000, 'Description cannot exceed 1000 characters'],
+      required: [true, "Description is required"],
+      maxlength: [1000, "Description cannot exceed 1000 characters"],
     },
     borrowDuration: {
       type: Number,
-      required: [true, 'Borrow duration is required'],
-      min: [1, 'Duration must be at least 1 day'],
-      max: [10, 'Duration cannot exceed 10 days'],
+      required: [true, "Borrow duration is required"],
+      min: [1, "Duration must be at least 1 day"],
+      max: [30, "Duration cannot exceed 30 days"],
     },
     hasExpansions: {
       type: String,
-      enum: ['yes', 'no'],
-      default: 'no',
+      enum: ["yes", "no"],
+      default: "no",
     },
     commercialBulking: {
       type: String,
-      enum: ['short-term', 'long-term', 'no'],
-      default: 'no',
-      required: [true, 'Commercial bulking availability is required'],
+      enum: ["short-term", "long-term", "no"],
+      default: "no",
+      required: [true, "Commercial bulking availability is required"],
     },
     deliveryMethod: {
       type: String,
-      required: [true, 'Delivery method is required'],
-      enum: ['Pick-up', 'Meet-up', 'Drop-off'],
+      required: [true, "Delivery method is required"],
+      enum: ["Pick-up", "Meet-up", "Drop-off"],
     },
     image: {
       type: String,
@@ -67,19 +71,28 @@ const listingSchema = new mongoose.Schema(
     },
     status: {
       type: String,
-      enum: ['pending', 'approved', 'available', 'delivering', 'rented', 'returning', 'returned', 'rejected'],
-      default: 'pending',
+      enum: [
+        "pending",
+        "approved",
+        "available",
+        "delivering",
+        "rented",
+        "returning",
+        "returned",
+        "rejected",
+      ],
+      default: "pending",
     },
     // Reference to the user who created the listing (lender)
     lender: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'User',
+      ref: "User",
       required: true,
     },
     // Reference to the user who rented the game (borrower) - null if not rented
     rentedBy: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'User',
+      ref: "User",
       default: null,
     },
     // Rental period dates
@@ -104,7 +117,7 @@ const listingSchema = new mongoose.Schema(
     rejectionReason: {
       type: String,
       default: null,
-      maxlength: [500, 'Rejection reason cannot exceed 500 characters'],
+      maxlength: [500, "Rejection reason cannot exceed 500 characters"],
     },
     rejectedAt: {
       type: Date,
@@ -113,7 +126,7 @@ const listingSchema = new mongoose.Schema(
   },
   {
     timestamps: true,
-  }
+  },
 );
 
 /**
@@ -123,6 +136,6 @@ listingSchema.index({ lender: 1, status: 1 });
 listingSchema.index({ rentedBy: 1, status: 1 });
 listingSchema.index({ status: 1, isApproved: 1 });
 
-const Listing = mongoose.model('Listing', listingSchema);
+const Listing = mongoose.model("Listing", listingSchema);
 
 export default Listing;
