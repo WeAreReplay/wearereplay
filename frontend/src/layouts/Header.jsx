@@ -9,6 +9,7 @@ import {
   RiLogoutCircleFill,
   RiMailFill,
 } from "react-icons/ri";
+import { FaBoxesStacked } from "react-icons/fa6";
 import { FaUser } from "react-icons/fa";
 
 import { BiLogoFacebookSquare, BiLogoInstagramAlt } from "react-icons/bi";
@@ -27,7 +28,7 @@ export default function Header() {
     { txt: "Catalogue", path: "/catalogue", icon: RiStoreFill },
     { txt: "Support", path: "/support", icon: RiQuestionFill },
     { txt: "About", path: "/about", icon: RiInformationFill },
-    { txt: "BulkRentals", path: "/BulkRentals", icon: RiInformationFill },
+    { txt: "BulkRentals", path: "/BulkRentals", icon: FaBoxesStacked },
     { txt: "Contact", path: "/contact", icon: RiMailFill },
   ];
 

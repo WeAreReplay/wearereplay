@@ -53,7 +53,11 @@ export default function AdminReview({
                   >
                     <span className="label">{item.label}:</span>
                     <span className="data">
-                      {item.isDate ? FormatDate(item.value) : item.value || "—"}
+                      {item.isDate
+                        ? FormatDate(item.value)
+                        : Array.isArray(item.value)
+                          ? item.value.join(", ")
+                          : item.value || "—"}
                     </span>
                   </li>
                 ))}

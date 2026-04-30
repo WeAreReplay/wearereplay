@@ -318,6 +318,8 @@
 
       .preview-img {
         padding-inline: $spacing-24;
+        max-width: 420px;
+        margin-inline: auto;
       }
 
       .review-content {
@@ -343,6 +345,8 @@
               padding: $spacing-8 $spacing-24;
               display: flex;
               justify-content: space-between;
+              flex-wrap: wrap;
+              gap: $spacing-8;
 
               &:not(:last-of-type) {
                 border-bottom: $orange solid $border-xsmall;
@@ -362,6 +366,7 @@
 
             .data {
               font-style: italic;
+              word-break: break-word;
               > .platform-badge {
                 display: flex;
                 align-items: center;

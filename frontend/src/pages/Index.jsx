@@ -24,14 +24,6 @@ export default function Index() {
   const { isAuthenticated, user } = useAuth();
   const navigate = useNavigate();
 
-  // // If admin user lands on home page, immediately redirect to dashboard
-  // // This prevents admin from seeing guest landing page when pressing back button
-  // useEffect(() => {
-  //   if (isAuthenticated() && user?.role === "admin") {
-  //     navigate("/dashboard", { replace: true });
-  //   }
-  // }, [isAuthenticated, user, navigate]);
-
   return (
     <main className="home-main">
       <Hero isAuthenticated={isAuthenticated} user={user} />
@@ -326,27 +318,40 @@ const Testimonials = () => {
       name: "Alex R.",
       subject: "Loved the fast game rotation",
       description:
-        "Re:Play completely changed how I experience games. I finish a game in a week and just move on without wasting money.",
+        "Re:Play completely changed how I experience games. I finish something in a few days and instantly jump into the next one without spending extra.",
     },
     {
       name: "Sara M.",
-      subject: "Perfect for trying story games",
+      subject: "Perfect for story lovers",
       description:
-        "I love that I can try story games without committing to buying them. It feels like Netflix but for gaming.",
+        "As someone who enjoys story-driven games, this is amazing. I can try different titles without worrying if they’re worth buying.",
     },
     {
       name: "Daniel K.",
-      subject: "Great way to discover indie games",
+      subject: "Hidden gems everywhere",
       description:
-        "The borrowing system is genius. I’ve discovered so many indie games I would’ve never bought.",
+        "I’ve discovered so many underrated indie games through Re:Play. It’s like having a curated library instead of guessing what to buy.",
     },
     {
-      name: "Daniel K.",
-      subject: "Great way to discover indie games",
+      name: "Liam T.",
+      subject: "Saves me money every month",
       description:
-        "The borrowing system is genius. I’ve discovered so many indie games I would’ve never bought.",
+        "I used to spend a lot on games I never finished. Now I just borrow, play, and return—it’s way more efficient.",
+    },
+    {
+      name: "Nina P.",
+      subject: "Super convenient system",
+      description:
+        "The whole borrowing process is smooth and easy. No downloads cluttering my device, just pick and play.",
+    },
+    {
+      name: "Omar H.",
+      subject: "Great for casual gamers",
+      description:
+        "I don’t play every day, so buying games felt wasteful. This lets me enjoy gaming at my own pace without pressure.",
     },
   ];
+
   return (
     <ItemSlider
       title="Voices of Re:Players"
