@@ -6,7 +6,7 @@ import Pagination from "../components/Pagination";
 import { RiSearchEyeFill } from "react-icons/ri";
 import { IoClose } from "react-icons/io5";
 import ItemSlider from "../components/ItemSlider";
-import NewReleases from "../components/NewReleases";
+import GameSlider from "../components/GameSlider";
 
 // API Base URL
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
@@ -549,7 +549,7 @@ export default function Games() {
         </div>
       </section>
 
-      <NewReleases />
+      <GameSlider title="Bulk Rentals" type="bulk" />
     </main>
   );
 }

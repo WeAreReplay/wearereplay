@@ -18,7 +18,7 @@ import {
 } from "react-icons/ai";
 import ItemSlider from "../components/ItemSlider";
 import { useAuth } from "../contexts/AuthContext";
-import NewReleases from "../components/NewReleases";
+import GameSlider from "../components/GameSlider";
 
 export default function Index() {
   const { isAuthenticated, user } = useAuth();
@@ -29,7 +29,8 @@ export default function Index() {
       <Hero isAuthenticated={isAuthenticated} user={user} />
       <HowItWorks />
       <Benefits />
-      <NewReleases
+      <GameSlider
+        title="New Releases"
         link={
           <Link to="/catalogue" className="more-link right">
             <span>View More</span>
