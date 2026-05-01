@@ -78,6 +78,11 @@ const rentalSchema = new mongoose.Schema(
       type: Number,
       default: 0,
     },
+    // Lender revenue - fixed fee
+    lenderRevenue: {
+      type: Number,
+      default: 10,
+    },
     // Payment and delivery details
     paymentMethod: {
       type: String,

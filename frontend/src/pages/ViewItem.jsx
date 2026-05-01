@@ -133,21 +133,47 @@ export default function ViewItem() {
   const isPremium =
     userSubscription.type === "premium" && userSubscription.status === "active";
 
-  // Calculate deposit (50% of original price, max 80 AED)
+  // Calculate deposit (40% base, 50% with expansions, max 80 AED)
+  const depositRate = listing?.hasExpansions === 'yes' ? 0.5 : 0.4;
   const depositAmount = Math.min(
-    Math.round((listing?.price || 0) * 0.5),
+    Math.round((listing?.price || 0) * depositRate),
     80,
   );
 
-  // Calculate protection fee with weekly increments
-  // Base: 10% of deposit for Week 1
-  // Additional: 2 AED per extra week
+  // Calculate borrow weeks
   const borrowWeeks = Math.ceil((listing?.borrowDuration || 7) / 7);
-  const baseProtectionFee = Math.round(depositAmount * 0.1);
-  const weeklyIncrement = 2 * Math.max(0, borrowWeeks - 1);
-  const protectionFee = baseProtectionFee + weeklyIncrement;
 
-  const totalAmount = (listing?.price || 0) + protectionFee + depositAmount;
+  // Calculate stepped weekly increment
+  // Weeks 1-3: +2 AED per week
+  // Week 4: +1 AED
+  const calculateWeeklyIncrement = (weeks) => {
+    let increment = 0;
+    for (let i = 1; i <= weeks; i++) {
+      if (i <= 3) {
+        increment += 2;
+      } else if (i === 4) {
+        increment += 1;
+      }
+      // Beyond week 4, no additional increment
+    }
+    return increment;
+  };
+
+  const weeklyIncrement = calculateWeeklyIncrement(borrowWeeks);
+
+  // Calculate protection fee: 10% of deposit + stepped weekly increment
+  // Premium users get 50% off protection fees
+  const baseProtectionFee = Math.round(depositAmount * 0.1);
+  const protectionFeeBeforeDiscount = baseProtectionFee + weeklyIncrement;
+  const protectionFee = isPremium
+    ? Math.round(protectionFeeBeforeDiscount * 0.5)
+    : protectionFeeBeforeDiscount;
+
+  // Fixed lender revenue
+  const lenderRevenue = 10;
+
+  // Calculate total (protection fee + deposit + lender revenue)
+  const totalAmount = protectionFee + depositAmount + lenderRevenue;
 
   // Fetch listing data from backend
   useEffect(() => {
@@ -441,20 +467,20 @@ export default function ViewItem() {
                 </li>
                 <li>
                   <p>
-                    A refundable deposit of 50% of the original game price is
-                    required before borrowing. This deposit is capped at a
-                    maximum of 80 AED and is only for security purposes. It will
-                    be fully returned once the game is safely returned in good
-                    condition.
+                    A refundable deposit is required before borrowing: 40% of
+                    the original game price (50% if the game includes expansions).
+                    This deposit is capped at a maximum of 80 AED and is only
+                    for security purposes. It will be fully returned once the
+                    game is safely returned in good condition.
                   </p>
                 </li>
                 <li>
                   <p>
                     A protection fee is applied to each transaction. The base
-                    fee is 10% of the security deposit for the first week, plus
-                    an additional 2 AED for each extra week of borrowing. This
-                    fee is charged separately and does not deduct from the
-                    deposit itself.
+                    fee is 10% of the security deposit, plus a stepped weekly increment:
+                    +2 AED for weeks 1-3, and +1 AED for week 4 (no additional
+                    increment beyond week 4). This fee is charged separately and
+                    does not deduct from the deposit itself.
                   </p>
                 </li>
                 <li>
@@ -631,21 +657,32 @@ export default function ViewItem() {
                 </div>
                 <div className="summary-totals">
                   <div className="total-row">
-                    <span>Rental Price:</span>
-                    <span>{listing.price} AED</span>
-                  </div>
-                  <div className="total-row">
                     <span>Protection Fee:</span>
-                    <span>{protectionFee} AED</span>
+                    <span>
+                      {protectionFee} AED
+                      {isPremium && protectionFeeBeforeDiscount > 0 && (
+                        <span style={{ textDecoration: 'line-through', color: '#999', fontSize: '0.85em', marginLeft: '8px' }}>
+                          {protectionFeeBeforeDiscount} AED
+                        </span>
+                      )}
+                    </span>
                   </div>
                   <p className="fee-note">
-                    Base (10% of deposit): {baseProtectionFee} AED • Weekly increment: {weeklyIncrement} AED ({borrowWeeks} {borrowWeeks === 1 ? 'week' : 'weeks'})
+                    Stepped increment: {weeklyIncrement} AED
+                    <br />
+                    <small>Weeks 1-3: +2 AED/week • Week 4: +1 AED • Beyond week 4: no additional</small>
+                    {isPremium && <span style={{ color: '#4CAF50' }}> • Premium: 50% OFF</span>}
                   </p>
                   <div className="total-row">
                     <span>Refundable Deposit:</span>
                     <span>{depositAmount} AED</span>
                   </div>
-                  <p className="fee-note">50% of price, capped at 80 AED • Fully refundable upon safe return</p>
+                  <p className="fee-note">40% of price (50% with expansions), capped at 80 AED • Fully refundable upon safe return</p>
+                  <div className="total-row">
+                    <span>Lender Revenue:</span>
+                    <span>{lenderRevenue} AED</span>
+                  </div>
+                  <p className="fee-note">Fixed platform fee for lender</p>
                   <div className="total-row grand-total">
                     <span>Total:</span>
                     <span>{totalAmount} AED</span>

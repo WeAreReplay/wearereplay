@@ -167,24 +167,49 @@ export const createRental = async (req, res) => {
       });
     }
 
-    // Calculate deposit (50% of original price, max 80 AED)
-    const depositAmount = Math.min(Math.round(listing.price * 0.5), 80);
+    // Calculate deposit (40% base, 50% with expansions, max 80 AED)
+    const depositRate = listing.hasExpansions === 'yes' ? 0.5 : 0.4;
+    const depositAmount = Math.min(Math.round(listing.price * depositRate), 80);
 
-    // Calculate protection fee with weekly increments
-    // Base: 10% of deposit for Week 1
-    // Additional: 2 AED per extra week
+    // Calculate borrow weeks
     const borrowWeeks = Math.ceil(listing.borrowDuration / 7);
+
+    // Calculate stepped weekly increment
+    // Weeks 1-3: +2 AED per week
+    // Week 4: +1 AED
+    const calculateWeeklyIncrement = (weeks) => {
+      let increment = 0;
+      for (let i = 1; i <= weeks; i++) {
+        if (i <= 3) {
+          increment += 2;
+        } else if (i === 4) {
+          increment += 1;
+        }
+        // Beyond week 4, no additional increment
+      }
+      return increment;
+    };
+
+    const weeklyIncrement = calculateWeeklyIncrement(borrowWeeks);
+
+    // Calculate protection fee: 10% of deposit + stepped weekly increment
+    // Premium users get 50% off protection fees
     const baseProtectionFee = Math.round(depositAmount * 0.1);
-    const weeklyIncrement = 2 * Math.max(0, borrowWeeks - 1);
-    const protectionFee = baseProtectionFee + weeklyIncrement;
+    const protectionFeeBeforeDiscount = baseProtectionFee + weeklyIncrement;
+    const protectionFee = isPremium
+      ? Math.round(protectionFeeBeforeDiscount * 0.5)
+      : protectionFeeBeforeDiscount;
+
+    // Fixed lender revenue
+    const lenderRevenue = 10;
+
+    // Calculate total (protection fee + deposit + lender revenue)
+    const totalAmount = protectionFee + depositAmount + lenderRevenue;
 
     // Calculate due date with grace period for premium users
     const gracePeriod = isPremium ? 2 : 0;
     const dueDate = new Date();
     dueDate.setDate(dueDate.getDate() + listing.borrowDuration + gracePeriod);
-
-    // Calculate total
-    const totalAmount = listing.price + protectionFee + depositAmount;
 
     // Create rental
     const rental = await Rental.create({
@@ -201,6 +226,7 @@ export const createRental = async (req, res) => {
       borrowWeeks,
       baseProtectionFee,
       weeklyIncrement,
+      lenderRevenue,
       paymentMethod: paymentMethod || 'cod',
       paymentStatus: paymentMethod === 'card' ? 'paid' : 'pending',
       deliveryAddress: deliveryAddress || '',
@@ -218,9 +244,9 @@ export const createRental = async (req, res) => {
       data: {
         rental,
         fees: {
-          price: listing.price,
           protectionFee,
           depositAmount,
+          lenderRevenue,
           totalAmount,
           borrowWeeks,
           baseProtectionFee,
