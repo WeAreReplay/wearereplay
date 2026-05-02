@@ -2023,7 +2023,7 @@ export default function Profile() {
                       </h4>
                       <ul style={{ margin: 0, paddingLeft: "1.25rem", color: "#666", fontSize: "0.85rem", lineHeight: "1.6" }}>
                         <li>Expanded Borrowing Capacity (up to 10 active borrows)</li>
-                        <li>Reduced Protection Fees (capped at 6 AED)</li>
+                        <li>50% off flat on Protection Fees</li>
                         <li>Extended Return Grace Period (+1-2 days)</li>
                       </ul>
                     </div>
@@ -2033,7 +2033,7 @@ export default function Profile() {
                         <FaShieldAlt /> Protection & Security
                       </h4>
                       <ul style={{ margin: 0, paddingLeft: "1.25rem", color: "#666", fontSize: "0.85rem", lineHeight: "1.6" }}>
-                        <li>Damage Protection Coverage (50% compensation)</li>
+                        <li>Damage Protection Coverage (50% compensation + Security Deposit)</li>
                       </ul>
                     </div>
 
@@ -2091,7 +2091,7 @@ export default function Profile() {
                       </h4>
                       <ul style={{ margin: 0, paddingLeft: "1.25rem", color: "#666", fontSize: "0.85rem", lineHeight: "1.6" }}>
                         <li>Basic Borrowing Capacity (max 3)</li>
-                        <li>Standard Protection Fees (6-10 AED)</li>
+                        <li>Standard Protection Fees</li>
                         <li>Standard return deadlines</li>
                       </ul>
                     </div>
