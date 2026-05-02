@@ -188,7 +188,7 @@ const Subscription = () => {
           icon: AiFillGift,
           items: [
             "Basic Borrowing Capacity (max 3)",
-            "Standard Protection Fees (6–10 AED)",
+            "Standard Protection Fees",
             "Standard return deadline with a 2-day grace period",
           ],
         },
@@ -230,14 +230,14 @@ const Subscription = () => {
           icon: AiFillGift,
           items: [
             "Expanded Borrowing Capacity (up to 10 active borrows)",
-            "Reduced Protection Fees (capped at 6 AED)",
+            "50% off flat on Protections Fees",
             "Extended Return Grace Period (4 days)",
           ],
         },
         {
           heading: "Protection & Security",
           icon: AiFillSafetyCertificate,
-          items: ["Damage Protection Coverage (50% compensation)"],
+          items: ["Damage Protection Coverage (50% compensation + Security Deposit)"],
         },
         {
           heading: "Support & Trust",
