@@ -473,6 +473,7 @@ form .fields-ctr li .file-ctr .file-hint {
   position: absolute;
   inset: 0;
   height: 100%;
+  width: 100%;
 }
 .item-slider .width-wrap .slider-ctr .games-card .head {
   margin-bottom: 1rem;
@@ -616,6 +617,10 @@ form .fields-ctr li .file-ctr .file-hint {
   color: #0077b6;
 }
 
+#g_a11y_announcement {
+  display: none !important;
+}
+
 .public-header {
   max-width: 1720px;
   position: fixed;
@@ -684,10 +689,16 @@ form .fields-ctr li .file-ctr .file-hint {
 }
 .public-header .width-wrap nav .social-items li a {
   height: 100%;
-  display: grid;
-  place-items: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  flex-direction: column;
   padding-inline: 1.5rem;
   color: #f07c68;
+  font-weight: 900;
+  font-size: 1.125rem;
+  line-height: 1.6;
 }
 .public-header .width-wrap nav .opt-items {
   grid-column: span 2;
