@@ -132,21 +132,4 @@ process.on("uncaughtException", (err) => {
   server.close(() => process.exit(1));
 });
 
-// Function to ping your website
-const pingWebsite = async () => {
-  try {
-    const response = await fetch(
-      process.env.FRONTEND_URL || "http://localhost:5173",
-    );
-    console.log(
-      `🌐 Pinged website - Status: ${response.status} at ${new Date().toISOString()}`,
-    );
-  } catch (error) {
-    console.error(`❌ Ping failed: ${error.message}`);
-  }
-};
-
-// Run every 5 minutes (5 * 60 * 1000 ms)
-setInterval(pingWebsite, 5 * 60 * 1000);
-
 export default app;
