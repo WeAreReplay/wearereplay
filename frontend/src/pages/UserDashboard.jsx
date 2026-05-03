@@ -250,7 +250,6 @@ export default function Dashboard() {
 
   // ! ---------------- USER ROLE ----------------
   const getUserRole = (user) => {
-    console.log(user);
     if (
       user?.subscriptionStatus === "active" &&
       user?.subscriptionType === "premium" &&
