@@ -263,7 +263,7 @@ export default function Dashboard() {
     return "regular";
   };
 
-  const role = getUserRole(user);
+  const role = getUserRole(user.subscriptionStatus);
   const currentRole = ROLE_CONFIG[role];
 
   /*
