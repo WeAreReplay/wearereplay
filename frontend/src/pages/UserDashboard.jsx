@@ -19,6 +19,7 @@ import Toast from "../components/Toast";
 import { FormatDate } from "../components/FormatDate";
 import DashboardHeader from "../layouts/DashboardHeader";
 import { useAuth } from "../contexts/AuthContext";
+import { get } from "http";
 
 // API Base URL
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
@@ -249,8 +250,21 @@ export default function Dashboard() {
   const [dataFetched, setDataFetched] = useState(false);
 
   // ! ---------------- USER ROLE ----------------
-  const role = user?.role || "regular";
-  const currentRole = ROLE_CONFIG[role] || ROLE_CONFIG.regular;
+  const getUserRole = (user) => {
+    if (
+      user.subscriptionStatus === "active" &&
+      user.subscriptionType === "premium" &&
+      user.subscriptionExpiry &&
+      new Date(user.subscriptionExpiry) > new Date()
+    ) {
+      return "premium";
+    }
+
+    return "regular";
+  };
+
+  const role = getUserRole(user);
+  const currentRole = ROLE_CONFIG[role];
 
   /*
     ! Modal State Grouping
