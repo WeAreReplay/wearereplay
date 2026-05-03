@@ -19,7 +19,6 @@ import Toast from "../components/Toast";
 import { FormatDate } from "../components/FormatDate";
 import DashboardHeader from "../layouts/DashboardHeader";
 import { useAuth } from "../contexts/AuthContext";
-import { get } from "http";
 
 // API Base URL
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
@@ -263,8 +262,9 @@ export default function Dashboard() {
     return "regular";
   };
 
-  const role = getUserRole(user.subscriptionStatus);
+  const role = getUserRole(user);
   const currentRole = ROLE_CONFIG[role];
+  console.log(user);
 
   /*
     ! Modal State Grouping
