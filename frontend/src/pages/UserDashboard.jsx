@@ -250,10 +250,11 @@ export default function Dashboard() {
 
   // ! ---------------- USER ROLE ----------------
   const getUserRole = (user) => {
+    console.log(user);
     if (
-      user.subscriptionStatus === "active" &&
-      user.subscriptionType === "premium" &&
-      user.subscriptionExpiry &&
+      user?.subscriptionStatus === "active" &&
+      user?.subscriptionType === "premium" &&
+      user?.subscriptionExpiry &&
       new Date(user.subscriptionExpiry) > new Date()
     ) {
       return "premium";
@@ -264,7 +265,6 @@ export default function Dashboard() {
 
   const role = getUserRole(user);
   const currentRole = ROLE_CONFIG[role];
-  console.log(user);
 
   /*
     ! Modal State Grouping
